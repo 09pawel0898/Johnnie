@@ -5,6 +5,7 @@ target_link_libraries(${ENGINE_NAME} PRIVATE
     	glfw
 	glm
 	imgui
+	spdlog
 )
 
 add_subdirectory(Source)

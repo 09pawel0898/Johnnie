@@ -49,3 +49,7 @@ add_subdirectory(Dependencies)
 
 add_subdirectory(${ENGINE_NAME})
 add_subdirectory(${APP_NAME})
+
+if (MSVC)
+    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${APP_NAME})
+endif()

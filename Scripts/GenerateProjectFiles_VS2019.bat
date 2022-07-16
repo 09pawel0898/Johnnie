@@ -6,7 +6,8 @@ if not exist ../Build  (
 ) else (
 	cd ../Build
 )
+
 echo [36m
-cmake .. -G "Visual Studio 16 2019"
+	cmake .. -G "Visual Studio 16 2019"
 echo [97m
 pause
