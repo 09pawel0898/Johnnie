@@ -9,3 +9,5 @@ target_link_libraries(${ENGINE_NAME} PRIVATE
 )
 
 add_subdirectory(Source)
+
+GroupSourcesByFolder(${ENGINE_NAME})
