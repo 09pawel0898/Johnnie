@@ -8,3 +8,5 @@ target_link_libraries(${APP_NAME} PRIVATE
 )
 
 add_subdirectory(Source)
+
+GroupSourcesByFolder(${APP_NAME})
