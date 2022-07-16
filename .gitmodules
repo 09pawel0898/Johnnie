@@ -7,3 +7,4 @@
 [submodule "Dependencies/spdlog"]
 	path = Dependencies/spdlog
 	url = https://github.com/gabime/spdlog
+	ignore = dirty
