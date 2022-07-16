@@ -1,7 +1,7 @@
 if (NOT TARGET uninstall)
     add_custom_target(uninstall)
     set_target_properties(
-        uninstall
+    	uninstall
         PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}
 )
 endif()
@@ -10,15 +10,15 @@ endif()
 
 add_subdirectory(glad)
 set_target_properties(
-    glad
-    PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/glad
+	glad
+	PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/glad
 )
 
 # GLM
 
 add_subdirectory(glm)
 set_target_properties(
-    glm
+	glm
     PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/glm
 )
 
