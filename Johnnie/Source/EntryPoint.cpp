@@ -14,12 +14,12 @@ public:
 		:	Core::Application(Core::WindowProperties("Sandbox", 450, 600))
 	{
 		SetFPSLimit(120);
-		
+		DEFINE_CONSOLE_LOG_CATEGORY(Sandbox);
+
 		LOG(Core, Info, "Test trace");
-		LOG(Core, Warning, "Test warning");
+		LOG(Sandbox, Warning, "Test warning");
 		LOG(Core, Error, "Test error");
-		
-		//Engine::Log::GetClientLogger()->warn("initClient");
+
 		//GetStateManager()->RegisterState<MainMenuState>("MainMenu");
 		//GetStateManager()->RegisterState<GameplayState>("Gameplay");
 		//GetStateManager()->RegisterState<GameLostState>("GameLost");

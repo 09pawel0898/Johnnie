@@ -29,6 +29,9 @@ namespace Engine
 		static std::shared_ptr<Logger>& GetLogger(std::string_view const& CategoryName);
 	};
 	
+	#define DEFINE_CONSOLE_LOG_CATEGORY(LogCategory)\
+		Log::RegisterLogger(#LogCategory,spdlog::stdout_color_mt(#LogCategory))
+
 	#define LOG(LogCategory,LogVerbosity,...) \
 		switch(Log::Verbosity::##LogVerbosity) \
 		{\
