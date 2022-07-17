@@ -1,6 +1,6 @@
-add_library(${ENGINE_NAME} STATIC "")
+add_library(${ENGINE_TARGET_NAME} STATIC "")
 
-target_link_libraries(${ENGINE_NAME} PRIVATE
+target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 	glad
     	glfw
 	glm
@@ -10,4 +10,4 @@ target_link_libraries(${ENGINE_NAME} PRIVATE
 
 add_subdirectory(Source)
 
-GroupSourcesByFolder(${ENGINE_NAME})
+GroupSourcesByFolder(${ENGINE_TARGET_NAME})

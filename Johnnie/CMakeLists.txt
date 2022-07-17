@@ -1,10 +1,10 @@
-add_executable(${APP_NAME} "")
+add_executable(${SANDBOX_TARGET_NAME} "")
 
-target_link_libraries(${APP_NAME} PRIVATE
+target_link_libraries(${SANDBOX_TARGET_NAME} PRIVATE
 	Engine
 	spdlog
 )
 
 add_subdirectory(Source)
 
-GroupSourcesByFolder(${APP_NAME})
+GroupSourcesByFolder(${SANDBOX_TARGET_NAME})

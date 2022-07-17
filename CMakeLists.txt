@@ -37,8 +37,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Targets
 
-set(APP_NAME Johnnie)
-set(ENGINE_NAME Engine)
+set(SANDBOX_TARGET_NAME Johnnie)
+set(ENGINE_TARGET_NAME Engine)
 
 # Dependencies
 
@@ -47,9 +47,9 @@ add_subdirectory(Dependencies)
 
 # Targets Subdirectories
 
-add_subdirectory(${ENGINE_NAME})
-add_subdirectory(${APP_NAME})
+add_subdirectory(${ENGINE_TARGET_NAME})
+add_subdirectory(${SANDBOX_TARGET_NAME})
 
 if (MSVC)
-    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${APP_NAME})
+    set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${SANDBOX_TARGET_NAME})
 endif()

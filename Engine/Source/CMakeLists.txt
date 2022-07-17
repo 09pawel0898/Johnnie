@@ -2,7 +2,7 @@ file(GLOB_RECURSE SOURCES *.cpp)
 file(GLOB_RECURSE HEADERS *.hpp)
 file(GLOB_RECURSE INLINES *.inl)
 
-target_sources(${ENGINE_NAME} PRIVATE 
+target_sources(${ENGINE_TARGET_NAME} PRIVATE 
 	${SOURCES} 
 	${HEADERS} 
 	${INLINES})

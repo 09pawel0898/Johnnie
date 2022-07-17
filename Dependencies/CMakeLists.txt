@@ -32,11 +32,6 @@ set_target_properties(
 
 # SPDLOG
 
-option(SPDLOG_FMT_EXTERNAL_HO "Use external fmt header-only library instead of bundled" ON) 
-if(SPDLOG_FMT_EXTERNAL AND SPDLOG_FMT_EXTERNAL_HO) 
-	message(FATAL_ERROR "SPDLOG_FMT_EXTERNAL and SPDLOG_FMT_EXTERNAL_HO are mutually exclusive") 
-endif() 
-
 add_subdirectory(spdlog)
 set_target_properties(
     spdlog
