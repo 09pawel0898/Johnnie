@@ -1,15 +1,23 @@
 #pragma once
 
-#include "Application.hpp"
+#include "Window/Application.hpp"
 #include "Log/Log.hpp"
+#include "Exceptions/InitializationException.hpp"
 
 using namespace Engine;
 
 extern std::shared_ptr<Core::Application> Core::CreateApplication(void);
 
-int main(void)
+auto main(void) -> int
 {
-	Core::Application::s_Instance = Core::CreateApplication();
-	Core::Application::s_Instance->Run();
+	try
+	{
+		Core::Application::s_Instance = Core::CreateApplication();
+		Core::Application::s_Instance->Run();
+	}
+	catch (Engine::InitializationException e)
+	{
+		LOG(Core, Error, e.what());
+	}
 	return 0;
 }

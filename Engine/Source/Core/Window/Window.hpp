@@ -1,13 +1,13 @@
 #pragma once
 
-#include "CoreMinimal.hpp"
-#include "../Events/Event.hpp"
+#include "../CoreMinimal.hpp"
+#include "../../Events/Event.hpp"
 
 struct GLFWwindow;
 
 namespace Engine::Core
 {	
-	using ClosedEventCallback = std::function<void(Events::Event&)>;
+	using EventCallback = std::function<void(Events::Event&)>;
 
 	struct WindowProperties
 	{
@@ -17,7 +17,7 @@ namespace Engine::Core
 		unsigned			Height;		
 		bool				bEnableVSync;
 
-		ClosedEventCallback	EventCallback;
+		EventCallback	EventCallback;
 
 		WindowProperties(	std::string const& Title = "DefaultWindow", 
 							unsigned Width = 1280, 
@@ -34,17 +34,19 @@ namespace Engine::Core
 		WindowProperties	m_Properties;
 		GLFWwindow*			m_WindowHandle;
 
-		void InitProperties(WindowProperties const& Properties);
 		void InitEvents(void);
-		bool InitWindowHandle(WindowProperties const& Properties);
 		bool InitOpenGL(void);
+		bool InitWindowHandle(WindowProperties const& Properties);
+		void InitProperties(WindowProperties const& Properties);
 
 	public:
+		[[nodiscard]] 
 		static std::shared_ptr<Window> Create(WindowProperties const& Properties = WindowProperties());
+		
 		void OnTick(void);
 
 	public:
-		void SetEventCallback(ClosedEventCallback const& Callback);
+		void SetEventCallback(EventCallback const& Callback);
 		void SetVSync(bool Enabled);
 
 		inline GLFWwindow* GetWindowHandle(void)	const { return m_WindowHandle;		}
@@ -52,7 +54,7 @@ namespace Engine::Core
 		inline uint16_t GetWidth(void)				const { return m_Properties.Width;	}
 	};
 
-	inline void Window::SetEventCallback(ClosedEventCallback const& Callback)
+	inline void Window::SetEventCallback(EventCallback const& Callback)
 	{
 		m_Properties.EventCallback = Callback;
 	}

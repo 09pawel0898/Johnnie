@@ -22,7 +22,7 @@ namespace Engine::States
 			Action		m_Action;
 			StateName	m_StateName;
 
-			explicit PendingAction(Action Action, StateName StateName = "NONE");
+			explicit PendingAction(Action Action, StateName StateName = "NONE") noexcept;
 		};
 
 	private:
@@ -32,8 +32,9 @@ namespace Engine::States
 		State::Context									m_Context;
 
 	public:
-		explicit StateManager(State::Context Context);
+		explicit StateManager(State::Context Context) noexcept;
 		
+		[[nodiscard]]
 		static std::unique_ptr<StateManager> Create(State::Context Context);
 
 		template <typename StateType>

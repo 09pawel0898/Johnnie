@@ -42,7 +42,7 @@ namespace Engine::Events
 	protected:
 		MouseButtonCode m_ButtonCode;
 
-		explicit MouseButtonEvent(MouseButtonCode Button)
+		explicit MouseButtonEvent(MouseButtonCode Button) noexcept
 			:	m_ButtonCode(Button)
 		{}
 
@@ -56,7 +56,7 @@ namespace Engine::Events
 	class MouseButtonPressedEvent : public MouseButtonEvent
 	{
 	public:
-		explicit MouseButtonPressedEvent(MouseButtonCode Button)
+		explicit MouseButtonPressedEvent(MouseButtonCode Button) noexcept
 			:	MouseButtonEvent(Button)
 		{}
 
@@ -66,7 +66,7 @@ namespace Engine::Events
 	class MouseButtonReleasedEvent : public MouseButtonEvent
 	{
 	public:
-		explicit MouseButtonReleasedEvent(MouseButtonCode Button)
+		explicit MouseButtonReleasedEvent(MouseButtonCode Button) noexcept
 			:	MouseButtonEvent(Button)
 		{}
 

@@ -25,7 +25,7 @@ namespace Engine::Events
 	protected:
 		KeyCode m_KeyCode;
 
-		explicit KeyEvent(KeyCode KeyCode)
+		explicit KeyEvent(KeyCode KeyCode) noexcept
 			:	m_KeyCode(KeyCode)
 		{}
 
@@ -39,7 +39,7 @@ namespace Engine::Events
 	class KeyPressedEvent : public KeyEvent
 	{
 	public:
-		explicit KeyPressedEvent(KeyCode KeyCode)
+		explicit KeyPressedEvent(KeyCode KeyCode) noexcept
 			:	KeyEvent(KeyCode)
 		{}
 
@@ -49,7 +49,7 @@ namespace Engine::Events
 	class KeyReleasedEvent : public KeyEvent
 	{
 	public:
-		explicit KeyReleasedEvent(KeyCode KeyCode)
+		explicit KeyReleasedEvent(KeyCode KeyCode) noexcept
 			:	KeyEvent(KeyCode)
 		{}
 

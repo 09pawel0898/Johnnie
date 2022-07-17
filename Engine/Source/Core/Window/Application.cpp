@@ -1,6 +1,6 @@
 #include "Application.hpp"
-#include "Log/Log.hpp"
-#include "../Events/WindowEvent.hpp"
+#include "../Log/Log.hpp"
+#include "../../Events/WindowEvent.hpp"
 
 //#include "../Graphics/Renderer.h"
 //#include "../Graphics/Texture.h"
@@ -20,7 +20,6 @@ namespace Engine::Core
         {
             return;
         }
-
         m_StateManager->OnEvent(Event);
     }
 
@@ -45,7 +44,7 @@ namespace Engine::Core
         m_StateManager = StateManager::Create(State::Context(m_Window));
     }
 
-    void Application::Run()
+    void Application::Run(void)
     { 
         LOG(Core, Trace, "Application::Run()");
         //Renderer::Init(m_Window->GetWidth(), m_Window->GetHeight());

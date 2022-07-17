@@ -31,7 +31,7 @@ namespace Engine::Events
 		Event& m_Event;
 	
 	public:
-		explicit EventDispatcher(Event& Event)
+		explicit EventDispatcher(Event& Event) noexcept
 			:	m_Event(Event)
 		{}
 

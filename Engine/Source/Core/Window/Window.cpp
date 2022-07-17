@@ -2,9 +2,10 @@
 
 #include "glad/glad.h"
 
-#include "../Events/WindowEvent.hpp"
-#include "../Events/KeyEvent.hpp"
-#include "../Events/MouseEvent.hpp"
+#include "../../Events/WindowEvent.hpp"
+#include "../../Events/KeyEvent.hpp"
+#include "../../Events/MouseEvent.hpp"
+#include "../Exceptions/InitializationException.hpp"
 
 #include "CoreGLFW.hpp"
 
@@ -24,18 +25,19 @@ namespace Engine::Core
 
 		if (!glfwInit())
 		{
-			exit(EXIT_FAILURE);
+			throw InitializationException("Failed to initialize GLFW.");
 		}
 		
 		if (!InitWindowHandle(Properties))
 		{
-			exit(EXIT_FAILURE);
+			throw InitializationException("Failed to initialize GLFW window handle.");
 		}
 
 		if (!InitOpenGL())
 		{
-			exit(EXIT_FAILURE);
+			throw InitializationException("Failed to initialize OpenGL context.");
 		}
+
 		InitEvents();
 		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
 	}
@@ -159,7 +161,6 @@ namespace Engine::Core
 			InitProperties(Properties);
 			return true;
 		}
-		LOG(Core, Error, "Error when initializing glfw window.");
 		return false;
 	}
 
@@ -167,7 +168,6 @@ namespace Engine::Core
 	{
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
-			LOG(Core, Error, "Error when initializing glad.");
 			return false;
 		}
 		return true;

@@ -31,7 +31,7 @@ namespace Engine::States
 			std::shared_ptr<Core::Window> m_Window;
 			//std::shared_ptr<TextureManager> m_Textures;
 
-			Context(std::shared_ptr<Core::Window> Window/*, std::shared_ptr<TextureManager> textures */)
+			explicit Context(std::shared_ptr<Core::Window> Window/*, std::shared_ptr<TextureManager> textures */) noexcept
 				:	m_Window(std::move(Window))
 					//m_Textures(std::move(textures))
 			{}
@@ -46,7 +46,7 @@ namespace Engine::States
 
 	public:
 		State() = delete;
-		State(StateManager& StateManager, Context context)
+		State(StateManager& StateManager, Context context) noexcept
 			:	m_StateManager(&StateManager),
 				m_Context(context)
 		{}

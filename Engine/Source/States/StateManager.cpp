@@ -4,7 +4,7 @@
 
 namespace Engine::States
 {
-	StateManager::StateManager(State::Context Context) 
+	StateManager::StateManager(State::Context Context) noexcept
 		:	m_States(),	
 			m_StateConstructors(),
 			m_PendingActions(),
@@ -66,7 +66,7 @@ namespace Engine::States
 		ProcessPendingActions();
 	}
 
-	StateManager::PendingAction::PendingAction(Action Action, StateName StateName)
+	StateManager::PendingAction::PendingAction(Action Action, StateName StateName) noexcept
 		:	m_Action(Action),
 			m_StateName(StateName)
 	{}
