@@ -14,6 +14,9 @@ public:
 		:	Core::Application(Core::WindowProperties("Sandbox", 450, 600))
 	{
 		SetFPSLimit(120);
+		//Engine::Log::Init();
+		//Engine::Log::GetCoreLogger()->warn("initCore");
+		//Engine::Log::GetClientLogger()->warn("initClient");
 		//GetStateManager()->RegisterState<MainMenuState>("MainMenu");
 		//GetStateManager()->RegisterState<GameplayState>("Gameplay");
 		//GetStateManager()->RegisterState<GameLostState>("GameLost");

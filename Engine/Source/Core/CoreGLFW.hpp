@@ -1,8 +1,8 @@
 #pragma once
 
-#include <cstdint>
+#include "GLFW/glfw3.h"
 
-//
+#include <cstdint>
 #include <iostream>
 
 namespace Engine::Core

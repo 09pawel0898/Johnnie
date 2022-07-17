@@ -1,7 +1,6 @@
 #include "Window.hpp"
 
 #include "glad/glad.h"
-#include "GLFW/glfw3.h"
 
 #include "../Events/WindowEvent.hpp"
 #include "../Events/KeyEvent.hpp"
@@ -21,7 +20,11 @@ namespace Engine::Core
 
 	Window::Window(WindowProperties const& Properties)
 	{
-		Check(glfwInit());
+		auto a = glfwInit();
+		if (!a)
+		{
+			std::cout << "Init Failed";
+		}
 		Check(InitWindowHandle(Properties));
 		Check(InitOpenGL());
 

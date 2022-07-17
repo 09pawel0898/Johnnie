@@ -17,7 +17,9 @@ namespace Engine::Core
         dispatcher.Dipatch<Events::WindowClosedEvent>(BIND_APP_EVENT_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
+        {
             return;
+        }
         m_StateManager->OnEvent(Event);
     }
 
