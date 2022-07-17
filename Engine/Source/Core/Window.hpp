@@ -19,38 +19,38 @@ namespace Engine::Core
 
 		ClosedEventCallback	EventCallback;
 
-		WindowProperties(const std::string& Title = "DefaultWindow", unsigned Width = 1280, unsigned Height = 720);
+		WindowProperties(std::string const& Title = "DefaultWindow", unsigned Width = 1280, unsigned Height = 720);
 	};
 
 	class Window
 	{
 	public:
-		Window(const WindowProperties& Properties);
+		Window(WindowProperties const& Properties);
 		~Window();
 
 	private:
 		WindowProperties	m_Properties;
 		GLFWwindow*			m_WindowHandle;
 
-		void InitProperties(const WindowProperties& Properties);
-		void InitEvents();
-		bool InitWindowHandle();
-		bool InitOpenGL();
+		void InitProperties(WindowProperties const& Properties);
+		void InitEvents(void);
+		bool InitWindowHandle(void);
+		bool InitOpenGL(void);
 
 	public:
-		static std::shared_ptr<Window> Create(const WindowProperties& Properties = WindowProperties());
+		static std::shared_ptr<Window> Create(WindowProperties const& Properties = WindowProperties());
 		void OnTick(void);
 
 	public:
-		void SetEventCallback(const ClosedEventCallback& Callback);
-		void SetVSync(bool enabled);
+		void SetEventCallback(ClosedEventCallback const& Callback);
+		void SetVSync(bool Enabled);
 
 		inline GLFWwindow* GetWindowHandle(void)	const { return m_WindowHandle;		}
-		inline uint16_t GetHeight()					const { return m_Properties.Height; }
-		inline uint16_t GetWidth()					const { return m_Properties.Width;	}
+		inline uint16_t GetHeight(void)				const { return m_Properties.Height; }
+		inline uint16_t GetWidth(void)				const { return m_Properties.Width;	}
 	};
 
-	inline void Window::SetEventCallback(const ClosedEventCallback& Callback)
+	inline void Window::SetEventCallback(ClosedEventCallback const& Callback)
 	{
 		m_Properties.EventCallback = Callback;
 	}

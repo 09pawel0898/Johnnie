@@ -1,7 +1,7 @@
 #include "Window.hpp"
 
-#include "GLFW/glfw3.h"
 #include "glad/glad.h"
+#include "GLFW/glfw3.h"
 
 #include "../Events/WindowEvent.hpp"
 #include "../Events/KeyEvent.hpp"
@@ -11,7 +11,7 @@
 
 namespace Engine::Core
 {
-	WindowProperties::WindowProperties(const std::string& Title, unsigned Width, unsigned Height)
+	WindowProperties::WindowProperties(std::string const& Title, unsigned Width, unsigned Height)
 		:	Title(Title),
 			Width(Width),
 			Height(Height),
@@ -19,7 +19,7 @@ namespace Engine::Core
 			EventCallback(nullptr)
 	{}
 
-	Window::Window(const WindowProperties& Properties)
+	Window::Window(WindowProperties const& Properties)
 	{
 		CHECK(glfwInit());
 		CHECK(InitWindowHandle());
@@ -36,7 +36,7 @@ namespace Engine::Core
 		glfwTerminate();
 	}
 
-	std::shared_ptr<Window> Window::Create(const WindowProperties& Properties)
+	std::shared_ptr<Window> Window::Create(WindowProperties const& Properties)
 	{
 		return std::make_shared<Window>(Properties);
 	}
@@ -56,7 +56,7 @@ namespace Engine::Core
 		m_Properties.bEnableVSync = Enabled;
 	}
 
-	void Window::InitProperties(const WindowProperties& Properties)
+	void Window::InitProperties(WindowProperties const& Properties)
 	{
 		m_Properties = Properties;
 		glfwSetWindowUserPointer(m_WindowHandle, &m_Properties);
@@ -99,19 +99,19 @@ namespace Engine::Core
 
 			switch (Action)
 			{
-			case GLFW_PRESS:
-			{
-				Events::MouseButtonPressedEvent mouseButtonPressedEvent(static_cast<Events::Mouse::MouseButtonCode>(Button));
-				properties->EventCallback(mouseButtonPressedEvent);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				Events::MouseButtonReleasedEvent mouseButtonReleasedEvent(static_cast<Events::Mouse::MouseButtonCode>(Button));
-				properties->EventCallback(mouseButtonReleasedEvent);
-				break;
-			}
-			default: break;
+				case GLFW_PRESS:
+				{
+					Events::MouseButtonPressedEvent mouseButtonPressedEvent(static_cast<Events::Mouse::MouseButtonCode>(Button));
+					properties->EventCallback(mouseButtonPressedEvent);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					Events::MouseButtonReleasedEvent mouseButtonReleasedEvent(static_cast<Events::Mouse::MouseButtonCode>(Button));
+					properties->EventCallback(mouseButtonReleasedEvent);
+					break;
+				}
+				default: break;
 			}
 		});
 

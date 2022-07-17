@@ -31,8 +31,8 @@ namespace Engine::Events
 		Event& m_Event;
 	
 	public:
-		EventDispatcher(Event& Event)
-			: m_Event(Event)
+		explicit EventDispatcher(Event& Event)
+			:	m_Event(Event)
 		{}
 
 		template<typename EventType>
