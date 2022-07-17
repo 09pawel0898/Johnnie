@@ -17,6 +17,6 @@ namespace Engine::Core
 
 	inline void GLFWErrorCallback(int ErrorCode, const char* Description)
 	{
-		std::cerr << "GLFW error ocurred [ " << Description << " ]\n";
+		LOG(Core, Error, "GLFW error ocurred [ {0} ]", Description);
 	}
 }

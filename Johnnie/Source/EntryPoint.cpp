@@ -16,10 +16,6 @@ public:
 		SetFPSLimit(120);
 		DEFINE_CONSOLE_LOG_CATEGORY(Sandbox);
 
-		LOG(Core, Info, "Test trace");
-		LOG(Sandbox, Warning, "Test warning");
-		LOG(Core, Error, "Test error");
-
 		//GetStateManager()->RegisterState<MainMenuState>("MainMenu");
 		//GetStateManager()->RegisterState<GameplayState>("Gameplay");
 		//GetStateManager()->RegisterState<GameLostState>("GameLost");

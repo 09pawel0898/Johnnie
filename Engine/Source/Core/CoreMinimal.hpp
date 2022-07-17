@@ -10,3 +10,4 @@
 #include <chrono>
 
 #include "Asserts.hpp"
+#include "../Core/Log/Log.hpp"

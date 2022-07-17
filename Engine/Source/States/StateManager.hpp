@@ -1,10 +1,7 @@
 #pragma once
 
 #include "../Core/CoreMinimal.hpp"
-
 #include "State.hpp"
-
-//#include "../Core/Debug.h"
 
 namespace Engine::States
 {
@@ -54,7 +51,7 @@ namespace Engine::States
 	template<typename StateType>
 	inline void StateManager::RegisterState(StateName StateName)
 	{
-		//EN_DEBUGMSG("%s%s%s", "[State] State '", stateName.c_str(), "' registered");
+		LOG(States, Trace, "State '{0}' registered.", StateName.c_str());
 		m_StateConstructors[StateName] = [this](void)
 		{
 			return State::StatePointer(new StateType(*this, m_Context));
@@ -63,13 +60,13 @@ namespace Engine::States
 
 	inline void StateManager::PushState(StateName StateName)
 	{
-		//EN_DEBUGMSG("%s%s%s", "[State] State '", stateName.c_str(), "' pushed");
+		LOG(States, Trace, "State '{0}' pushed.", StateName.c_str());
 		m_PendingActions.push_back(PendingAction(Action::ADD, StateName));
 	}
 
 	inline void StateManager::PopState(void)
 	{
-		//EN_DEBUGMSG("%s", "[State] State popped from the top");
+		LOG(States, Trace, "State popped from top.");
 		m_PendingActions.push_back(PendingAction(Action::DELETE));
 	}
 

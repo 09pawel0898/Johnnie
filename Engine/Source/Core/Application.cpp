@@ -20,6 +20,7 @@ namespace Engine::Core
         {
             return;
         }
+
         m_StateManager->OnEvent(Event);
     }
 
@@ -34,6 +35,8 @@ namespace Engine::Core
         using namespace States;
         
         DEFINE_CONSOLE_LOG_CATEGORY(Core);
+        DEFINE_CONSOLE_LOG_CATEGORY(States);
+        DEFINE_CONSOLE_LOG_CATEGORY(Events);
 
         m_Window = Window::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
@@ -44,6 +47,7 @@ namespace Engine::Core
 
     void Application::Run()
     { 
+        LOG(Core, Trace, "Application::Run()");
         //Renderer::Init(m_Window->GetWidth(), m_Window->GetHeight());
         //Renderer::EnableBlending();
 

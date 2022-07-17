@@ -36,8 +36,8 @@ namespace Engine::Core
 		{
 			exit(EXIT_FAILURE);
 		}
-
 		InitEvents();
+		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
 	}
 
 	Window::~Window()
@@ -60,9 +60,13 @@ namespace Engine::Core
 	void Window::SetVSync(bool Enabled)
 	{
 		if (Enabled)
+		{
 			glfwSwapInterval(1);
+		}
 		else
+		{
 			glfwSwapInterval(0);
+		}
 		m_Properties.bEnableVSync = Enabled;
 	}
 
@@ -155,6 +159,7 @@ namespace Engine::Core
 			InitProperties(Properties);
 			return true;
 		}
+		LOG(Core, Error, "Error when initializing glfw window.");
 		return false;
 	}
 
@@ -162,6 +167,7 @@ namespace Engine::Core
 	{
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
+			LOG(Core, Error, "Error when initializing glad.");
 			return false;
 		}
 		return true;
