@@ -1,0 +1,5 @@
+file(GLOB_RECURSE HEADERS *.hpp)
+
+target_sources(${ENGINE_TARGET_NAME} PUBLIC
+	${HEADERS}
+)
