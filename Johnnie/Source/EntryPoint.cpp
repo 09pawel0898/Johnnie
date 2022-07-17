@@ -14,8 +14,11 @@ public:
 		:	Core::Application(Core::WindowProperties("Sandbox", 450, 600))
 	{
 		SetFPSLimit(120);
-		//Engine::Log::Init();
-		//Engine::Log::GetCoreLogger()->warn("initCore");
+		
+		LOG(Core, Info, "Test trace");
+		LOG(Core, Warning, "Test warning");
+		LOG(Core, Error, "Test error");
+		
 		//Engine::Log::GetClientLogger()->warn("initClient");
 		//GetStateManager()->RegisterState<MainMenuState>("MainMenu");
 		//GetStateManager()->RegisterState<GameplayState>("Gameplay");

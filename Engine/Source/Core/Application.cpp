@@ -1,5 +1,5 @@
 #include "Application.hpp"
-
+#include "Log/Log.hpp"
 #include "../Events/WindowEvent.hpp"
 
 //#include "../Graphics/Renderer.h"
@@ -32,6 +32,8 @@ namespace Engine::Core
     Application::Application(const WindowProperties& WindowProperties)
     {
         using namespace States;
+        
+        Log::RegisterLogger("Core", spdlog::stdout_color_mt("Core"));
 
         m_Window = Window::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
@@ -41,7 +43,7 @@ namespace Engine::Core
     }
 
     void Application::Run()
-    {
+    { 
         //Renderer::Init(m_Window->GetWidth(), m_Window->GetHeight());
         //Renderer::EnableBlending();
 

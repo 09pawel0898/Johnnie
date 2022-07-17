@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Application.hpp"
+#include "Log/Log.hpp"
 
 using namespace Engine;
 
