@@ -21,9 +21,9 @@ namespace Engine::Core
 
 	Window::Window(WindowProperties const& Properties)
 	{
-		CHECK(glfwInit());
-		CHECK(InitWindowHandle());
-		CHECK(InitOpenGL());
+		Check(glfwInit());
+		Check(InitWindowHandle());
+		Check(InitOpenGL());
 
 		InitProperties(Properties);
 

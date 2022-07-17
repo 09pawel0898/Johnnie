@@ -2,6 +2,10 @@
 
 #include <iostream>
 #include <functional>
+#include <utility>
+#include <cstdint>
+#include <stack>
+#include <map>
+#include <cassert>
 
-#define CHECK(x) \
-	if(!(x)) __debugbreak()
+#include "Asserts.hpp"
