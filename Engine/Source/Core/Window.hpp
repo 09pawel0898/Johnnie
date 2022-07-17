@@ -19,7 +19,9 @@ namespace Engine::Core
 
 		ClosedEventCallback	EventCallback;
 
-		WindowProperties(std::string const& Title = "DefaultWindow", unsigned Width = 1280, unsigned Height = 720);
+		WindowProperties(	std::string const& Title = "DefaultWindow", 
+							unsigned Width = 1280, 
+							unsigned Height = 720);
 	};
 
 	class Window
@@ -34,7 +36,7 @@ namespace Engine::Core
 
 		void InitProperties(WindowProperties const& Properties);
 		void InitEvents(void);
-		bool InitWindowHandle(void);
+		bool InitWindowHandle(WindowProperties const& Properties);
 		bool InitOpenGL(void);
 
 	public:

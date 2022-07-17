@@ -6,7 +6,7 @@
 
 #include "Window.hpp"
 
-//#include "../States/StateManager.h"
+#include "../States/StateManager.hpp"
 //#include "../Resources/ResourceManager.h"
 
 int main(void);
@@ -34,15 +34,14 @@ namespace Engine::Core
 		friend int ::main(void);
 		
 		using WindowPtr = std::shared_ptr<Window>;
+		using StateManagerPtr = std::unique_ptr<States::StateManager>;
 		//using TextureManagerPtr = std::shared_ptr<TextureManager>;
-		//using StateManagerPtr = std::unique_ptr<States::StateManager>;
-
 	
 	private:
-		WindowPtr m_Window;
+		WindowPtr			m_Window;
+		StateManagerPtr		m_StateManager;
 		//TextureManagerPtr m_TextureManager;
-		//StateManagerPtr m_StateManager;
-
+		
 		bool		m_bRunning = true;
 		double		m_DeltaTime = 0.0;
 		double		m_FPS = 0.0;
@@ -69,9 +68,9 @@ namespace Engine::Core
 
 		inline double GetDT(void) const					{ return m_DeltaTime; }
 		inline double GetFPS(void) const				{ return m_FPS; }
-		inline const WindowPtr& GetWindow(void) const	{ return m_Window; }
+		inline WindowPtr const& GetWindow(void) const	{ return m_Window; }
 
-		//inline const StateManagerPtr& GetStateManager(void) const { return m_StateManager; }
+		inline StateManagerPtr const& GetStateManager(void) const { return m_StateManager; }
 		//inline const TextureManagerPtr& GetTextureManager(void) const { return m_TextureManager; }
 	};
 

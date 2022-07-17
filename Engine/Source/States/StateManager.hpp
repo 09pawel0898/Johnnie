@@ -36,12 +36,14 @@ namespace Engine::States
 
 	public:
 		explicit StateManager(State::Context Context);
+		
+		static std::unique_ptr<StateManager> Create(State::Context Context);
 
 		template <typename StateType>
 		void RegisterState(StateName StateName);
 
 		void OnRender(void) const;
-		void OnUpdate(double DeltaTime);
+		void OnTick(double DeltaTime);
 		void OnEvent(Events::Event& Event);
 
 		void PushState(StateName StateName);

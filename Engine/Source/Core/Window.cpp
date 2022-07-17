@@ -22,11 +22,10 @@ namespace Engine::Core
 	Window::Window(WindowProperties const& Properties)
 	{
 		Check(glfwInit());
-		Check(InitWindowHandle());
+		Check(InitWindowHandle(Properties));
 		Check(InitOpenGL());
 
-		InitProperties(Properties);
-
+		InitEvents();
 		glfwSetErrorCallback(GLFWErrorCallback);
 	}
 
@@ -67,6 +66,7 @@ namespace Engine::Core
 		glfwSetWindowCloseCallback(m_WindowHandle, [](GLFWwindow* Window)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
+			Check(properties);
 			Events::WindowClosedEvent windowClosedEvent;
 			properties->EventCallback(windowClosedEvent);
 		});
@@ -74,6 +74,7 @@ namespace Engine::Core
 		glfwSetKeyCallback(m_WindowHandle, [](GLFWwindow* Window, int Key, int Scancode, int Action, int Mods)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
+			Check(properties);
 
 			switch (Action)
 			{
@@ -96,6 +97,7 @@ namespace Engine::Core
 		glfwSetMouseButtonCallback(m_WindowHandle, [](GLFWwindow* Window, int Button, int Action, int Mods)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
+			Check(properties);
 
 			switch (Action)
 			{
@@ -118,12 +120,13 @@ namespace Engine::Core
 		glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow* Window, double NewX, double NewY)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
+			Check(properties);
 			Events::MouseMovedEvent mouseMovedEvent(NewX, NewY);
 			properties->EventCallback(mouseMovedEvent);
 		});
 	}
 
-	bool Window::InitWindowHandle()
+	bool Window::InitWindowHandle(WindowProperties const& Properties)
 	{
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW::CONTEXT_VERSION_MAJOR);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLFW::CONTEXT_VERSION_MINOR);
@@ -131,13 +134,14 @@ namespace Engine::Core
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW::WINDOW_RESIZEABLE);
 
-		m_WindowHandle = glfwCreateWindow(	m_Properties.Width,
-											m_Properties.Height,
-											m_Properties.Title.c_str(),
+		m_WindowHandle = glfwCreateWindow(	Properties.Width,
+											Properties.Height,
+											Properties.Title.c_str(),
 											nullptr, nullptr);
 		if(m_WindowHandle)
 		{
 			glfwMakeContextCurrent(m_WindowHandle);
+			InitProperties(Properties);
 			return true;
 		}
 		return false;

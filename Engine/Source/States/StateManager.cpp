@@ -11,6 +11,11 @@ namespace Engine::States
 			m_Context(Context)
 	{}
 
+	std::unique_ptr<StateManager> StateManager::Create(State::Context Context)
+	{
+		return std::make_unique<StateManager>(Context);
+	}
+
 	StatePointer StateManager::CreateState(StateName StateName)
 	{
 		auto stateConstructor = m_StateConstructors.find(StateName);
@@ -43,7 +48,7 @@ namespace Engine::States
 		}
 	}
 
-	void StateManager::OnUpdate(double DeltaTime)
+	void StateManager::OnTick(double DeltaTime)
 	{
 		if (!IsEmpty())
 		{

@@ -5,8 +5,6 @@
 //#include "../Graphics/Renderer.h"
 //#include "../Graphics/Texture.h"
 
-#include <chrono>
-
 namespace Engine::Core
 {
     #define BIND_APP_EVENT_FUNCTION(x) std::bind(&Application::x, this,std::placeholders::_1)
@@ -20,7 +18,7 @@ namespace Engine::Core
 
         if (Event.Handled())
             return;
-        //m_StateManager->OnEvent(event);
+        m_StateManager->OnEvent(Event);
     }
 
     bool Application::OnWindowClosed(Events::WindowClosedEvent& Event)
@@ -31,10 +29,13 @@ namespace Engine::Core
 
     Application::Application(const WindowProperties& WindowProperties)
     {
+        using namespace States;
+
         m_Window = Window::Create(WindowProperties);
-        //m_TextureManager = std::make_shared<TextureManager>();
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
-        //m_StateManager = std::make_unique<States::StateManager>(States::State::Context(m_Window, m_TextureManager));
+        
+        //m_TextureManager = std::make_shared<TextureManager>();
+        m_StateManager = StateManager::Create(State::Context(m_Window));
     }
 
     void Application::Run()
@@ -50,7 +51,7 @@ namespace Engine::Core
         double tElapsedTime{ 0.0 };
         double tMinTimePerFrame = 1000.0 / m_FPSLIMIT;
 
-        auto updateStats = [&]
+        auto updateStats = [&, this]
         {
             m_DeltaTime = tElapsedTime;
             m_FPS = (1.0 / m_DeltaTime) * 1000;
@@ -66,9 +67,10 @@ namespace Engine::Core
             if (tElapsedTime >= tMinTimePerFrame)
             {
                 //Renderer::Clear();
-                //m_StateManager->OnUpdate(m_DeltaTime);
-                //m_StateManager->OnRender();
-                //m_Window->OnUpdate();
+                m_StateManager->OnTick(m_DeltaTime);
+                m_StateManager->OnRender();
+                m_Window->OnTick();
+                
                 tLastUpdate = TimePoint::now();
                 updateStats();
             }
