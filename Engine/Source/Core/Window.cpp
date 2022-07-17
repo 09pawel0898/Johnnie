@@ -20,16 +20,24 @@ namespace Engine::Core
 
 	Window::Window(WindowProperties const& Properties)
 	{
-		auto a = glfwInit();
-		if (!a)
+		glfwSetErrorCallback(GLFWErrorCallback);
+
+		if (!glfwInit())
 		{
-			std::cout << "Init Failed";
+			exit(EXIT_FAILURE);
 		}
-		Check(InitWindowHandle(Properties));
-		Check(InitOpenGL());
+		
+		if (!InitWindowHandle(Properties))
+		{
+			exit(EXIT_FAILURE);
+		}
+
+		if (!InitOpenGL())
+		{
+			exit(EXIT_FAILURE);
+		}
 
 		InitEvents();
-		glfwSetErrorCallback(GLFWErrorCallback);
 	}
 
 	Window::~Window()
