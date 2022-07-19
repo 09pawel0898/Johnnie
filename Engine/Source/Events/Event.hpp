@@ -25,7 +25,7 @@ namespace Engine::Events
 	class EventDispatcher
 	{
 		template<typename EventType>
-		using EventFunction = std::function<bool(EventType&)>;
+		using EventCallback = std::function<bool(EventType&)>;
 
 	private:
 		Event& m_Event;
@@ -36,7 +36,8 @@ namespace Engine::Events
 		{}
 
 		template<typename EventType>
-		bool Dipatch(EventFunction<EventType> const& Func)
+			requires std::is_base_of_v<Event,EventType>
+		bool Dipatch(EventCallback<EventType> const& Func)
 		{
 			if (m_Event.GetEventType() == EventType::GetStaticType())
 			{

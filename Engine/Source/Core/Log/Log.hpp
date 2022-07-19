@@ -35,9 +35,9 @@ namespace Engine
 	#define LOG(LogCategory,LogVerbosity,...) \
 		switch(Log::Verbosity::##LogVerbosity) \
 		{\
-			case Log::Verbosity::Trace:		Engine::Log::GetLogger(#LogCategory)->trace(__VA_ARGS__);	break; \
-			case Log::Verbosity::Info:		Engine::Log::GetLogger(#LogCategory)->info(__VA_ARGS__);	break; \
-			case Log::Verbosity::Warning:	Engine::Log::GetLogger(#LogCategory)->warn(__VA_ARGS__);	break; \
-			case Log::Verbosity::Error:		Engine::Log::GetLogger(#LogCategory)->error(__VA_ARGS__);	break; \
+			case Log::Verbosity::Trace:		Log::GetLogger(#LogCategory)->trace(__VA_ARGS__);	break; \
+			case Log::Verbosity::Info:		Log::GetLogger(#LogCategory)->info(__VA_ARGS__);	break; \
+			case Log::Verbosity::Warning:	Log::GetLogger(#LogCategory)->warn(__VA_ARGS__);	break; \
+			case Log::Verbosity::Error:		Log::GetLogger(#LogCategory)->error(__VA_ARGS__);	break; \
 		}
 }

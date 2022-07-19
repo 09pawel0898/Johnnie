@@ -37,7 +37,8 @@ namespace Engine::States
 		[[nodiscard]]
 		static std::unique_ptr<StateManager> Create(State::Context Context);
 
-		template <typename StateType>
+		template<typename StateType>
+			requires std::is_base_of_v<State, StateType>
 		void RegisterState(StateName StateName);
 
 		void OnRender(void) const;
@@ -50,24 +51,25 @@ namespace Engine::States
 	};
 
 	template<typename StateType>
+		requires std::is_base_of_v<State,StateType>
 	inline void StateManager::RegisterState(StateName StateName)
 	{
 		LOG(States, Trace, "State '{0}' registered.", StateName.c_str());
 		m_StateConstructors[StateName] = [this](void)
 		{
-			return State::StatePointer(new StateType(*this, m_Context));
+			return std::make_unique<StateType>(*this, m_Context);
 		};
 	}
 
 	inline void StateManager::PushState(StateName StateName)
 	{
-		LOG(States, Trace, "State '{0}' pushed.", StateName.c_str());
+		LOG(States, Trace, "State '{0}' attached.", StateName.c_str());
 		m_PendingActions.push_back(PendingAction(Action::ADD, StateName));
 	}
 
 	inline void StateManager::PopState(void)
 	{
-		LOG(States, Trace, "State popped from top.");
+		LOG(States, Trace, "State popped from detached.");
 		m_PendingActions.push_back(PendingAction(Action::DELETE));
 	}
 

@@ -53,8 +53,8 @@ namespace Engine::States
 		virtual ~State(void) = default;
 
 		virtual void OnRender(void) const			= 0;
-		virtual bool OnTick(double DeltaTime)		= 0;
-		virtual bool OnEvent(Events::Event& Event)	= 0;
+		virtual void OnTick(double DeltaTime)		= 0;
+		virtual void OnEvent(Events::Event& Event)	= 0;
 		virtual void OnAwake(void) {}
 	};
 }
