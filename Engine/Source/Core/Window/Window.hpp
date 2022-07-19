@@ -4,6 +4,7 @@
 #include "../../Events/Event.hpp"
 
 struct GLFWwindow;
+struct ImGuiIO;
 
 namespace Engine::Core
 {	
@@ -11,11 +12,11 @@ namespace Engine::Core
 
 	struct WindowProperties
 	{
-		std::string			Title;
+		std::string		Title;
 		
-		unsigned			Width;
-		unsigned			Height;		
-		bool				bEnableVSync;
+		unsigned		Width;
+		unsigned		Height;		
+		bool			bEnableVSync;
 
 		EventCallback	EventCallback;
 
@@ -33,9 +34,11 @@ namespace Engine::Core
 	private:
 		WindowProperties	m_Properties;
 		GLFWwindow*			m_WindowHandle;
+		ImGuiIO*			m_ImGuiIO;
 
 		void InitEvents(void);
-		bool InitOpenGL(void);
+		bool InitOpenGLContext(void);
+		bool InitImGuiContext(void);
 		bool InitWindowHandle(WindowProperties const& Properties);
 		void InitProperties(WindowProperties const& Properties);
 
@@ -43,6 +46,9 @@ namespace Engine::Core
 		[[nodiscard]] 
 		static std::shared_ptr<Window> Create(WindowProperties const& Properties = WindowProperties());
 		
+		void OnBeginImGuiFrame();
+		void OnEndImGuiFrame();
+		void OnRenderImGuiFrame();
 		void OnTick(void);
 
 	public:

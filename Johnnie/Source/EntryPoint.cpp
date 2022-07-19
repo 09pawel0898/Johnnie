@@ -18,7 +18,7 @@ class JohnnieApplication : public Core::Application
 {
 public:
 	JohnnieApplication() noexcept
-		:	Core::Application(Core::WindowProperties("Johnnie", 450, 600))
+		:	Core::Application(Core::WindowProperties("Johnnie", 1280, 720))
 	{
 		SetFPSLimit(120);
 

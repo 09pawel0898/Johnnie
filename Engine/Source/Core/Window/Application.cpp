@@ -2,6 +2,11 @@
 #include "../Debug/Log.hpp"
 #include "../../Events/WindowEvent.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
+#include "glad/glad.h"
 //#include "../Graphics/Renderer.h"
 //#include "../Graphics/Texture.h"
 
@@ -64,6 +69,8 @@ namespace Engine::Core
             m_FPS = (1.0 / m_DeltaTime) * 1000;
         };
 
+        ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
         while (m_bRunning)
         {
             tFrameStart = TimePoint::now();
@@ -73,10 +80,25 @@ namespace Engine::Core
 
             if (tElapsedTime >= tMinTimePerFrame)
             {
-                //Renderer::Clear();
+                m_Window->OnTick();
+
                 m_StateManager->OnTick(m_DeltaTime);
                 m_StateManager->OnRender();
-                m_Window->OnTick();
+
+                m_Window->OnBeginImGuiFrame();
+                {
+                    if (bool demoWindow = true; demoWindow)
+                    {
+                        ImGui::ShowDemoWindow(&demoWindow);
+                    }
+                }
+                m_Window->OnEndImGuiFrame();
+               
+                glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+                glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+                glClear(GL_COLOR_BUFFER_BIT);
+                //Renderer::Clear();
+                m_Window->OnRenderImGuiFrame();
                 
                 tLastUpdate = TimePoint::now();
                 updateStats();

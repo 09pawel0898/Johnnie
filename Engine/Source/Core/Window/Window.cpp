@@ -2,6 +2,10 @@
 
 #include "glad/glad.h"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include "../../Events/WindowEvent.hpp"
 #include "../../Events/KeyEvent.hpp"
 #include "../../Events/MouseEvent.hpp"
@@ -33,17 +37,27 @@ namespace Engine::Core
 			throw InitializationException("Failed to initialize GLFW window handle.");
 		}
 
-		if (!InitOpenGL())
+		if (!InitOpenGLContext())
 		{
 			throw InitializationException("Failed to initialize OpenGL context.");
 		}
-
+		
+		/** GLFW events must be initialized before ImGui context */
 		InitEvents();
+
+		if (!InitImGuiContext())
+		{
+			throw InitializationException("Failed to initialize ImGui context.");
+		}
 		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
 	}
 
 	Window::~Window()
 	{
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+
 		glfwDestroyWindow(m_WindowHandle);
 		glfwTerminate();
 	}
@@ -57,6 +71,23 @@ namespace Engine::Core
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_WindowHandle);
+	}
+
+	void Window::OnRenderImGuiFrame()
+	{
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
+
+	void Window::OnBeginImGuiFrame()
+	{
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+	}
+
+	void Window::OnEndImGuiFrame()
+	{
+		ImGui::Render();
 	}
 
 	void Window::SetVSync(bool Enabled)
@@ -110,7 +141,7 @@ namespace Engine::Core
 				default: break;
 			}
 		});
-
+		
 		glfwSetMouseButtonCallback(m_WindowHandle, [](GLFWwindow* Window, int Button, int Action, int Mods)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
@@ -133,7 +164,7 @@ namespace Engine::Core
 				default: break;
 			}
 		});
-
+		
 		glfwSetCursorPosCallback(m_WindowHandle, [](GLFWwindow* Window, double NewX, double NewY)
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
@@ -141,6 +172,19 @@ namespace Engine::Core
 			Events::MouseMovedEvent mouseMovedEvent(NewX, NewY);
 			properties->EventCallback(mouseMovedEvent);
 		});
+	}
+
+	bool Window::InitImGuiContext(void)
+	{
+		ImGui::CreateContext();
+		m_ImGuiIO = &ImGui::GetIO();
+		
+		ImGui::StyleColorsDark();
+
+		ImGui_ImplGlfw_InitForOpenGL(m_WindowHandle, true);
+		ImGui_ImplOpenGL3_Init("#version 150");
+
+		return true;
 	}
 
 	bool Window::InitWindowHandle(WindowProperties const& Properties)
@@ -164,7 +208,7 @@ namespace Engine::Core
 		return false;
 	}
 
-	bool Window::InitOpenGL()
+	bool Window::InitOpenGLContext()
 	{
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{
