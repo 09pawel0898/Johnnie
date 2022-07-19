@@ -13,7 +13,7 @@ private:
 	virtual void OnTick(double DeltaTime) {};
 	virtual void OnEvent(Events::Event& Event) {};
 };
-#include <any>
+
 class JohnnieApplication : public Core::Application
 {
 public:
@@ -21,7 +21,6 @@ public:
 		:	Core::Application(Core::WindowProperties("Johnnie", 450, 600))
 	{
 		SetFPSLimit(120);
-		DEFINE_CONSOLE_LOG_CATEGORY(Sandbox);
 
 		GetStateManager()->RegisterState<InitialState>("InitialState");
 		GetStateManager()->PushState("InitialState");

@@ -1,5 +1,5 @@
 #include "Application.hpp"
-#include "../Log/Log.hpp"
+#include "../Debug/Log.hpp"
 #include "../../Events/WindowEvent.hpp"
 
 //#include "../Graphics/Renderer.h"
@@ -14,7 +14,7 @@ namespace Engine::Core
     void Application::OnEvent(Events::Event& Event)
     {
         Events::EventDispatcher dispatcher(Event);
-        dispatcher.Dipatch<Events::WindowClosedEvent>(BIND_APP_EVENT_FUNCTION(OnWindowClosed));
+        dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_APP_EVENT_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
         {
@@ -36,7 +36,7 @@ namespace Engine::Core
         DEFINE_CONSOLE_LOG_CATEGORY(Core);
         DEFINE_CONSOLE_LOG_CATEGORY(States);
         DEFINE_CONSOLE_LOG_CATEGORY(Events);
-
+        
         m_Window = Window::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
         

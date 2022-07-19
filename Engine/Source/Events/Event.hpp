@@ -37,7 +37,7 @@ namespace Engine::Events
 
 		template<typename EventType>
 			requires std::is_base_of_v<Event,EventType>
-		bool Dipatch(EventCallback<EventType> const& Func)
+		bool Dispatch(EventCallback<EventType> const& Func)
 		{
 			if (m_Event.GetEventType() == EventType::GetStaticType())
 			{

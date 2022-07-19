@@ -9,5 +9,5 @@
 #include <cassert>
 #include <chrono>
 
-#include "Asserts.hpp"
-#include "../Core/Log/Log.hpp"
+#include "Debug/Asserts.hpp"
+#include "../Core/Debug/Log.hpp"
