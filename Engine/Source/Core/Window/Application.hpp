@@ -35,7 +35,7 @@ namespace Engine::Core
 		inline WindowPtr const& GetWindow(void) const { return m_Window; }
 
 	private:
-		using StateManagerPtr	= std::unique_ptr<States::StateManager>;
+		using StateManagerPtr = std::unique_ptr<States::StateManager>;
 		StateManagerPtr	m_StateManager;
 
 	public:

@@ -1,5 +1,6 @@
 #include <Engine/CoreMinimal.hpp>
 #include <Engine/EntryPoint.hpp>
+#include <Engine/Debug.hpp>
 
 class InitialState : public States::State
 {
@@ -9,12 +10,16 @@ public:
 	{}
 
 private:
-	virtual void OnRender(void) const {};
-	virtual void OnTick(double DeltaTime) {};
-	virtual void OnEvent(Events::Event& Event) {};
+	virtual void OnAwake(void) override 
+	{
+	
+	}
+	virtual void OnRender(void) const override{};
+	virtual void OnTick(double DeltaTime) override {};
+	virtual void OnEvent(Events::Event& Event) override {};
 };
 
-class JohnnieApplication : public Core::Application
+class JohnnieApplication final : public Core::Application
 {
 public:
 	JohnnieApplication() noexcept

@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "Debug/Log.hpp"
+#include "Log.hpp"
 
 using namespace Engine;
 

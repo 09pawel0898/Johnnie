@@ -25,7 +25,7 @@ namespace Engine::Core
 							unsigned Height = 720);
 	};
 
-	class Window
+	class Window final
 	{
 	public:
 		Window(WindowProperties const& Properties);
