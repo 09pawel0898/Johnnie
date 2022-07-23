@@ -21,7 +21,7 @@ namespace Engine::Utility
 
 	template <typename TimeUnit>
 		requires is_duration<TimeUnit>::value
-	constexpr std::string_view TimeUnitToStringV()		{ static_assert(false); }
+	constexpr std::string_view TimeUnitToStringV(){ static_assert(false); }
 
 	template <> constexpr std::string_view TimeUnitToStringV<std::chrono::milliseconds>()	{ return "ms"; }
 	template <> constexpr std::string_view TimeUnitToStringV<std::chrono::microseconds>()	{ return "us"; }
@@ -48,7 +48,7 @@ namespace Engine::Utility
 
 		~Timer()
 		{
-			auto endTimepoint = std::chrono::high_resolution_clock::now();
+			TimePoint endTimepoint = std::chrono::high_resolution_clock::now();
 
 			auto duration = std::chrono::time_point_cast<TimeUnit>(endTimepoint).time_since_epoch() -
 							std::chrono::time_point_cast<TimeUnit>(m_StartTimepoint).time_since_epoch();

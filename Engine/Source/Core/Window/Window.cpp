@@ -189,6 +189,7 @@ namespace Engine::Core
 
 	bool Window::InitWindowHandle(WindowProperties const& Properties)
 	{
+		
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW::CONTEXT_VERSION_MAJOR);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLFW::CONTEXT_VERSION_MINOR);
 
