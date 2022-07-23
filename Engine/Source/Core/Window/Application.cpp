@@ -58,7 +58,6 @@ namespace Engine::Core
 #if (_MSC_VER >= 1910)
         _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
-
         using TimePoint = std::chrono::high_resolution_clock;
 
         std::chrono::steady_clock::time_point tFrameStart, tLastUpdate;
