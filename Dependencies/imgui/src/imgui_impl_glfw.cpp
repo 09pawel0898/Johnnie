@@ -89,7 +89,7 @@ enum GlfwClientApi
 
 struct ImGui_ImplGlfw_Data
 {
-    GLFWwindow*             Window;
+    GLFWwindow*             WindowsWindow;
     GlfwClientApi           ClientApi;
     double                  Time;
     GLFWwindow*             MouseWindow;
@@ -271,7 +271,7 @@ static void ImGui_ImplGlfw_UpdateKeyModifiers(int mods)
 void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackMousebutton != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackMousebutton != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackMousebutton(window, button, action, mods);
 
     ImGui_ImplGlfw_UpdateKeyModifiers(mods);
@@ -284,7 +284,7 @@ void ImGui_ImplGlfw_MouseButtonCallback(GLFWwindow* window, int button, int acti
 void ImGui_ImplGlfw_ScrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackScroll != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackScroll != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackScroll(window, xoffset, yoffset);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -322,7 +322,7 @@ static int ImGui_ImplGlfw_TranslateUntranslatedKey(int key, int scancode)
 void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int keycode, int scancode, int action, int mods)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackKey != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackKey != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackKey(window, keycode, scancode, action, mods);
 
     if (action != GLFW_PRESS && action != GLFW_RELEASE)
@@ -344,7 +344,7 @@ void ImGui_ImplGlfw_KeyCallback(GLFWwindow* window, int keycode, int scancode, i
 void ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow* window, int focused)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackWindowFocus != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackWindowFocus != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackWindowFocus(window, focused);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -354,7 +354,7 @@ void ImGui_ImplGlfw_WindowFocusCallback(GLFWwindow* window, int focused)
 void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackCursorPos != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackCursorPos != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackCursorPos(window, x, y);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -367,7 +367,7 @@ void ImGui_ImplGlfw_CursorPosCallback(GLFWwindow* window, double x, double y)
 void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow* window, int entered)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackCursorEnter != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackCursorEnter != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackCursorEnter(window, entered);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -387,7 +387,7 @@ void ImGui_ImplGlfw_CursorEnterCallback(GLFWwindow* window, int entered)
 void ImGui_ImplGlfw_CharCallback(GLFWwindow* window, unsigned int c)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if (bd->PrevUserCallbackChar != NULL && window == bd->Window)
+    if (bd->PrevUserCallbackChar != NULL && window == bd->WindowsWindow)
         bd->PrevUserCallbackChar(window, c);
 
     ImGuiIO& io = ImGui::GetIO();
@@ -403,7 +403,7 @@ void ImGui_ImplGlfw_InstallCallbacks(GLFWwindow* window)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
     IM_ASSERT(bd->InstalledCallbacks == false && "Callbacks already installed!");
-    IM_ASSERT(bd->Window == window);
+    IM_ASSERT(bd->WindowsWindow == window);
 
     bd->PrevUserCallbackWindowFocus = glfwSetWindowFocusCallback(window, ImGui_ImplGlfw_WindowFocusCallback);
     bd->PrevUserCallbackCursorEnter = glfwSetCursorEnterCallback(window, ImGui_ImplGlfw_CursorEnterCallback);
@@ -420,7 +420,7 @@ void ImGui_ImplGlfw_RestoreCallbacks(GLFWwindow* window)
 {
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
     IM_ASSERT(bd->InstalledCallbacks == true && "Callbacks not installed!");
-    IM_ASSERT(bd->Window == window);
+    IM_ASSERT(bd->WindowsWindow == window);
 
     glfwSetWindowFocusCallback(window, bd->PrevUserCallbackWindowFocus);
     glfwSetCursorEnterCallback(window, bd->PrevUserCallbackCursorEnter);
@@ -453,16 +453,16 @@ static bool ImGui_ImplGlfw_Init(GLFWwindow* window, bool install_callbacks, Glfw
     io.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;         // We can honor GetMouseCursor() values (optional)
     io.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;          // We can honor io.WantSetMousePos requests (optional, rarely used)
 
-    bd->Window = window;
+    bd->WindowsWindow = window;
     bd->Time = 0.0;
 
     io.SetClipboardTextFn = ImGui_ImplGlfw_SetClipboardText;
     io.GetClipboardTextFn = ImGui_ImplGlfw_GetClipboardText;
-    io.ClipboardUserData = bd->Window;
+    io.ClipboardUserData = bd->WindowsWindow;
 
     // Set platform dependent data in viewport
 #if defined(_WIN32)
-    ImGui::GetMainViewport()->PlatformHandleRaw = (void*)glfwGetWin32Window(bd->Window);
+    ImGui::GetMainViewport()->PlatformHandleRaw = (void*)glfwGetWin32Window(bd->WindowsWindow);
 #endif
 
     // Create mouse cursors
@@ -518,7 +518,7 @@ void ImGui_ImplGlfw_Shutdown()
     ImGuiIO& io = ImGui::GetIO();
 
     if (bd->InstalledCallbacks)
-        ImGui_ImplGlfw_RestoreCallbacks(bd->Window);
+        ImGui_ImplGlfw_RestoreCallbacks(bd->WindowsWindow);
 
     for (ImGuiMouseCursor cursor_n = 0; cursor_n < ImGuiMouseCursor_COUNT; cursor_n++)
         glfwDestroyCursor(bd->MouseCursors[cursor_n]);
@@ -536,19 +536,19 @@ static void ImGui_ImplGlfw_UpdateMouseData()
 #ifdef __EMSCRIPTEN__
     const bool is_app_focused = true;
 #else
-    const bool is_app_focused = glfwGetWindowAttrib(bd->Window, GLFW_FOCUSED) != 0;
+    const bool is_app_focused = glfwGetWindowAttrib(bd->WindowsWindow, GLFW_FOCUSED) != 0;
 #endif
     if (is_app_focused)
     {
         // (Optional) Set OS mouse position from Dear ImGui if requested (rarely used, only when ImGuiConfigFlags_NavEnableSetMousePos is enabled by user)
         if (io.WantSetMousePos)
-            glfwSetCursorPos(bd->Window, (double)io.MousePos.x, (double)io.MousePos.y);
+            glfwSetCursorPos(bd->WindowsWindow, (double)io.MousePos.x, (double)io.MousePos.y);
 
         // (Optional) Fallback to provide mouse position when focused (ImGui_ImplGlfw_CursorPosCallback already provides this when hovered or captured)
         if (is_app_focused && bd->MouseWindow == NULL)
         {
             double mouse_x, mouse_y;
-            glfwGetCursorPos(bd->Window, &mouse_x, &mouse_y);
+            glfwGetCursorPos(bd->WindowsWindow, &mouse_x, &mouse_y);
             io.AddMousePosEvent((float)mouse_x, (float)mouse_y);
             bd->LastValidMousePos = ImVec2((float)mouse_x, (float)mouse_y);
         }
@@ -559,21 +559,21 @@ static void ImGui_ImplGlfw_UpdateMouseCursor()
 {
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplGlfw_Data* bd = ImGui_ImplGlfw_GetBackendData();
-    if ((io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) || glfwGetInputMode(bd->Window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
+    if ((io.ConfigFlags & ImGuiConfigFlags_NoMouseCursorChange) || glfwGetInputMode(bd->WindowsWindow, GLFW_CURSOR) == GLFW_CURSOR_DISABLED)
         return;
 
     ImGuiMouseCursor imgui_cursor = ImGui::GetMouseCursor();
     if (imgui_cursor == ImGuiMouseCursor_None || io.MouseDrawCursor)
     {
         // Hide OS mouse cursor if imgui is drawing it or if it wants no cursor
-        glfwSetInputMode(bd->Window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        glfwSetInputMode(bd->WindowsWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
     }
     else
     {
         // Show OS mouse cursor
         // FIXME-PLATFORM: Unfocused windows seems to fail changing the mouse cursor with GLFW 3.2, but 3.3 works here.
-        glfwSetCursor(bd->Window, bd->MouseCursors[imgui_cursor] ? bd->MouseCursors[imgui_cursor] : bd->MouseCursors[ImGuiMouseCursor_Arrow]);
-        glfwSetInputMode(bd->Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        glfwSetCursor(bd->WindowsWindow, bd->MouseCursors[imgui_cursor] ? bd->MouseCursors[imgui_cursor] : bd->MouseCursors[ImGuiMouseCursor_Arrow]);
+        glfwSetInputMode(bd->WindowsWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 }
 
@@ -639,8 +639,8 @@ void ImGui_ImplGlfw_NewFrame()
     // Setup display size (every frame to accommodate for window resizing)
     int w, h;
     int display_w, display_h;
-    glfwGetWindowSize(bd->Window, &w, &h);
-    glfwGetFramebufferSize(bd->Window, &display_w, &display_h);
+    glfwGetWindowSize(bd->WindowsWindow, &w, &h);
+    glfwGetFramebufferSize(bd->WindowsWindow, &display_w, &display_h);
     io.DisplaySize = ImVec2((float)w, (float)h);
     if (w > 0 && h > 0)
         io.DisplayFramebufferScale = ImVec2((float)display_w / (float)w, (float)display_h / (float)h);

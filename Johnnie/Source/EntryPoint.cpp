@@ -2,11 +2,11 @@
 #include <Engine/EntryPoint.hpp>
 #include <Engine/Debug.hpp>
 
-class InitialState : public States::State
+class SandboxLayer : public Engine::Layer
 {
 public:
-	InitialState(States::StateManager& StateManager, Context Context) noexcept
-		:	State(StateManager,Context)
+	explicit SandboxLayer(std::string_view Name) noexcept
+		:	Layer(Name)
 	{}
 
 private:
@@ -26,9 +26,7 @@ public:
 		:	Core::Application(Core::WindowProperties("Johnnie", 1280, 720))
 	{
 		SetFPSLimit(120);
-
-		GetStateManager()->RegisterState<InitialState>("InitialState");
-		GetStateManager()->PushState("InitialState");
+		GetLayerManager().PushLayer(std::make_unique<SandboxLayer>("Sandbox"));
 	}
 
 	~JohnnieApplication() = default;

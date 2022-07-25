@@ -6053,7 +6053,7 @@ static ImGuiWindow* ImGui::FindBlockingModal(ImGuiWindow* window)
     // Find a modal that has common parent with specified window. Specified window should be positioned behind that modal.
     for (int i = g.OpenPopupStack.Size - 1; i >= 0; i--)
     {
-        ImGuiWindow* popup_window = g.OpenPopupStack.Data[i].Window;
+        ImGuiWindow* popup_window = g.OpenPopupStack.Data[i].WindowsWindow;
         if (popup_window == NULL || !(popup_window->Flags & ImGuiWindowFlags_Modal))
             continue;
         if (!popup_window->Active && !popup_window->WasActive)      // Check WasActive, because this code may run before popup renders on current frame, also check Active to handle newly created windows.
@@ -6107,7 +6107,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     {
         ImGuiPopupData& popup_ref = g.OpenPopupStack[g.BeginPopupStack.Size];
         window_just_activated_by_user |= (window->PopupId != popup_ref.PopupId); // We recycle popups so treat window as activated if popup id changed
-        window_just_activated_by_user |= (window != popup_ref.Window);
+        window_just_activated_by_user |= (window != popup_ref.WindowsWindow);
     }
     window->Appearing = window_just_activated_by_user;
     if (window->Appearing)
@@ -6128,7 +6128,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     }
 
     // Parent window is latched only on the first call to Begin() of the frame, so further append-calls can be done from a different window stack
-    ImGuiWindow* parent_window_in_stack = g.CurrentWindowStack.empty() ? NULL : g.CurrentWindowStack.back().Window;
+    ImGuiWindow* parent_window_in_stack = g.CurrentWindowStack.empty() ? NULL : g.CurrentWindowStack.back().WindowsWindow;
     ImGuiWindow* parent_window = first_begin_of_the_frame ? ((flags & (ImGuiWindowFlags_ChildWindow | ImGuiWindowFlags_Popup)) ? parent_window_in_stack : NULL) : window->ParentWindow;
     IM_ASSERT(parent_window != NULL || !(flags & ImGuiWindowFlags_ChildWindow));
 
@@ -6140,7 +6140,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     // We intentionally set g.CurrentWindow to NULL to prevent usage until when the viewport is set, then will call SetCurrentWindow()
     g.CurrentWindow = window;
     ImGuiWindowStackData window_stack_data;
-    window_stack_data.Window = window;
+    window_stack_data.WindowsWindow = window;
     window_stack_data.ParentLastItemDataBackup = g.LastItemData;
     window_stack_data.StackSizesOnBegin.SetToCurrentState();
     g.CurrentWindowStack.push_back(window_stack_data);
@@ -6151,7 +6151,7 @@ bool ImGui::Begin(const char* name, bool* p_open, ImGuiWindowFlags flags)
     if (flags & ImGuiWindowFlags_Popup)
     {
         ImGuiPopupData& popup_ref = g.OpenPopupStack[g.BeginPopupStack.Size];
-        popup_ref.Window = window;
+        popup_ref.WindowsWindow = window;
         popup_ref.ParentNavLayer = parent_window_in_stack->DC.NavLayerCurrent;
         g.BeginPopupStack.push_back(popup_ref);
         window->PopupId = popup_ref.PopupId;
@@ -6774,7 +6774,7 @@ void ImGui::End()
         g.BeginPopupStack.pop_back();
     g.CurrentWindowStack.back().StackSizesOnBegin.CompareWithCurrentState();
     g.CurrentWindowStack.pop_back();
-    SetCurrentWindow(g.CurrentWindowStack.Size == 0 ? NULL : g.CurrentWindowStack.back().Window);
+    SetCurrentWindow(g.CurrentWindowStack.Size == 0 ? NULL : g.CurrentWindowStack.back().WindowsWindow);
 }
 
 void ImGui::BringWindowToFocusFront(ImGuiWindow* window)
@@ -9197,7 +9197,7 @@ ImGuiWindow* ImGui::GetTopMostPopupModal()
 {
     ImGuiContext& g = *GImGui;
     for (int n = g.OpenPopupStack.Size - 1; n >= 0; n--)
-        if (ImGuiWindow* popup = g.OpenPopupStack.Data[n].Window)
+        if (ImGuiWindow* popup = g.OpenPopupStack.Data[n].WindowsWindow)
             if (popup->Flags & ImGuiWindowFlags_Modal)
                 return popup;
     return NULL;
@@ -9207,7 +9207,7 @@ ImGuiWindow* ImGui::GetTopMostAndVisiblePopupModal()
 {
     ImGuiContext& g = *GImGui;
     for (int n = g.OpenPopupStack.Size - 1; n >= 0; n--)
-        if (ImGuiWindow* popup = g.OpenPopupStack.Data[n].Window)
+        if (ImGuiWindow* popup = g.OpenPopupStack.Data[n].WindowsWindow)
             if ((popup->Flags & ImGuiWindowFlags_Modal) && IsWindowActiveAndVisible(popup))
                 return popup;
     return NULL;
@@ -9242,7 +9242,7 @@ void ImGui::OpenPopupEx(ImGuiID id, ImGuiPopupFlags popup_flags)
 
     ImGuiPopupData popup_ref; // Tagged as new ref as Window will be set back to NULL if we write this into OpenPopupStack.
     popup_ref.PopupId = id;
-    popup_ref.Window = NULL;
+    popup_ref.WindowsWindow = NULL;
     popup_ref.SourceWindow = g.NavWindow;
     popup_ref.OpenFrameCount = g.FrameCount;
     popup_ref.OpenParentId = parent_window->IDStack.back();
@@ -9293,10 +9293,10 @@ void ImGui::ClosePopupsOverWindow(ImGuiWindow* ref_window, bool restore_focus_to
         for (; popup_count_to_keep < g.OpenPopupStack.Size; popup_count_to_keep++)
         {
             ImGuiPopupData& popup = g.OpenPopupStack[popup_count_to_keep];
-            if (!popup.Window)
+            if (!popup.WindowsWindow)
                 continue;
-            IM_ASSERT((popup.Window->Flags & ImGuiWindowFlags_Popup) != 0);
-            if (popup.Window->Flags & ImGuiWindowFlags_ChildWindow)
+            IM_ASSERT((popup.WindowsWindow->Flags & ImGuiWindowFlags_Popup) != 0);
+            if (popup.WindowsWindow->Flags & ImGuiWindowFlags_ChildWindow)
                 continue;
 
             // Trim the stack unless the popup is a direct parent of the reference window (the reference window is often the NavWindow)
@@ -9306,7 +9306,7 @@ void ImGui::ClosePopupsOverWindow(ImGuiWindow* ref_window, bool restore_focus_to
             //     Window -> Popup1 -> Popup1_Child -> Popup2 -> Popup2_Child
             bool ref_window_is_descendent_of_popup = false;
             for (int n = popup_count_to_keep; n < g.OpenPopupStack.Size; n++)
-                if (ImGuiWindow* popup_window = g.OpenPopupStack[n].Window)
+                if (ImGuiWindow* popup_window = g.OpenPopupStack[n].WindowsWindow)
                     if (IsWindowWithinBeginStackOf(ref_window, popup_window))
                     {
                         ref_window_is_descendent_of_popup = true;
@@ -9330,7 +9330,7 @@ void ImGui::ClosePopupsExceptModals()
     int popup_count_to_keep;
     for (popup_count_to_keep = g.OpenPopupStack.Size; popup_count_to_keep > 0; popup_count_to_keep--)
     {
-        ImGuiWindow* window = g.OpenPopupStack[popup_count_to_keep - 1].Window;
+        ImGuiWindow* window = g.OpenPopupStack[popup_count_to_keep - 1].WindowsWindow;
         if (!window || window->Flags & ImGuiWindowFlags_Modal)
             break;
     }
@@ -9346,7 +9346,7 @@ void ImGui::ClosePopupToLevel(int remaining, bool restore_focus_to_window_under_
 
     // Trim open popup stack
     ImGuiWindow* focus_window = g.OpenPopupStack[remaining].SourceWindow;
-    ImGuiWindow* popup_window = g.OpenPopupStack[remaining].Window;
+    ImGuiWindow* popup_window = g.OpenPopupStack[remaining].WindowsWindow;
     g.OpenPopupStack.resize(remaining);
 
     if (restore_focus_to_window_under_popup)
@@ -9376,8 +9376,8 @@ void ImGui::CloseCurrentPopup()
     // Closing a menu closes its top-most parent popup (unless a modal)
     while (popup_idx > 0)
     {
-        ImGuiWindow* popup_window = g.OpenPopupStack[popup_idx].Window;
-        ImGuiWindow* parent_popup_window = g.OpenPopupStack[popup_idx - 1].Window;
+        ImGuiWindow* popup_window = g.OpenPopupStack[popup_idx].WindowsWindow;
+        ImGuiWindow* parent_popup_window = g.OpenPopupStack[popup_idx - 1].WindowsWindow;
         bool close_parent = false;
         if (popup_window && (popup_window->Flags & ImGuiWindowFlags_ChildMenu))
             if (parent_popup_window && !(parent_popup_window->Flags & ImGuiWindowFlags_MenuBar))
@@ -9659,7 +9659,7 @@ ImVec2 ImGui::FindBestWindowPosForPopup(ImGuiWindow* window)
         // Child menus typically request _any_ position within the parent menu item, and then we move the new menu outside the parent bounds.
         // This is how we end up with child menus appearing (most-commonly) on the right of the parent menu.
         IM_ASSERT(g.CurrentWindow == window);
-        ImGuiWindow* parent_window = g.CurrentWindowStack[g.CurrentWindowStack.Size - 2].Window;
+        ImGuiWindow* parent_window = g.CurrentWindowStack[g.CurrentWindowStack.Size - 2].WindowsWindow;
         float horizontal_overlap = g.Style.ItemInnerSpacing.x; // We want some overlap to convey the relative depth of each menu (currently the amount of overlap is hard-coded to style.ItemSpacing.x).
         ImRect r_avoid;
         if (parent_window->DC.MenuBarAppending)
@@ -9912,7 +9912,7 @@ static void ImGui::NavApplyItemToResult(ImGuiNavItemData* result)
 {
     ImGuiContext& g = *GImGui;
     ImGuiWindow* window = g.CurrentWindow;
-    result->Window = window;
+    result->WindowsWindow = window;
     result->ID = g.LastItemData.ID;
     result->FocusScopeId = window->DC.NavFocusScopeIdCurrent;
     result->InFlags = g.LastItemData.InFlags;
@@ -10587,10 +10587,10 @@ void ImGui::NavMoveRequestApplyResult()
             result = &g.NavMoveResultLocalVisible;
 
     // Maybe entering a flattened child from the outside? In this case solve the tie using the regular scoring rules.
-    if (result != &g.NavMoveResultOther && g.NavMoveResultOther.ID != 0 && g.NavMoveResultOther.Window->ParentWindow == g.NavWindow)
+    if (result != &g.NavMoveResultOther && g.NavMoveResultOther.ID != 0 && g.NavMoveResultOther.WindowsWindow->ParentWindow == g.NavWindow)
         if ((g.NavMoveResultOther.DistBox < result->DistBox) || (g.NavMoveResultOther.DistBox == result->DistBox && g.NavMoveResultOther.DistCenter < result->DistCenter))
             result = &g.NavMoveResultOther;
-    IM_ASSERT(g.NavWindow && result->Window);
+    IM_ASSERT(g.NavWindow && result->WindowsWindow);
 
     // Scroll to keep newly navigated item fully into view.
     if (g.NavLayer == ImGuiNavLayer_Main)
@@ -10598,20 +10598,20 @@ void ImGui::NavMoveRequestApplyResult()
         if (g.NavMoveFlags & ImGuiNavMoveFlags_ScrollToEdgeY)
         {
             // FIXME: Should remove this
-            float scroll_target = (g.NavMoveDir == ImGuiDir_Up) ? result->Window->ScrollMax.y : 0.0f;
-            SetScrollY(result->Window, scroll_target);
+            float scroll_target = (g.NavMoveDir == ImGuiDir_Up) ? result->WindowsWindow->ScrollMax.y : 0.0f;
+            SetScrollY(result->WindowsWindow, scroll_target);
         }
         else
         {
-            ImRect rect_abs = WindowRectRelToAbs(result->Window, result->RectRel);
-            ScrollToRectEx(result->Window, rect_abs, g.NavMoveScrollFlags);
+            ImRect rect_abs = WindowRectRelToAbs(result->WindowsWindow, result->RectRel);
+            ScrollToRectEx(result->WindowsWindow, rect_abs, g.NavMoveScrollFlags);
         }
     }
 
-    if (g.NavWindow != result->Window)
+    if (g.NavWindow != result->WindowsWindow)
     {
-        IMGUI_DEBUG_LOG_FOCUS("[focus] NavMoveRequest: SetNavWindow(\"%s\")\n", result->Window->Name);
-        g.NavWindow = result->Window;
+        IMGUI_DEBUG_LOG_FOCUS("[focus] NavMoveRequest: SetNavWindow(\"%s\")\n", result->WindowsWindow->Name);
+        g.NavWindow = result->WindowsWindow;
     }
     if (g.ActiveId != result->ID)
         ClearActiveID();
@@ -10680,7 +10680,7 @@ static void ImGui::NavUpdateCancelRequest()
         SetNavID(child_window->ChildId, ImGuiNavLayer_Main, 0, WindowRectAbsToRel(parent_window, child_rect));
         NavRestoreHighlightAfterMove();
     }
-    else if (g.OpenPopupStack.Size > 0 && !(g.OpenPopupStack.back().Window->Flags & ImGuiWindowFlags_Modal))
+    else if (g.OpenPopupStack.Size > 0 && !(g.OpenPopupStack.back().WindowsWindow->Flags & ImGuiWindowFlags_Modal))
     {
         // Close open popup/menu
         ClosePopupToLevel(g.OpenPopupStack.Size - 1, true);
@@ -12590,7 +12590,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
     {
         for (int i = 0; i < g.OpenPopupStack.Size; i++)
         {
-            ImGuiWindow* window = g.OpenPopupStack[i].Window;
+            ImGuiWindow* window = g.OpenPopupStack[i].WindowsWindow;
             BulletText("PopupID: %08x, Window: '%s'%s%s", g.OpenPopupStack[i].PopupId, window ? window->Name : "NULL", window && (window->Flags & ImGuiWindowFlags_ChildWindow) ? " ChildWindow" : "", window && (window->Flags & ImGuiWindowFlags_ChildMenu) ? " ChildMenu" : "");
         }
         TreePop();

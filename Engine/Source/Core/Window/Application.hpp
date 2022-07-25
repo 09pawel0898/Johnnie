@@ -1,7 +1,7 @@
 #pragma once
 #include "../CoreMinimal.hpp"
-#include "Window.hpp"
-#include "../../States/StateManager.hpp"
+#include "WindowsWindow.hpp"
+#include "../Layers/LayerManager.hpp"
 
 //#include "../Resources/ResourceManager.h"
 
@@ -28,24 +28,18 @@ namespace Engine::Core
 		};
 
 	private:		
-		using WindowPtr	= std::shared_ptr<Window>;
-		WindowPtr m_Window;
+		using WindowPointer	= std::shared_ptr<WindowsWindow>;
+		WindowPointer m_Window;
 
 	public:
-		inline WindowPtr const& GetWindow(void) const { return m_Window; }
+		inline WindowPointer const& GetWindow(void) const { return m_Window; }
 
 	private:
-		using StateManagerPtr = std::unique_ptr<States::StateManager>;
-		StateManagerPtr	m_StateManager;
+		LayerManager m_LayerManager;
 
 	public:
-		inline StateManagerPtr const& GetStateManager(void) const { return m_StateManager; }
+		inline LayerManager& GetLayerManager(void) { return m_LayerManager; }
 
-	private:
-		//using TextureManagerPtr = std::shared_ptr<TextureManager>;
-		//TextureManagerPtr m_TextureManager;
-		//inline const TextureManagerPtr& GetTextureManager(void) const { return m_TextureManager; }
-	
 	private:
 		bool		m_bRunning = true;
 		double		m_DeltaTime = 0.0;
@@ -70,7 +64,6 @@ namespace Engine::Core
 		void Run(void);
 
 		inline void SetFPSLimit(unsigned FpsLimit)	{ m_FPSLIMIT = FpsLimit;}
-
 		inline double GetDT(void) const				{ return m_DeltaTime;	}
 		inline double GetFPS(void) const			{ return m_FPS;			}
 	};

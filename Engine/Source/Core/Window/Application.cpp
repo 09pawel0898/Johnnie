@@ -12,7 +12,8 @@
 
 namespace Engine::Core
 {
-    #define BIND_APP_EVENT_FUNCTION(x) std::bind(&Application::x, this,std::placeholders::_1)
+    #define BIND_APP_EVENT_FUNCTION(Func)\
+        [this](auto&&... Args) -> decltype(auto) { return this->Func(std::forward<decltype(Args)>(Args)...); }
 
     std::shared_ptr<Application> Application::s_Instance = nullptr;
 
@@ -22,10 +23,14 @@ namespace Engine::Core
         dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_APP_EVENT_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
-        {
             return;
+
+        for (auto iter = m_LayerManager.end(); iter != m_LayerManager.begin();)
+        {
+            (*--iter)->OnEvent(Event);
+            if (Event.Handled())
+                return;
         }
-        m_StateManager->OnEvent(Event);
     }
 
     bool Application::OnWindowClosed(Events::WindowClosedEvent& Event)
@@ -36,17 +41,12 @@ namespace Engine::Core
 
     Application::Application(const WindowProperties& WindowProperties)
     {
-        using namespace States;
-        
         DEFINE_CONSOLE_LOG_CATEGORY(Core);
         DEFINE_CONSOLE_LOG_CATEGORY(States);
         DEFINE_CONSOLE_LOG_CATEGORY(Events);
         
-        m_Window = Window::Create(WindowProperties);
+        m_Window = WindowsWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
-        
-        //m_TextureManager = std::make_shared<TextureManager>();
-        m_StateManager = StateManager::Create(State::Context(m_Window));
     }
 
     void Application::Run(void)
@@ -85,9 +85,17 @@ namespace Engine::Core
             {
                 m_Window->OnTick();
 
-                m_StateManager->OnTick(m_DeltaTime);
-                m_StateManager->OnRender();
+                for (auto& layer : m_LayerManager)
+                {
+                    layer->OnTick(m_DeltaTime);
+                }
+                
+                for (auto& layer : m_LayerManager)
+                {
+                    layer->OnRender();
+                }
 
+     
                 m_Window->OnBeginImGuiFrame();
                 {
                     if (bool demoWindow = true; demoWindow)
@@ -108,4 +116,5 @@ namespace Engine::Core
             }
         }
     }
+    
 }
