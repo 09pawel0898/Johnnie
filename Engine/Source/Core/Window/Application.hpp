@@ -28,7 +28,7 @@ namespace Engine::Core
 		};
 
 	private:		
-		using WindowPointer	= std::shared_ptr<WindowsWindow>;
+		using WindowPointer	= std::shared_ptr<Window>;
 		WindowPointer m_Window;
 
 	public:

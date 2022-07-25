@@ -45,7 +45,7 @@ namespace Engine::Core
         DEFINE_CONSOLE_LOG_CATEGORY(States);
         DEFINE_CONSOLE_LOG_CATEGORY(Events);
         
-        m_Window = WindowsWindow::Create(WindowProperties);
+        m_Window = Window::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
     }
 
