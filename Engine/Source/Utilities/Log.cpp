@@ -1,7 +1,7 @@
 #include "Log.hpp"
 #include <spdlog/sinks/stdout_color_sinks.h>
 
-#include "../CoreMinimal.hpp"
+#include "../Core/CoreMinimal.hpp"
 
 namespace Engine
 {

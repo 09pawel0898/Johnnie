@@ -1,5 +1,5 @@
 #include "Application.hpp"
-#include "../Debug/Log.hpp"
+#include "../../Utilities/Log.hpp"
 #include "../../Events/WindowEvent.hpp"
 
 #include "imgui.h"

@@ -42,10 +42,9 @@ namespace Engine
 		using Iterator		= std::vector<LayerPointer>::iterator;
 		using ConstIterator = std::vector<LayerPointer>::const_iterator;
 		
-		Iterator begin(){ return m_Layers.begin();	}
-		Iterator end()	{ return m_Layers.end();	}
-		
-		ConstIterator begin() const { return m_Layers.begin(); }
-		ConstIterator end() const { return m_Layers.end(); }
+		Iterator		begin()			{ return m_Layers.begin();	}
+		Iterator		end()			{ return m_Layers.end();	}
+		ConstIterator	begin() const	{ return m_Layers.begin();	}
+		ConstIterator	end()	const	{ return m_Layers.end();	}
 	};
 }

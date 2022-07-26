@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../Events/Event.hpp"
+#include "../../Events/IEventListener.hpp"
 
 namespace Engine
 {
-	class Layer
+	class Layer : public Events::IEventListener
 	{
 	private:
 		std::string_view m_LayerName;
@@ -35,6 +35,6 @@ namespace Engine
 		virtual void OnRender(void) const {}
 		virtual void OnRenderImGui(void) {}
 
-		virtual void OnEvent(Events::Event& Event) {}
+		virtual void OnEvent(Events::Event& Event) override {}
 	};
 }

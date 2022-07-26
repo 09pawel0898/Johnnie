@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Window/Application.hpp"
-#include "Debug/Log.hpp"
+#include "../Utilities/Log.hpp"
 #include "Exceptions/InitializationException.hpp"
 
 using namespace Engine;

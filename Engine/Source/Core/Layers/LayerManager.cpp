@@ -50,5 +50,4 @@ namespace Engine
 			m_Layers.erase(iter);
 		}
 	}
-
 }
