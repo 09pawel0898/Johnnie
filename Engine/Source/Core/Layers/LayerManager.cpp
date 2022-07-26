@@ -12,11 +12,13 @@ namespace Engine
 
 	void LayerManager::PushLayer(LayerPointer Layer)
 	{
+		Layer->OnAwake();
 		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, std::move(Layer));
 	}
 
 	void LayerManager::PushOverlay(LayerPointer Layer)
 	{
+		Layer->OnAwake();
 		m_Layers.emplace_back(std::move(Layer));
 	}
 

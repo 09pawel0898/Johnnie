@@ -12,15 +12,12 @@
 
 namespace Engine::Core
 {
-    #define BIND_APP_EVENT_FUNCTION(Func)\
-        [this](auto&&... Args) -> decltype(auto) { return this->Func(std::forward<decltype(Args)>(Args)...); }
-
     std::shared_ptr<Application> Application::s_Instance = nullptr;
 
     void Application::OnEvent(Events::Event& Event)
     {
         Events::EventDispatcher dispatcher(Event);
-        dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_APP_EVENT_FUNCTION(OnWindowClosed));
+        dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_EVENT_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
             return;
@@ -36,7 +33,13 @@ namespace Engine::Core
     bool Application::OnWindowClosed(Events::WindowClosedEvent& Event)
     {
         m_bRunning = false;
-        return false;
+        return true;
+    }
+
+    void Application::InitCoreLayers()
+    {
+        m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
+        m_LayerManager.PushOverlay(m_ImGuiLayer);
     }
 
     Application::Application(const WindowProperties& WindowProperties)
@@ -46,73 +49,61 @@ namespace Engine::Core
         DEFINE_CONSOLE_LOG_CATEGORY(Events);
         
         m_Window = Window::Create(WindowProperties);
-        m_Window->SetEventCallback(BIND_APP_EVENT_FUNCTION(OnEvent));
+        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
+
+#if (_MSC_VER >= 1910)
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
     }
 
     void Application::Run(void)
     { 
         LOG(Core, Trace, "Application::Run()");
-        //Renderer::Init(m_Window->GetWidth(), m_Window->GetHeight());
-        //Renderer::EnableBlending();
+        InitCoreLayers();
 
-#if (_MSC_VER >= 1910)
-        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
         using TimePoint = std::chrono::high_resolution_clock;
-
-        std::chrono::steady_clock::time_point tFrameStart, tLastUpdate;
-
-        tLastUpdate = TimePoint::now();
-        double tElapsedTime{ 0.0 };
+        std::chrono::steady_clock::time_point tFrameStart, tLastUpdate = TimePoint::now();
+        
         double tMinTimePerFrame = 1000.0 / m_FPSLIMIT;
-
-        auto updateStats = [&, this]
-        {
-            m_DeltaTime = tElapsedTime;
-            m_FPS = (1.0 / m_DeltaTime) * 1000;
-        };
-
         ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
         while (m_bRunning)
         {
             tFrameStart = TimePoint::now();
 
-            tElapsedTime = std::chrono::duration<double, std::milli>
+            m_DeltaTime = std::chrono::duration<double, std::milli>
                 (tFrameStart - tLastUpdate).count();
 
-            if (tElapsedTime >= tMinTimePerFrame)
+            if (m_DeltaTime >= tMinTimePerFrame)
             {
-                m_Window->OnTick();
-
-                for (auto& layer : m_LayerManager)
                 {
-                    layer->OnTick(m_DeltaTime);
-                }
-                
-                for (auto& layer : m_LayerManager)
-                {
-                    layer->OnRender();
-                }
-
-     
-                m_Window->OnBeginImGuiFrame();
-                {
-                    if (bool demoWindow = true; demoWindow)
+                    for (auto& layer : m_LayerManager)
                     {
-                        ImGui::ShowDemoWindow(&demoWindow);
+                        layer->OnTick(m_DeltaTime);
+                    }
+                
+                    for (auto& layer : m_LayerManager)
+                    {
+                        layer->OnRender();
                     }
                 }
-                m_Window->OnEndImGuiFrame();
-               
+
+                {
+                    m_ImGuiLayer->BeginFrame();
+                    for (auto& layer : m_LayerManager)
+                    {
+                        layer->OnRenderImGui();
+                    }
+                    m_ImGuiLayer->EndFrame();
+                }
+                m_Window->OnTick();
+
                 glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
                 glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
                 glClear(GL_COLOR_BUFFER_BIT);
-                //Renderer::Clear();
-                m_Window->OnRenderImGuiFrame();
-                
+
                 tLastUpdate = TimePoint::now();
-                updateStats();
+                m_FPS = (1.0 / m_DeltaTime) * 1000;;
             }
         }
     }

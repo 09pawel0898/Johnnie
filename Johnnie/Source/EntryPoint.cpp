@@ -1,6 +1,7 @@
 #include <Engine/CoreMinimal.hpp>
 #include <Engine/EntryPoint.hpp>
 #include <Engine/Debug.hpp>
+#include <Engine/Gui.hpp>
 
 class SandboxLayer : public Engine::Layer
 {
@@ -14,9 +15,17 @@ private:
 	{
 	
 	}
+
 	virtual void OnRender(void) const override{};
 	virtual void OnTick(double DeltaTime) override {};
 	virtual void OnEvent(Events::Event& Event) override {};
+	virtual void OnRenderImGui(void) override
+	{
+		if (bool demoWindow = true; demoWindow)
+		{
+			ImGui::ShowDemoWindow(&demoWindow);
+		}
+	}
 };
 
 class JohnnieApplication final : public Core::Application

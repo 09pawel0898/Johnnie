@@ -2,6 +2,7 @@
 #include "../CoreMinimal.hpp"
 #include "WindowsWindow.hpp"
 #include "../Layers/LayerManager.hpp"
+#include "../../ImGui/ImGuiLayer.hpp"
 
 //#include "../Resources/ResourceManager.h"
 
@@ -30,12 +31,14 @@ namespace Engine::Core
 	private:		
 		using WindowPointer	= std::shared_ptr<Window>;
 		WindowPointer m_Window;
-
 	public:
 		inline WindowPointer const& GetWindow(void) const { return m_Window; }
 
 	private:
 		LayerManager m_LayerManager;
+		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
+
+		void InitCoreLayers();
 
 	public:
 		inline LayerManager& GetLayerManager(void) { return m_LayerManager; }

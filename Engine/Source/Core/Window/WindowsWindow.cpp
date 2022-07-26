@@ -45,10 +45,6 @@ namespace Engine::Core
 		/** GLFW events must be initialized before ImGui context */
 		InitEvents();
 
-		if (!InitImGuiContext())
-		{
-			throw InitializationException("Failed to initialize ImGui context.");
-		}
 		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
 	}
 
@@ -71,23 +67,6 @@ namespace Engine::Core
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_WindowHandle);
-	}
-
-	void Window::OnRenderImGuiFrame()
-	{
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-	}
-
-	void Window::OnBeginImGuiFrame()
-	{
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-	}
-
-	void Window::OnEndImGuiFrame()
-	{
-		ImGui::Render();
 	}
 
 	void Window::SetVSync(bool Enabled)
@@ -172,19 +151,6 @@ namespace Engine::Core
 			Events::MouseMovedEvent mouseMovedEvent(NewX, NewY);
 			properties->EventCallback(mouseMovedEvent);
 		});
-	}
-
-	bool Window::InitImGuiContext(void)
-	{
-		ImGui::CreateContext();
-		m_ImGuiIO = &ImGui::GetIO();
-		
-		ImGui::StyleColorsDark();
-
-		ImGui_ImplGlfw_InitForOpenGL(m_WindowHandle, true);
-		ImGui_ImplOpenGL3_Init("#version 150");
-
-		return true;
 	}
 
 	bool Window::InitWindowHandle(WindowProperties const& Properties)

@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	using LayerPointer = std::unique_ptr<Layer>;
+	using LayerPointer = std::shared_ptr<Layer>;
 
 	class LayerManager final
 	{

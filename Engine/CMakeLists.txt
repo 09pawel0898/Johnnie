@@ -4,8 +4,12 @@ target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 	glad
     	glfw
 	glm
-	imgui
 	spdlog
+)
+
+
+target_link_libraries(${ENGINE_TARGET_NAME} PUBLIC
+	imgui
 )
 
 add_subdirectory(Source)

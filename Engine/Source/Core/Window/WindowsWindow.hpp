@@ -38,7 +38,6 @@ namespace Engine::Core
 
 		void InitEvents(void);
 		bool InitOpenGLContext(void);
-		bool InitImGuiContext(void);
 		bool InitWindowHandle(WindowProperties const& Properties);
 		void InitProperties(WindowProperties const& Properties);
 
@@ -46,9 +45,6 @@ namespace Engine::Core
 		[[nodiscard]] 
 		static std::shared_ptr<Window> Create(WindowProperties const& Properties = WindowProperties());
 		
-		void OnBeginImGuiFrame();
-		void OnEndImGuiFrame();
-		void OnRenderImGuiFrame();
 		void OnTick(void);
 
 	public:
