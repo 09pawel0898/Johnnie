@@ -2,10 +2,6 @@
 
 #include "glad/glad.h"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "../../Events/WindowEvent.hpp"
 #include "../../Events/KeyEvent.hpp"
 #include "../../Events/MouseEvent.hpp"
@@ -50,10 +46,6 @@ namespace Engine::Core
 
 	Window::~Window()
 	{
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-
 		glfwDestroyWindow(m_WindowHandle);
 		glfwTerminate();
 	}

@@ -4,7 +4,7 @@ namespace Engine
 {
 	LayerManager::~LayerManager()
 	{
-		for (auto& layer: m_Layers)
+		for (auto& layer : m_Layers)
 		{
 			layer->OnDetach();
 		}
@@ -50,6 +50,14 @@ namespace Engine
 		{
 			iter->get()->OnDetach();
 			m_Layers.erase(iter);
+		}
+	}
+	void LayerManager::Clear(void)
+	{
+		while (!IsEmpty())
+		{
+			(--m_Layers.end())->get()->OnDetach();
+			m_Layers.pop_back();
 		}
 	}
 }

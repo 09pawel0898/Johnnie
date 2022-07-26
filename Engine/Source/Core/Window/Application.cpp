@@ -14,6 +14,20 @@ namespace Engine::Core
 {
     std::shared_ptr<Application> Application::s_Instance = nullptr;
 
+    Application::Application(const WindowProperties& WindowProperties)
+    {
+        DEFINE_CONSOLE_LOG_CATEGORY(Core);
+        DEFINE_CONSOLE_LOG_CATEGORY(Events);
+        
+        m_Window = Window::Create(WindowProperties);
+        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
+
+#if (_MSC_VER >= 1910)
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+        InitLayerManager();
+    }
+
     void Application::OnEvent(Events::Event& Event)
     {
         Events::EventDispatcher dispatcher(Event);
@@ -22,7 +36,7 @@ namespace Engine::Core
         if (Event.Handled())
             return;
 
-        for (auto iter = m_LayerManager.end(); iter != m_LayerManager.begin();)
+        for (auto iter = m_LayerManager->end(); iter != m_LayerManager->begin();)
         {
             (*--iter)->OnEvent(Event);
             if (Event.Handled())
@@ -36,30 +50,22 @@ namespace Engine::Core
         return true;
     }
 
-    void Application::InitCoreLayers()
+    void Application::InitLayerManager()
     {
-        m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
-        m_LayerManager.PushOverlay(m_ImGuiLayer);
+        m_LayerManager = std::make_unique<LayerManager>();
     }
 
-    Application::Application(const WindowProperties& WindowProperties)
+    void Application::InitImGuiLayer(void)
     {
-        DEFINE_CONSOLE_LOG_CATEGORY(Core);
-        DEFINE_CONSOLE_LOG_CATEGORY(States);
-        DEFINE_CONSOLE_LOG_CATEGORY(Events);
-        
-        m_Window = Window::Create(WindowProperties);
-        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
-
-#if (_MSC_VER >= 1910)
-        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
+        m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
+        m_LayerManager->PushOverlay(m_ImGuiLayer);
     }
 
     void Application::Run(void)
     { 
         LOG(Core, Trace, "Application::Run()");
-        InitCoreLayers();
+        
+        InitImGuiLayer();
 
         using TimePoint = std::chrono::high_resolution_clock;
         std::chrono::steady_clock::time_point tFrameStart, tLastUpdate = TimePoint::now();
@@ -77,12 +83,12 @@ namespace Engine::Core
             if (m_DeltaTime >= tMinTimePerFrame)
             {
                 {
-                    for (auto& layer : m_LayerManager)
+                    for (auto& layer : *m_LayerManager)
                     {
                         layer->OnTick(m_DeltaTime);
                     }
                 
-                    for (auto& layer : m_LayerManager)
+                    for (auto& layer : *m_LayerManager)
                     {
                         layer->OnRender();
                     }
@@ -90,7 +96,7 @@ namespace Engine::Core
 
                 {
                     m_ImGuiLayer->BeginFrame();
-                    for (auto& layer : m_LayerManager)
+                    for (auto& layer : *m_LayerManager)
                     {
                         layer->OnRenderImGui();
                     }
@@ -106,6 +112,9 @@ namespace Engine::Core
                 m_FPS = (1.0 / m_DeltaTime) * 1000;;
             }
         }
+        Shutdown();
     }
-    
+
+    void Application::Shutdown(void)
+    {}
 }

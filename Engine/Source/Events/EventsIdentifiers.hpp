@@ -20,4 +20,13 @@ namespace Engine::Events
 		// Window Events
 		WindowClosed
 	};
+
+	enum EventCategory : uint8_t
+	{
+		EventCategory_Application	= 0x00,
+		EventCategory_Input			= 0x01,
+		EventCategory_Keyboard		= 0x02,
+		EventCategory_Mouse			= 0x04,
+		EventCategory_MouseButton	= 0x08
+	};
 }

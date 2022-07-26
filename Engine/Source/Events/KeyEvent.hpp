@@ -36,7 +36,7 @@ namespace Engine::Events
 		}
 	};
 
-	class KeyPressedEvent : public KeyEvent
+	class KeyPressedEvent final : public KeyEvent
 	{
 	public:
 		explicit KeyPressedEvent(KeyCode KeyCode) noexcept
@@ -44,9 +44,10 @@ namespace Engine::Events
 		{}
 
 		DECLARE_EVENT_CLASS_TYPE(KeyPressed)
+		DECLARE_EVENT_CATEGORY(EventCategory_Keyboard | EventCategory_Input)
 	};
 
-	class KeyReleasedEvent : public KeyEvent
+	class KeyReleasedEvent final : public KeyEvent
 	{
 	public:
 		explicit KeyReleasedEvent(KeyCode KeyCode) noexcept
@@ -54,5 +55,6 @@ namespace Engine::Events
 		{}
 
 		DECLARE_EVENT_CLASS_TYPE(KeyReleased)
+		DECLARE_EVENT_CATEGORY(EventCategory_Keyboard | EventCategory_Input)
 	};
 }

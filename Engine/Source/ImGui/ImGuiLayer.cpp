@@ -5,6 +5,7 @@
 #include "imgui_impl_opengl3.h"
 
 #include "../Core/Window/Application.hpp"
+#include "../Events/EventsIdentifiers.hpp"
 
 namespace Engine 
 {
@@ -49,12 +50,9 @@ namespace Engine
 
 	void ImGuiLayer::OnEvent(Events::Event& Event)
 	{
-		if (m_BlockEvents)
-		{
-			ImGuiIO& io = ImGui::GetIO();
-			//Event.Handled |= Event.IsInCategory(EventCategoryMouse) & io.WantCaptureMouse;
-			//Event.Handled |= Event.IsInCategory(EventCategoryKeyboard) & io.WantCaptureKeyboard;
-		}
+		ImGuiIO& io = ImGui::GetIO();
+		Event.m_Handled |= io.WantCaptureKeyboard & Event.HasCategory(Events::EventCategory_Keyboard);
+		Event.m_Handled |= io.WantCaptureMouse & Event.HasCategory(Events::EventCategory_Mouse);
 	}
 
 	void ImGuiLayer::BeginFrame()

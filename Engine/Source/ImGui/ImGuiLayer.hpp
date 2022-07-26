@@ -7,9 +7,6 @@ namespace Engine
 {
 	class ImGuiLayer : public Layer
 	{
-	private:
-		bool m_BlockEvents = true;
-
 	public:
 		explicit ImGuiLayer(std::string_view LayerName) noexcept
 			:	Layer(LayerName)
@@ -21,7 +18,5 @@ namespace Engine
 
 		void BeginFrame();
 		void EndFrame();
-
-		inline void BlockEvents(bool Block) { m_BlockEvents = Block; }
 	};
 }

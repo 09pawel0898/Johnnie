@@ -38,6 +38,8 @@ namespace Engine
 			return m_Layers.empty();
 		}
 
+		void Clear(void);
+
 	public:
 		using Iterator		= std::vector<LayerPointer>::iterator;
 		using ConstIterator = std::vector<LayerPointer>::const_iterator;

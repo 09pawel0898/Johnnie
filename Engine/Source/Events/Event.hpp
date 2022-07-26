@@ -1,24 +1,35 @@
 #pragma once
 
 #include "EventsIdentifiers.hpp"
+#include "../Utilities/FlagOperators.hpp"
+
 #include <functional>
 
 namespace Engine::Events
 {
-	#define DECLARE_EVENT_CLASS_TYPE(type)\
-		static	EventType GetStaticType(void)				{ return EventType::type; }\
+	#define DECLARE_EVENT_CLASS_TYPE(Type)\
+		static	EventType GetStaticType(void)				{ return EventType::Type; }\
 		virtual EventType GetEventType(void) const override { return GetStaticType(); }
+
+	#define DECLARE_EVENT_CATEGORY(Category)\
+		virtual EventCategory GetCategoryFlags() const override { return Category; }
 
 	class Event
 	{
-	protected:
+	public:
 		bool m_Handled = false;
-		friend class EventDispatcher;
 	
 	public:
 		virtual ~Event() = default;
 		
 		virtual EventType GetEventType() const = 0;
+		virtual EventCategory GetCategoryFlags() const = 0;
+
+		bool HasCategory(EventCategory Category)
+		{
+			return Category & GetCategoryFlags();
+		}
+
 		inline bool Handled() const { return m_Handled; }
 	};
 

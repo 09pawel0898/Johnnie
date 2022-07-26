@@ -20,7 +20,7 @@ namespace Engine::Events
 	}
 	using namespace Mouse;
 
-	class MouseMovedEvent : public Event
+	class MouseMovedEvent final : public Event
 	{
 	private:
 		double m_MouseX, m_MouseY;
@@ -35,6 +35,7 @@ namespace Engine::Events
 		inline double GetY(void) const { return m_MouseY; }
 
 		DECLARE_EVENT_CLASS_TYPE(MouseMoved)
+		DECLARE_EVENT_CATEGORY(EventCategory_Input | EventCategory_Mouse)
 	};
 
 	class MouseButtonEvent : public Event
@@ -53,7 +54,7 @@ namespace Engine::Events
 		}
 	};
 
-	class MouseButtonPressedEvent : public MouseButtonEvent
+	class MouseButtonPressedEvent final : public MouseButtonEvent
 	{
 	public:
 		explicit MouseButtonPressedEvent(MouseButtonCode Button) noexcept
@@ -61,9 +62,10 @@ namespace Engine::Events
 		{}
 
 		DECLARE_EVENT_CLASS_TYPE(MouseButtonPressed)
+		DECLARE_EVENT_CATEGORY(EventCategory_Input | EventCategory_MouseButton)
 	};
 
-	class MouseButtonReleasedEvent : public MouseButtonEvent
+	class MouseButtonReleasedEvent final : public MouseButtonEvent
 	{
 	public:
 		explicit MouseButtonReleasedEvent(MouseButtonCode Button) noexcept
@@ -71,5 +73,6 @@ namespace Engine::Events
 		{}
 
 		DECLARE_EVENT_CLASS_TYPE(MouseButtonReleased)
+		DECLARE_EVENT_CATEGORY(EventCategory_Input | EventCategory_MouseButton)
 	};
 }

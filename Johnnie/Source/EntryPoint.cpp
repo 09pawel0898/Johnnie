@@ -18,7 +18,10 @@ private:
 
 	virtual void OnRender(void) const override{};
 	virtual void OnTick(double DeltaTime) override {};
-	virtual void OnEvent(Events::Event& Event) override {};
+	virtual void OnEvent(Events::Event& Event) override 
+	{
+		std::cout << (int)Event.GetEventType();
+	};
 	virtual void OnRenderImGui(void) override
 	{
 		if (bool demoWindow = true; demoWindow)

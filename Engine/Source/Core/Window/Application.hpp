@@ -31,17 +31,20 @@ namespace Engine::Core
 	private:		
 		using WindowPointer	= std::shared_ptr<Window>;
 		WindowPointer m_Window;
+
 	public:
 		inline WindowPointer const& GetWindow(void) const { return m_Window; }
 
 	private:
-		LayerManager m_LayerManager;
+		/** Layers */
+		std::unique_ptr<LayerManager> m_LayerManager;
 		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
 
-		void InitCoreLayers();
+		void InitLayerManager(void);
+		void InitImGuiLayer(void);
 
 	public:
-		inline LayerManager& GetLayerManager(void) { return m_LayerManager; }
+		inline LayerManager& GetLayerManager(void) { return *m_LayerManager; }
 
 	private:
 		bool		m_bRunning = true;
@@ -69,6 +72,9 @@ namespace Engine::Core
 		inline void SetFPSLimit(unsigned FpsLimit)	{ m_FPSLIMIT = FpsLimit;}
 		inline double GetDT(void) const				{ return m_DeltaTime;	}
 		inline double GetFPS(void) const			{ return m_FPS;			}
+	
+	private:
+		void Shutdown(void);
 	};
 
 	[[nodiscard]] std::shared_ptr<Application> CreateApplication();
