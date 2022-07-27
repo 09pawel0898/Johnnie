@@ -8,9 +8,7 @@ class SandboxLayer : public Engine::Layer
 public:
 	explicit SandboxLayer(std::string_view Name) noexcept
 		:	Layer(Name)
-	{
-
-	}
+	{}
 
 private:
 	virtual void OnAwake(void) override 
@@ -24,8 +22,10 @@ private:
 	};
 	virtual void OnRenderGui(void) override
 	{
-		Gui::Begin("sas");
-		Gui::Text("Hello");
+		Gui::Begin("MyWindow");
+		Gui::Text("Hello there");
+		Gui::Text("Hello there");
+		Gui::Text("Hello there");
 		Gui::End();
 
 		if (bool demoWindow = true; demoWindow)

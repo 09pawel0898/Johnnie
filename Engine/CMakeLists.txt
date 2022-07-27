@@ -16,5 +16,6 @@ add_subdirectory(Source)
 add_subdirectory(Include)
 
 target_include_directories(${ENGINE_TARGET_NAME} PUBLIC Include)
+target_include_directories(${ENGINE_TARGET_NAME} PUBLIC Source)
 
 GroupSourcesByFolder(${ENGINE_TARGET_NAME})

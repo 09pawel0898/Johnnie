@@ -34,10 +34,14 @@ namespace Engine
 		//}
 
 		auto application = Application::Get();
-		GLFWwindow* window = static_cast<GLFWwindow*>(application->GetWindow()->GetWindowHandle());
 
+#ifdef PLATFORM_WINDOWS
+		GLFWwindow* window = static_cast<GLFWwindow*>(application->GetWindow()->GetNativeWindow());
 		ImGui_ImplGlfw_InitForOpenGL(window, true);
 		ImGui_ImplOpenGL3_Init("#version 410");
+#else
+#	error Failed to initialize ImGui context, platform not supported!
+#endif
 	}
 
 	void ImGuiLayer::OnDetach()

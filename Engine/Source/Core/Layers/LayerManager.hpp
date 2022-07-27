@@ -28,16 +28,15 @@ namespace Engine
 		std::vector<LayerPointer> m_Layers;
 		
 	public:	
-		void PushLayer(LayerPointer Layer);
-		void PushOverlay(LayerPointer Layer);
-		void RemoveLayer(std::string_view LayerName);
-		void RemoveOverlay(std::string_view LayerName);
+		void PushLayer		(LayerPointer Layer);
+		void PushOverlay	(LayerPointer Layer);
+		void RemoveLayer	(std::string_view LayerName);
+		void RemoveOverlay	(std::string_view LayerName);
 
-		inline bool IsEmpty(void) const
+		FORCEINLINE bool IsEmpty(void) const
 		{
 			return m_Layers.empty();
 		}
-
 		void Clear(void);
 
 	public:

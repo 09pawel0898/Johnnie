@@ -15,7 +15,7 @@ namespace Engine::Core
 		constexpr int8_t WINDOW_RESIZEABLE = 0;
 	}
 
-	inline void GLFWErrorCallback(int ErrorCode, const char* Description)
+	FORCEINLINE void GLFWErrorCallback(int ErrorCode, const char* Description)
 	{
 		LOG(Core, Error, "GLFW error ocurred [ {0} ]", Description);
 	}

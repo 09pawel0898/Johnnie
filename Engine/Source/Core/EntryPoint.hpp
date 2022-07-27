@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Window/Application.hpp"
-#include "../Utilities/Log.hpp"
+#include "Application/Application.hpp"
+#include "Utilities/Log.hpp"
 #include "Exceptions/InitializationException.hpp"
+#include "PlatformCheck.hpp"
 
 using namespace Engine;
 

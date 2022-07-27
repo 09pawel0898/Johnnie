@@ -1,14 +1,9 @@
 #include "Application.hpp"
-#include "../../Utilities/Log.hpp"
-#include "../../Events/WindowEvent.hpp"
+#include "Utilities/Log.hpp"
+#include "Events/WindowEvent.hpp"
 
 #include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
-
 #include "glad/glad.h"
-//#include "../Graphics/Renderer.h"
-//#include "../Graphics/Texture.h"
 
 namespace Engine::Core
 {
@@ -16,10 +11,12 @@ namespace Engine::Core
 
     Application::Application(const WindowProperties& WindowProperties)
     {
+        Check(s_Instance == nullptr);
+
         DEFINE_CONSOLE_LOG_CATEGORY(Core);
         DEFINE_CONSOLE_LOG_CATEGORY(Events);
         
-        m_Window = Window::Create(WindowProperties);
+        m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
 
 #if (_MSC_VER >= 1910)
@@ -34,7 +31,9 @@ namespace Engine::Core
         dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_EVENT_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
+        {
             return;
+        }
 
         for (auto iter = m_LayerManager->end(); iter != m_LayerManager->begin();)
         {

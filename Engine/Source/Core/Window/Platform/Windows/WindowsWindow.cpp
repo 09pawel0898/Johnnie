@@ -2,24 +2,17 @@
 
 #include "glad/glad.h"
 
-#include "../../Events/WindowEvent.hpp"
-#include "../../Events/KeyEvent.hpp"
-#include "../../Events/MouseEvent.hpp"
-#include "../Exceptions/InitializationException.hpp"
+#include "Events/WindowEvent.hpp"
+#include "Events/KeyEvent.hpp"
+#include "Events/MouseEvent.hpp"
+#include "Core/Exceptions/InitializationException.hpp"
 
-#include "CoreGLFW.hpp"
+#include "../CoreGLFW.hpp"
+#include "imgui.h"
 
 namespace Engine::Core
 {
-	WindowProperties::WindowProperties(std::string const& Title, unsigned Width, unsigned Height)
-		:	Title(Title),
-			Width(Width),
-			Height(Height),
-			bEnableVSync(false),
-			EventCallback(nullptr)
-	{}
-
-	Window::Window(WindowProperties const& Properties)
+	WindowsWindow::WindowsWindow(WindowProperties const& Properties)
 	{
 		glfwSetErrorCallback(GLFWErrorCallback);
 
@@ -28,7 +21,7 @@ namespace Engine::Core
 			throw InitializationException("Failed to initialize GLFW.");
 		}
 		
-		if (!InitWindowHandle(Properties))
+		if (!InitNativeWindow(Properties))
 		{
 			throw InitializationException("Failed to initialize GLFW window handle.");
 		}
@@ -44,24 +37,19 @@ namespace Engine::Core
 		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
 	}
 
-	Window::~Window()
+	WindowsWindow::~WindowsWindow()
 	{
 		glfwDestroyWindow(m_WindowHandle);
 		glfwTerminate();
 	}
 
-	std::shared_ptr<Window> Window::Create(WindowProperties const& Properties)
-	{
-		return std::make_shared<Window>(Properties);
-	}
-
-	void Window::OnTick(void)
+	void WindowsWindow::OnTick(void)
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_WindowHandle);
 	}
 
-	void Window::SetVSync(bool Enabled)
+	void WindowsWindow::SetVSync(bool Enabled)
 	{
 		if (Enabled)
 		{
@@ -74,13 +62,13 @@ namespace Engine::Core
 		m_Properties.bEnableVSync = Enabled;
 	}
 
-	void Window::InitProperties(WindowProperties const& Properties)
+	void WindowsWindow::InitProperties(WindowProperties const& Properties)
 	{
 		m_Properties = Properties;
 		glfwSetWindowUserPointer(m_WindowHandle, &m_Properties);
 	}
 
-	void Window::InitEvents()
+	void WindowsWindow::InitEvents()
 	{
 		glfwSetWindowCloseCallback(m_WindowHandle, [](GLFWwindow* Window)
 		{
@@ -145,7 +133,7 @@ namespace Engine::Core
 		});
 	}
 
-	bool Window::InitWindowHandle(WindowProperties const& Properties)
+	bool WindowsWindow::InitNativeWindow(WindowProperties const& Properties)
 	{
 		
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, GLFW::CONTEXT_VERSION_MAJOR);
@@ -167,7 +155,7 @@ namespace Engine::Core
 		return false;
 	}
 
-	bool Window::InitOpenGLContext()
+	bool WindowsWindow::InitOpenGLContext()
 	{
 		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 		{

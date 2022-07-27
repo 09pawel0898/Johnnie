@@ -1,6 +1,6 @@
 #pragma once
 #include "../CoreMinimal.hpp"
-#include "WindowsWindow.hpp"
+#include "../Window/IWindow.hpp"
 #include "../Layers/LayerManager.hpp"
 #include "../../ImGui/ImGuiLayer.hpp"
 
@@ -23,17 +23,17 @@ namespace Engine::Core
 		static std::shared_ptr<Application> s_Instance;
 
 	public:
-		static inline std::shared_ptr<Application>& Get(void)
+		static FORCEINLINE std::shared_ptr<Application>& Get(void)
 		{ 
 			return s_Instance; 
 		};
 
 	private:		
-		using WindowPointer	= std::shared_ptr<Window>;
+		using WindowPointer	= std::shared_ptr<IWindow>;
 		WindowPointer m_Window;
 
 	public:
-		inline WindowPointer const& GetWindow(void) const { return m_Window; }
+		FORCEINLINE WindowPointer const& GetWindow(void) const { return m_Window; }
 
 	private:
 		/** Layers */
@@ -44,7 +44,7 @@ namespace Engine::Core
 		void InitImGuiLayer(void);
 
 	public:
-		inline LayerManager& GetLayerManager(void) { return *m_LayerManager; }
+		FORCEINLINE LayerManager& GetLayerManager(void) { return *m_LayerManager; }
 
 	private:
 		bool		m_bRunning = true;
@@ -69,9 +69,9 @@ namespace Engine::Core
 
 		void Run(void);
 
-		inline void SetFPSLimit(unsigned FpsLimit)	{ m_FPSLIMIT = FpsLimit;}
-		inline double GetDT(void) const				{ return m_DeltaTime;	}
-		inline double GetFPS(void) const			{ return m_FPS;			}
+		FORCEINLINE void SetFPSLimit(unsigned FpsLimit)	{ m_FPSLIMIT = FpsLimit;}
+		FORCEINLINE double GetDT(void) const			{ return m_DeltaTime;	}
+		FORCEINLINE double GetFPS(void) const			{ return m_FPS;			}
 	
 	private:
 		void Shutdown(void);
