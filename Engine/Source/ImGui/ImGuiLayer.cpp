@@ -5,8 +5,8 @@
 #include "imgui_impl_opengl3.h"
 #include "GLFW/glfw3.h"
 
-#include "../Core/Window/Application.hpp"
-#include "../Events/EventsIdentifiers.hpp"
+#include "Core/Application/Application.hpp"
+#include "Events/EventsIdentifiers.hpp"
 
 namespace Engine 
 {
@@ -22,16 +22,16 @@ namespace Engine
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;    
-		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  
 		
 		ImGui::StyleColorsDark();
 
-		ImGuiStyle& style = ImGui::GetStyle();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			style.WindowRounding = 0.0f;
-			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-		}
+		//ImGuiStyle& style = ImGui::GetStyle();
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	style.WindowRounding = 0.0f;
+		//	style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		//}
 
 		auto application = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(application->GetWindow()->GetWindowHandle());
@@ -73,12 +73,12 @@ namespace Engine
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			GLFWwindow* backup_current_context = glfwGetCurrentContext();
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-			glfwMakeContextCurrent(backup_current_context);
-		}
+		//if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		//{
+		//	GLFWwindow* backup_current_context = glfwGetCurrentContext();
+		//	ImGui::UpdatePlatformWindows();
+		//	ImGui::RenderPlatformWindowsDefault();
+		//	glfwMakeContextCurrent(backup_current_context);
+		//}
 	}
 }
