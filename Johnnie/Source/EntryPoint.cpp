@@ -8,13 +8,13 @@ class SandboxLayer : public Engine::Layer
 public:
 	explicit SandboxLayer(std::string_view Name) noexcept
 		:	Layer(Name)
-	{}
+	{
+
+	}
 
 private:
 	virtual void OnAwake(void) override 
-	{
-	
-	}
+	{}
 
 	virtual void OnRender(void) const override{};
 	virtual void OnTick(double DeltaTime) override {};
@@ -22,8 +22,12 @@ private:
 	{
 		std::cout << (int)Event.GetEventType();
 	};
-	virtual void OnRenderImGui(void) override
+	virtual void OnRenderGui(void) override
 	{
+		Gui::Begin("sas");
+		Gui::Text("Hello");
+		Gui::End();
+
 		if (bool demoWindow = true; demoWindow)
 		{
 			ImGui::ShowDemoWindow(&demoWindow);

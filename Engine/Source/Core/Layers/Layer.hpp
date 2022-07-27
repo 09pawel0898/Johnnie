@@ -33,7 +33,7 @@ namespace Engine
 
 		virtual void OnTick(double DeltaTime) {}
 		virtual void OnRender(void) const {}
-		virtual void OnRenderImGui(void) {}
+		virtual void OnRenderGui(void) {}
 
 		virtual void OnEvent(Events::Event& Event) override {}
 	};

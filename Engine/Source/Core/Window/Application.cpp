@@ -98,7 +98,7 @@ namespace Engine::Core
                     m_ImGuiLayer->BeginFrame();
                     for (auto& layer : *m_LayerManager)
                     {
-                        layer->OnRenderImGui();
+                        layer->OnRenderGui();
                     }
                     m_ImGuiLayer->EndFrame();
                 }

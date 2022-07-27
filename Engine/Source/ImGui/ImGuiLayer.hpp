@@ -11,6 +11,7 @@ namespace Engine
 		explicit ImGuiLayer(std::string_view LayerName) noexcept
 			:	Layer(LayerName)
 		{}
+		~ImGuiLayer() = default;
 
 		virtual void OnAwake() override;
 		virtual void OnDetach() override;
