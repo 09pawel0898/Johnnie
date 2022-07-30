@@ -8,7 +8,7 @@
 	#error "x86 Builds are not supported!"
 	#endif
 #elif defined(__linux__)
-	#define HZ_PLATFORM_LINUX
+	#define PLATFORM_LINUX
 	#error "Linux is not supported!"
 #else
 	#error "Unknown platform!"

@@ -1,10 +1,8 @@
 #pragma once
-#include "../CoreMinimal.hpp"
-#include "../Window/IWindow.hpp"
-#include "../Layers/LayerManager.hpp"
-#include "../../ImGui/ImGuiLayer.hpp"
-
-//#include "../Resources/ResourceManager.h"
+#include "Core/CoreMinimal.hpp"
+#include "Core/Window/IWindow.hpp"
+#include "Core/Layers/LayerManager.hpp"
+#include "ImGui/ImGuiLayer.hpp"
 
 int main(void);
 
@@ -46,12 +44,6 @@ namespace Engine::Core
 	public:
 		FORCEINLINE LayerManager& GetLayerManager(void) { return *m_LayerManager; }
 
-	private:
-		bool		m_bRunning = true;
-		double		m_DeltaTime = 0.0;
-		double		m_FPS = 0.0;
-		unsigned	m_FPSLIMIT = 9999;
-
 	public:
 		explicit Application(const WindowProperties& WindowProperties = WindowProperties());
 		virtual ~Application() = default;
@@ -62,19 +54,26 @@ namespace Engine::Core
 		Application& operator =(const Application& App) = delete;
 		Application& operator =(Application&& App)		= delete;
 	
-	public:
-		
-		void OnEvent(Events::Event& Event);
-		bool OnWindowClosed(Events::WindowClosedEvent& Event);
-
 		void Run(void);
 
-		FORCEINLINE void SetFPSLimit(unsigned FpsLimit)	{ m_FPSLIMIT = FpsLimit;}
-		FORCEINLINE double GetDT(void) const			{ return m_DeltaTime;	}
-		FORCEINLINE double GetFPS(void) const			{ return m_FPS;			}
-	
 	private:
 		void Shutdown(void);
+
+		/** Statistics */
+		bool		m_bRunning = true;
+		double		m_DeltaTime = 0.0;
+		double		m_FPS = 0.0;
+		unsigned	m_FPSLIMIT = 9999;
+
+	public:
+		FORCEINLINE void SetFPSLimit(unsigned FpsLimit) { m_FPSLIMIT = FpsLimit; }
+		FORCEINLINE double GetDT(void) const { return m_DeltaTime; }
+		FORCEINLINE double GetFPS(void) const { return m_FPS; }
+
+	public:
+		/** Event Handling */
+		void OnEvent(Events::Event& Event);
+		bool OnWindowClosed(Events::WindowClosedEvent& Event);
 	};
 
 	[[nodiscard]] std::shared_ptr<Application> CreateApplication();
