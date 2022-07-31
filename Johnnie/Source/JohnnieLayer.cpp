@@ -28,6 +28,8 @@ void JohnnieLayer::OnAwake(void)
 		auto n = videoMemInfo.Get<SystemNvidiaVideoMemoryInfo>();
 		n.value().Log();
 	}
+
+	InitGui();
 }
 
 void JohnnieLayer::OnDetach(void)
@@ -46,10 +48,16 @@ void JohnnieLayer::OnEvent(Events::Event& Event)
 {
 }
 
+void JohnnieLayer::InitGui(void)
+{
+	m_MainMenuBar.BindToAction(MainMenuBarActions::Open,
+	[]()
+	{
+		std::cout << "Open";
+	});
+}
+
 void JohnnieLayer::OnRenderGui(void)
 {
-	if (bool demoWindow = true; demoWindow)
-	{
-		ImGui::ShowDemoWindow(&demoWindow);
-	}
+	m_MainMenuBar.OnRenderGui();
 }

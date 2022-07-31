@@ -16,8 +16,7 @@ namespace Engine::Core
 {
 	class Application
 	{
-	protected:
-		using Super = Application;
+		DEFINE_SUPER(Application);
 
 	private:
 		friend int ::main(void);

@@ -10,4 +10,8 @@
 
 #define FORCEINLINE __forceinline
 
+#define DEFINE_SUPER(ClassName)\
+    protected:\
+    using Super = ClassName
+
 #include "System/Memory.hpp"

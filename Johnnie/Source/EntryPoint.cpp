@@ -13,7 +13,7 @@ public:
 		GetLayerManager().PushLayer(std::make_unique<JohnnieLayer>("JohnnieLayer"));
 	}
 
-	virtual void PostInitApplication() override
+	virtual void PostInitApplication(void) override
 	{
 		Super::PostInitApplication();
 
