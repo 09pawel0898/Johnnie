@@ -1,6 +1,7 @@
 #include "Application.hpp"
 #include "Utilities/Log.hpp"
 #include "Events/WindowEvent.hpp"
+#include "System/System.hpp"
 
 #include "imgui.h"
 #include "glad/glad.h"
@@ -18,6 +19,8 @@ namespace Engine::Core
         
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
+
+        System::Init();
 
 #if (_MSC_VER >= 1910)
         _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
@@ -115,5 +118,7 @@ namespace Engine::Core
     }
 
     void Application::Shutdown(void)
-    {}
+    {
+        System::Shutdown();
+    }
 }

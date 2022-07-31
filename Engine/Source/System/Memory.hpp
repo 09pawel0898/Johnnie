@@ -5,11 +5,13 @@
 #pragma warning(disable : 4595)
 #pragma warning(disable : 4005)
 
+[[nodiscard]]
 __forceinline void* operator new(size_t Size)
 {
 	return Engine::Allocator::Allocate(Size);
 }
 
+[[nodiscard]]
 __forceinline void* operator new[](size_t Size)
 {
 	return Engine::Allocator::Allocate(Size);

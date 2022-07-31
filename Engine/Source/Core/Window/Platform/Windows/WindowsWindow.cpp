@@ -6,6 +6,7 @@
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
 #include "Core/Exceptions/InitializationException.hpp"
+#include "Utilities/Log.hpp"
 
 #include "../CoreGLFW.hpp"
 #include "imgui.h"
@@ -161,6 +162,7 @@ namespace Engine::Core
 		{
 			return false;
 		}
+		DEFINE_CONSOLE_LOG_CATEGORY(OpenGL);
 		return true;
 	}
 }

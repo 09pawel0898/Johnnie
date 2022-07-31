@@ -5,7 +5,7 @@
 #include <bit>
 
 
-namespace Engine::Utility
+namespace Engine::Utilities
 {
 	std::string BytesToString(uint64_t Bytes)
 	{
