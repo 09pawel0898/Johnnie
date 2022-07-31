@@ -13,7 +13,7 @@ namespace Engine
 		uint64_t AvailableVirtualMemory;
 		uint64_t TotalVirtualMemory;
 
-		void Log() const;
+		void Log(void) const;
 	};
 	
 	struct SystemVideoMemoryInfo
@@ -25,12 +25,12 @@ namespace Engine
 	{
 	public:
 		/** Physical and virtual memory info */
-		static std::optional<SystemMemoryInfo> GetMemoryInfo();
+		static std::optional<SystemMemoryInfo> GetMemoryInfo(void);
 
 		/** Video memory info */
-		static std::optional<SystemVideoMemoryInfo> GetVideoMemoryInfo();
+		static std::optional<SystemVideoMemoryInfo> GetVideoMemoryInfo(void);
 
 		/** Allocated memory info */
-		static MemoryStatistics const& GetMemoryStatistics();
+		static MemoryStatistics const& GetMemoryStatistics(void);
 	};
 }

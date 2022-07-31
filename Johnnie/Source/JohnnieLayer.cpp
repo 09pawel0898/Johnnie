@@ -1,6 +1,7 @@
 #include "JohnnieLayer.hpp"
 
 #include <Engine/Gui.hpp>
+#include <Engine/System.hpp>
 
 JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
 	:	Layer(Name)
@@ -9,6 +10,16 @@ JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
 
 void JohnnieLayer::OnAwake(void)
 {
+	auto memoryInfo = System::GetMemoryInfo();
+	Check(memoryInfo);
+
+	memoryInfo.value().Log();
+
+	const auto& memoryStats = System::GetMemoryStatistics();
+	
+	memoryStats.Log();
+
+
 }
 
 void JohnnieLayer::OnDetach(void)

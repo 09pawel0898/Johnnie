@@ -17,12 +17,12 @@ __forceinline void* operator new[](size_t Size)
 
 __forceinline void operator delete(void* Block, size_t Size)
 {
-	Engine::Allocator::Free(Block, Size);
+	Engine::Allocator::Deallocate(Block, Size);
 }
 
 __forceinline void operator delete[](void* Block, size_t Size)
 {
-	Engine::Allocator::Free(Block, Size);
+	Engine::Allocator::Deallocate(Block, Size);
 }
 
 #pragma warning(default : 4595)

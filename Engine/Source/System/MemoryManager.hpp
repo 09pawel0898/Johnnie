@@ -12,29 +12,29 @@ namespace Engine
 		uint64_t TotalFreed;
 		uint64_t TotalAllocations;
 		uint64_t CurrentlyAllocated;
+
+		void Log(void) const;
 	};
 
 	class MemoryManager
 	{
 	private:
-		MemoryStatistics m_MemoryStats;
+		MemoryStatistics m_MemoryStats {};
 
 	public:
-		MemoryManager() = default;
-		
-		inline MemoryStatistics& GetMemoryStats()
+		MemoryManager() 
+		{}
+
+		inline MemoryStatistics& GetMutableMemoryStats(void)
 		{
 			return m_MemoryStats;
 		}
 
-		inline MemoryStatistics const& GetMemoryStats() const
+		inline MemoryStatistics const& GetMemoryStats(void) const
 		{
 			return m_MemoryStats;
 		}
-
-	private:
-		static std::unique_ptr<MemoryManager> s_Instance;
-	public:
-		static std::unique_ptr<MemoryManager> const& Get();
 	};
+
+	inline MemoryManager g_MemoryManager{};
 }

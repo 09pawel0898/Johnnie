@@ -6,6 +6,6 @@ namespace Engine
 	{
 	public:
 		static void* Allocate(size_t Size);
-		static void Free(void* Memory, size_t Size);
+		static void Deallocate(void* Memory, size_t Size);
 	};
 }

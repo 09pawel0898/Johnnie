@@ -9,3 +9,5 @@
         [this](auto&&... Args) -> decltype(auto) { return this->Func(std::forward<decltype(Args)>(Args)...); }
 
 #define FORCEINLINE __forceinline
+
+#include "System/Memory.hpp"

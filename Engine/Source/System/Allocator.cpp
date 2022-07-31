@@ -6,19 +6,19 @@
 
 void* Engine::Allocator::Allocate(size_t Size)
 {
-    CheckMsg(Size < 1024 * 1024 * 1024, "Memory block is to big to allocate!");
+    Check(Size < 1024 * 1024 * 1024);
 	
-	MemoryManager::Get()->GetMemoryStats().TotalAllocations++;
-	MemoryManager::Get()->GetMemoryStats().TotalAllocated += Size;
-	MemoryManager::Get()->GetMemoryStats().CurrentlyAllocated += Size;
+	g_MemoryManager.GetMutableMemoryStats().TotalAllocations++;
+	g_MemoryManager.GetMutableMemoryStats().TotalAllocated += Size;
+	g_MemoryManager.GetMutableMemoryStats().CurrentlyAllocated += Size;
 	
-	std::byte* result = (std::byte*)malloc(Size);
+	std::byte* result = static_cast<std::byte*>(malloc(Size));
 	return result;
 }
 
-void Engine::Allocator::Free(void* Memory, size_t Size)
+void Engine::Allocator::Deallocate(void* Memory, size_t Size)
 {
-	MemoryManager::Get()->GetMemoryStats().TotalFreed += Size;
-	MemoryManager::Get()->GetMemoryStats().CurrentlyAllocated -= Size;
+	g_MemoryManager.GetMutableMemoryStats().TotalFreed += Size;
+	g_MemoryManager.GetMutableMemoryStats().CurrentlyAllocated -= Size;
 	free(Memory);
 }
