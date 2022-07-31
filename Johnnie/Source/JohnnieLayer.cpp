@@ -48,12 +48,6 @@ void JohnnieLayer::OnEvent(Events::Event& Event)
 
 void JohnnieLayer::OnRenderGui(void)
 {
-	Gui::Begin("MyWindow");
-	Gui::Text("Hello there");
-	Gui::Text("Hello there");
-	Gui::Text("Hello there");
-	Gui::End();
-
 	if (bool demoWindow = true; demoWindow)
 	{
 		ImGui::ShowDemoWindow(&demoWindow);

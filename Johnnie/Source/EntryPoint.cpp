@@ -13,6 +13,13 @@ public:
 		GetLayerManager().PushLayer(std::make_unique<JohnnieLayer>("JohnnieLayer"));
 	}
 
+	virtual void PostInitApplication() override
+	{
+		Super::PostInitApplication();
+
+		GetGuiProperties().EnableDocking();
+	}
+
 	~JohnnieApplication() = default;
 };
 

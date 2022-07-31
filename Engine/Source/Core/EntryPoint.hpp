@@ -14,6 +14,7 @@ auto main(void) -> int
 	try
 	{
 		Core::Application::s_Instance = Core::CreateApplication();
+		Core::Application::s_Instance->PostInitApplication();
 		Core::Application::s_Instance->Run();
 	}
 	catch (Engine::InitializationException e)

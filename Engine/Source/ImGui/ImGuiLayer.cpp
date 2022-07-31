@@ -21,7 +21,6 @@ namespace Engine
 
 		ImGuiIO& io = ImGui::GetIO(); (void)io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;    
 		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;  
 		
 		ImGui::StyleColorsDark();
@@ -58,11 +57,43 @@ namespace Engine
 		Event.m_Handled |= io.WantCaptureMouse & Event.HasCategory(Events::EventCategory_Mouse);
 	}
 
+	void ImGuiLayer::OnNativeRenderGui()
+	{
+		/** Configuring docspace viewport */
+
+		if (m_ImGuiProperties.bDockingEnabled)
+		{
+			ImGuiViewport* viewport = ImGui::GetMainViewport();
+			ImGui::SetNextWindowPos(viewport->WorkPos);
+			ImGui::SetNextWindowSize(viewport->WorkSize);
+			ImGui::SetNextWindowViewport(viewport->ID);
+
+			ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode;
+			ImGuiWindowFlags hostWindowFlags = 0;
+			hostWindowFlags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDocking;
+			hostWindowFlags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
+			if (dockspaceFlags & ImGuiDockNodeFlags_PassthruCentralNode)
+				hostWindowFlags |= ImGuiWindowFlags_NoBackground;
+
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+			ImGui::Begin("DockSpace Window", nullptr, hostWindowFlags);
+			ImGui::PopStyleVar(3);
+
+			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
+			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags, nullptr);
+			ImGui::End();
+		}
+	}
+
 	void ImGuiLayer::BeginFrame()
 	{
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+		OnNativeRenderGui();
 	}
 
 	void ImGuiLayer::EndFrame()

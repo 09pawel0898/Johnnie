@@ -15,20 +15,7 @@ namespace Engine::Core
 
     Application::Application(const WindowProperties& WindowProperties)
     {
-        Check(s_Instance == nullptr);
-
-        DEFINE_CONSOLE_LOG_CATEGORY(Core);
-        DEFINE_CONSOLE_LOG_CATEGORY(Events);
-        
-        m_Window = IWindow::Create(WindowProperties);
-        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
-
-        System::Init();
-
-#if (_MSC_VER >= 1910)
-        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-        InitLayerManager();
+        InitApplication(WindowProperties);
     }
 
     void Application::OnEvent(Events::Event& Event)
@@ -69,8 +56,6 @@ namespace Engine::Core
     void Application::Run(void)
     { 
         LOG(Core, Trace, "Application::Run()");
-        
-        InitImGuiLayer();
 
         using TimePoint = std::chrono::high_resolution_clock;
         std::chrono::steady_clock::time_point tFrameStart, tLastUpdate = TimePoint::now();
@@ -110,14 +95,37 @@ namespace Engine::Core
                 m_Window->OnTick();
 
                 GLCall(glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
-                glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
-                glClear(GL_COLOR_BUFFER_BIT);
+                GLCall(glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w));
+                GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
                 tLastUpdate = TimePoint::now();
                 m_FPS = (1.0 / m_DeltaTime) * 1000;;
             }
         }
         Shutdown();
+    }
+
+    void Application::InitApplication(const WindowProperties& WindowProperties)
+    {
+        Check(s_Instance == nullptr);
+
+        DEFINE_CONSOLE_LOG_CATEGORY(Core);
+        DEFINE_CONSOLE_LOG_CATEGORY(Events);
+
+        m_Window = IWindow::Create(WindowProperties);
+        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
+
+        System::Init();
+        InitLayerManager();
+
+#if (_MSC_VER >= 1910)
+        _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+    }
+
+    void Application::PostInitApplication(void)
+    {
+        InitImGuiLayer();
     }
 
     void Application::Shutdown(void)

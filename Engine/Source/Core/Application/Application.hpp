@@ -16,6 +16,9 @@ namespace Engine::Core
 {
 	class Application
 	{
+	protected:
+		using Super = Application;
+
 	private:
 		friend int ::main(void);
 		static std::shared_ptr<Application> s_Instance;
@@ -26,6 +29,16 @@ namespace Engine::Core
 			return s_Instance; 
 		};
 
+		explicit Application(const WindowProperties& WindowProperties = WindowProperties());
+		virtual ~Application() = default;
+
+		Application(const Application & App) = delete;
+		Application(Application && App) = delete;
+
+		Application& operator =(const Application & App) = delete;
+		Application& operator =(Application && App) = delete;
+
+		/** Window */
 	private:		
 		using WindowPointer	= std::shared_ptr<IWindow>;
 		WindowPointer m_Window;
@@ -33,32 +46,26 @@ namespace Engine::Core
 	public:
 		FORCEINLINE WindowPointer const& GetWindow(void) const { return m_Window; }
 
-	private:
 		/** Layers */
+	private:
 		std::unique_ptr<LayerManager> m_LayerManager;
 		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
-
 		void InitLayerManager(void);
 		void InitImGuiLayer(void);
 
 	public:
+		FORCEINLINE ImGuiProperties& GetGuiProperties() { return m_ImGuiLayer->GetImGuiProperties(); };
 		FORCEINLINE LayerManager& GetLayerManager(void) { return *m_LayerManager; }
-
-	public:
-		explicit Application(const WindowProperties& WindowProperties = WindowProperties());
-		virtual ~Application() = default;
-
-		Application(const Application& App) = delete;
-		Application(Application&& App)		= delete;
-
-		Application& operator =(const Application& App) = delete;
-		Application& operator =(Application&& App)		= delete;
-	
+		
+		/** Initialization/Runtime */
+	private:
 		void Run(void);
+		void InitApplication(const WindowProperties& WindowProperties);
+		void Shutdown(void);
+	public:
+		virtual void PostInitApplication(void);
 
 	private:
-		void Shutdown(void);
-
 		/** Statistics */
 		bool		m_bRunning = true;
 		double		m_DeltaTime = 0.0;

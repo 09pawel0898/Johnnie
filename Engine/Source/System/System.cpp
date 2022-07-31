@@ -17,7 +17,7 @@
 
 namespace Engine
 {
-	System::GetVideoMemoryInfoFunc System::s_GetVideoMemoryInfoFunc = GetMemoryInfo_NotSupported;
+	System::GetVideoMemoryInfoFunc System::s_GetVideoMemoryInfoFunc = nullptr;
 
 	void System::Init()
 	{
