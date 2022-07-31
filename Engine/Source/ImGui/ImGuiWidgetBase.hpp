@@ -9,7 +9,7 @@ template <typename ActionName>
 class ImGuiWidgetBase
 {
 public:
-	using ActionCallback = std::function<void()>;
+	using SimpleActionDelegate = std::function<void()>;
 
 private:
 	struct ActionNameClassHash
@@ -21,23 +21,23 @@ private:
 		}
 	};
 
-	std::unordered_map<ActionName, ActionCallback, ActionNameClassHash> m_Actions;
+	std::unordered_map<ActionName, SimpleActionDelegate, ActionNameClassHash> m_SimpleActions;
 
 protected:
-	template<typename... Args>
-	void CallAction(ActionName Name, Args&&... args)
+
+	void Execute(ActionName Name)
 	{
-		const auto existingAction = m_Actions.find(Name);
-		CheckMsg(existingAction != m_Actions.cend(), "No delegate is bound to this action.");
-		m_Actions[Name](std::forward<decltype(args)>(args)...);
+		const auto existingAction = m_SimpleActions.find(Name);
+		CheckMsg(existingAction != m_SimpleActions.cend(), "No delegate is bound to this action.");
+		m_SimpleActions[Name]();
 	}
 
 public:
-	void BindToAction(ActionName Name, ActionCallback Callback)
+	void BindDelegate(ActionName Name, SimpleActionDelegate Callback)
 	{
-		const auto existingAction = m_Actions.find(Name);
-		CheckMsg(existingAction == m_Actions.cend(), "Tried to bind already bound action.");
-		m_Actions[Name] = Callback;
+		const auto existingAction = m_SimpleActions.find(Name);
+		CheckMsg(existingAction == m_SimpleActions.cend(), "Tried to bind already bound action.");
+		m_SimpleActions[Name] = Callback;
 	}
 
 	virtual void OnRenderGui(void) = 0;

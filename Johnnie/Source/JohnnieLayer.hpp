@@ -3,7 +3,8 @@
 #include <Engine/CoreMinimal.hpp>
 #include <Engine/Layers.hpp>
 
-#include "Gui/MainMenuBar.hpp"
+#include "Gui/MainMenuBarWidget.hpp"
+#include "Gui/ConsoleLogWidget.hpp"
 
 class JohnnieLayer final : public Engine::Layer
 {
@@ -11,7 +12,8 @@ public:
 	explicit JohnnieLayer(std::string_view Name) noexcept;
 
 private:
-	MainMenuBar m_MainMenuBar;
+	MainMenuBarWidget m_MainMenuBar;
+	ConsoleLogWidget m_ConsoleLog;
 
 private:
 	/** Layer Interface Impl*/

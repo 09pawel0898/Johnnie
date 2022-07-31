@@ -1,9 +1,9 @@
-#include "MainMenuBar.hpp"
+#include "MainMenuBarWidget.hpp"
 
 #include "Engine/Gui.hpp"
 #include <iostream>
 
-void MainMenuBar::OnRenderGui(void)
+void MainMenuBarWidget::OnRenderGui(void)
 {
 	if (ImGui::BeginMainMenuBar())
 	{
@@ -11,7 +11,7 @@ void MainMenuBar::OnRenderGui(void)
 		{
 			if (ImGui::MenuItem("Open...", "Ctrl+O"))
 			{
-				CallAction(MainMenuBarActions::Open);
+				Execute(MainMenuBarActions::Open);
 			}
 
 			if (ImGui::MenuItem("Exit")) 

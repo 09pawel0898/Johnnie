@@ -81,8 +81,8 @@ namespace Engine
 			ImGui::Begin("DockSpace Window", nullptr, hostWindowFlags);
 			ImGui::PopStyleVar(3);
 
-			ImGuiID dockspace_id = ImGui::GetID("DockSpace");
-			ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspaceFlags, nullptr);
+			ImGuiID dockspaceID = ImGui::GetID("DockSpace");
+			ImGui::DockSpace(dockspaceID, ImVec2(0.0f, 0.0f), dockspaceFlags, nullptr);
 			ImGui::End();
 		}
 	}

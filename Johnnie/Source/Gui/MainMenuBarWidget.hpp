@@ -8,7 +8,7 @@ enum class MainMenuBarActions : uint8_t
 	Exit,
 };
 
-class MainMenuBar : public ImGuiWidgetBase<MainMenuBarActions>
+class MainMenuBarWidget : public ImGuiWidgetBase<MainMenuBarActions>
 {
 public:
 	virtual void OnRenderGui(void) override;

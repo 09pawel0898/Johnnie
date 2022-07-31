@@ -50,7 +50,7 @@ void JohnnieLayer::OnEvent(Events::Event& Event)
 
 void JohnnieLayer::InitGui(void)
 {
-	m_MainMenuBar.BindToAction(MainMenuBarActions::Open,
+	m_MainMenuBar.BindDelegate(MainMenuBarActions::Open,
 	[]()
 	{
 		std::cout << "Open";
@@ -59,5 +59,14 @@ void JohnnieLayer::InitGui(void)
 
 void JohnnieLayer::OnRenderGui(void)
 {
+
 	m_MainMenuBar.OnRenderGui();
+	
+
+	ImGui::SetNextWindowDockID(3, ImGuiCond_FirstUseEver);
+
+	bool x = true;
+	ImGui::ShowDemoWindow(&x);
+
+	m_ConsoleLog.OnRenderGui();
 }
