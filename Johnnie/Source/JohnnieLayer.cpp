@@ -19,7 +19,15 @@ void JohnnieLayer::OnAwake(void)
 	
 	memoryStats.Log();
 
+	SystemVideoBrandingInfo brandingInfo = System::GetGraphicsCardBrandingInfo();
+	brandingInfo.Log();
 
+	if (brandingInfo.Brand == GpuBrand::NVIDIA)
+	{
+		SystemVideoMemoryInfo videoMemInfo = System::GetVideoMemoryInfo();
+		auto n = videoMemInfo.Get<SystemNvidiaVideoMemoryInfo>();
+		n.value().Log();
+	}
 }
 
 void JohnnieLayer::OnDetach(void)

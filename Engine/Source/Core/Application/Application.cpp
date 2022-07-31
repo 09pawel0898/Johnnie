@@ -2,8 +2,11 @@
 #include "Utilities/Log.hpp"
 #include "Events/WindowEvent.hpp"
 #include "System/System.hpp"
+#include "Utilities/OpenGL/OpenGLCallCheck.hpp"
 
 #include "imgui.h"
+
+/** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include "glad/glad.h"
 
 namespace Engine::Core
@@ -106,7 +109,7 @@ namespace Engine::Core
                 }
                 m_Window->OnTick();
 
-                glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+                GLCall(glViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
                 glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
                 glClear(GL_COLOR_BUFFER_BIT);
 

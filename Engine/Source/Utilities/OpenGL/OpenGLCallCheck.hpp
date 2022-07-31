@@ -1,6 +1,8 @@
 #pragma once
 
+/** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include <glad/glad.h>
+
 #include "Utilities/Log.hpp"
 #include "Core/Debug/Asserts.hpp"
 

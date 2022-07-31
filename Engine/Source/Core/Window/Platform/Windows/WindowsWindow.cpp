@@ -1,5 +1,6 @@
 #include "WindowsWindow.hpp"
 
+/** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include "glad/glad.h"
 
 #include "Events/WindowEvent.hpp"

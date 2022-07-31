@@ -1,11 +1,30 @@
 #pragma once
 
 #include <optional>
+#include <variant>
+#include <iostream>
+#include <functional>
+
 #include "MemoryManager.hpp"
 
 namespace Engine
 {
-	struct SystemMemoryInfo
+	enum
+	{
+		None = -1
+	};
+
+	enum class GpuBrand : uint8_t
+	{
+		UNKNOWN, NVIDIA, AMD
+	};
+
+	struct Info
+	{
+		virtual void Log(void) const = 0;
+	};
+
+	struct SystemMemoryInfo : public Info
 	{
 		uint64_t AvailablePhysMemory;
 		uint64_t TotalPhysMemory;
@@ -13,40 +32,91 @@ namespace Engine
 		uint64_t AvailableVirtualMemory;
 		uint64_t TotalVirtualMemory;
 
-		void Log(void) const;
+		SystemMemoryInfo(uint64_t AvailablePhysMemory, uint64_t TotalPhysMemory, uint64_t AvailableVirtualMemory, uint64_t TotalVirtualMemory)
+			:	AvailablePhysMemory(AvailablePhysMemory), TotalPhysMemory(TotalPhysMemory), AvailableVirtualMemory(AvailableVirtualMemory), TotalVirtualMemory(TotalVirtualMemory)
+		{}
+
+		void Log(void) const override;
 	};
 	
-	struct SystemVideoMemoryInfo
+	struct SystemVideoBrandingInfo : public Info
 	{
-		// Nvidia
-		int32_t total_video;    // dedicated video memory, total size (in kb) of the GPU memory
-		int32_t total_system;   // total available memory, total size (in Kb) of the memory available for allocations
-		int32_t gpu_available;  // current available dedicated video memory (in kb), currently unused GPU memory
+		GpuBrand Brand = GpuBrand::UNKNOWN;
 
-		// Ati
-		int32_t total_pool;     // total memory free in the pool
-		int32_t largest_block;  // largest available free block in the pool
-		int32_t total_aux;      // total auxiliary memory free
-		int32_t largest_aux;    // largest auxiliary free block
+		std::string Vendor	= "none";
+		std::string Renderer= "none";
+
+		void Log(void) const override;
 	};
 
-	// a value of -1 means it is not supported or not set
-	struct SystemVideoMemoryEvictionInfo
+	/** Parsed from GL_NVX_gpu_memory_info */
+	struct SystemNvidiaVideoMemoryInfo : public Info
 	{
-		int32_t count;  // count of total evictions seen by system
-		int32_t size;   // size of total video memory evicted (in kb)
+		int64_t DedicatedVideoMemory		= None;	// Dedicated video memory, total size (in kb) of the GPU memory
+		int64_t TotalAvailableVideoMemory	= None;	// Total available memory, total size (in Kb) of the memory available for allocations
+		int64_t CurrentAvailableVideoMemory = None; // Current available dedicated video memory (in kb), currently unused GPU memory
+
+		int64_t EvictedCount	= None;				// Count of total evictions seen by system
+		int64_t EvictedSize		= None;				// Size of total video memory evicted (in kb)
+
+		void Log(void) const override;
+	};
+
+	/** Parsed from GL_ATI_meminfo */
+	struct SystemAMDVideoMemoryInfo : public Info
+	{
+		int64_t TotalPool		= None;				// Total memory free in the pool
+		int64_t LargestBlock	= None;				// Largest available free block in the pool
+		int64_t TotalAux		= None;				// Total auxiliary memory free
+		int64_t LargestAux		= None;				// Largest auxiliary free block
+
+		void Log(void) const override;
+	};
+
+	struct SystemVideoMemoryInfo
+	{
+	private:
+		std::variant<std::nullptr_t,
+					SystemNvidiaVideoMemoryInfo,
+					SystemAMDVideoMemoryInfo> Info;
+	public:
+
+		template <typename BrandVideoMemoryInfoType>
+		explicit SystemVideoMemoryInfo(BrandVideoMemoryInfoType&& VideoMemoryInfo) noexcept
+			:	Info(std::forward<BrandVideoMemoryInfoType>(VideoMemoryInfo))
+		{}
+
+		template<typename BrandVideoMemoryInfoType>
+		std::optional<BrandVideoMemoryInfoType> Get(void)
+		{
+			BrandVideoMemoryInfoType* resultInfo = std::get_if<BrandVideoMemoryInfoType>(&Info);
+			if (resultInfo)
+			{
+				return *resultInfo;
+			}
+			else
+			{
+				return std::nullopt;
+			}
+		}
 	};
 
 	class System
 	{
 	private:
 		static inline bool s_bInitialized = false;
+		static inline SystemVideoBrandingInfo s_BrandingInfo;
+
+		using GetVideoMemoryInfoFunc = std::function<SystemVideoMemoryInfo(void)>;
+
+		static GetVideoMemoryInfoFunc s_GetVideoMemoryInfoFunc;
 
 	public:
 		static void Init(void);
 		static void Shutdown(void);
 
 	private:
+		static void InitGraphicsCardBrandingInfo(void);
 		static void InitVideoMemoryInfo(void);
 
 	public:		
@@ -54,7 +124,10 @@ namespace Engine
 		static std::optional<SystemMemoryInfo> GetMemoryInfo(void);
 
 		/** Video memory info */
-		static std::optional<SystemVideoMemoryInfo> GetVideoMemoryInfo(void);
+		static SystemVideoMemoryInfo GetVideoMemoryInfo(void);
+
+		/** Video memory branding info */
+		static SystemVideoBrandingInfo GetGraphicsCardBrandingInfo(void);
 
 		/** Allocated memory info */
 		static MemoryStatistics const& GetMemoryStatistics(void);

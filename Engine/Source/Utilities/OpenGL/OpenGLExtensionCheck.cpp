@@ -1,8 +1,9 @@
 #include "OpenGLExtensionCheck.hpp"
 
+/** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include <glad/glad.h>
-#include <cstring>
 
+#include <cstring>
 #include "OpenGLCallCheck.hpp"
 
 namespace Engine::Utilities::OpenGL
@@ -14,7 +15,7 @@ namespace Engine::Utilities::OpenGL
 
         for (int i = 0; i < numExtensions; i++) 
         {
-            const char* extensionNameToCheck = (const char*)(glGetStringi(GL_EXTENSIONS, i));
+            const char* extensionNameToCheck = reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i));
             if (strstr(extensionNameToCheck, Extension))
             {
                 return true;
