@@ -24,14 +24,21 @@ void JohnnieLayer::OnTick(double DeltaTime)
 void JohnnieLayer::OnEvent(Events::Event& Event)
 {}
 
+static void func(int x)
+{
+	std::cout << "s";
+}
+
 void JohnnieLayer::InitGui(void)
 {
-	m_MainMenuBar.BindActionDelegate(MainMenuBarActions::Open,
+	m_MainMenuBar.BindActionDelegate(MainMenuBarAction::Open,
 	[]()
 	{
 		std::cout << "Open";
 	});
 }
+
+
 
 void JohnnieLayer::OnRenderGui(void)
 {

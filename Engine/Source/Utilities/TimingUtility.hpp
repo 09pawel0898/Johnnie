@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Log.hpp"
+#include "Log/Log.hpp"
 
 #include <chrono>
 #include <utility>

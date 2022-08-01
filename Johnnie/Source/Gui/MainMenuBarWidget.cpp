@@ -11,7 +11,7 @@ void MainMenuBarWidget::OnRenderGui(void)
 		{
 			if (ImGui::MenuItem("Open...", "Ctrl+O"))
 			{
-				ExecuteActionDelegate(MainMenuBarActions::Open);
+				ExecuteActionDelegate(MainMenuBarAction::Open);
 			}
 
 			if (ImGui::MenuItem("Exit")) 

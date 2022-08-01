@@ -2,13 +2,13 @@
 
 #include "ImGui/ImGuiWidgetBase.hpp"
 
-enum class MainMenuBarActions : uint8_t
+enum class MainMenuBarAction : uint8_t
 {
 	Open = 0,
 	Exit,
 };
 
-class MainMenuBarWidget : public ImGuiWidgetBase<MainMenuBarActions>
+class MainMenuBarWidget final : public ImGuiWidgetBase<MainMenuBarAction>
 {
 public:
 	virtual void OnRenderGui(void) override;

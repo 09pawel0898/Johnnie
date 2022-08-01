@@ -21,7 +21,7 @@ namespace Engine::Core
     void Application::OnEvent(Events::Event& Event)
     {
         Events::EventDispatcher dispatcher(Event);
-        dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_EVENT_FUNCTION(OnWindowClosed));
+        dispatcher.Dispatch<Events::WindowClosedEvent>(BIND_FUNCTION(OnWindowClosed));
 
         if (Event.Handled())
         {
@@ -113,7 +113,7 @@ namespace Engine::Core
         DEFINE_LOG_CATEGORY(Events);
 
         m_Window = IWindow::Create(WindowProperties);
-        m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));
+        m_Window->SetEventCallback(BIND_FUNCTION(OnEvent));
 
         System::Init();
         InitLayerManager();

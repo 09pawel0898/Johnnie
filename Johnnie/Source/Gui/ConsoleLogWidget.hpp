@@ -1,15 +1,15 @@
 #pragma once
 
+#include <Engine/CoreMinimal.hpp>
 #include <Engine/Gui.hpp>
+
 #include "ImGui/ImGuiWidgetBase.hpp"
 #include <list>
 
-enum class ConsoleLogActions : uint8_t
+enum class ConsoleLogAction : uint8_t
 {};
 
-
-
-class ConsoleLogWidget : ImGuiWidgetBase<ConsoleLogActions>
+class ConsoleLogWidget final : ImGuiWidgetBase<ConsoleLogAction>
 {
 public:
     ConsoleLogWidget(void);

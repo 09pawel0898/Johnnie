@@ -19,12 +19,12 @@ namespace Engine
 		UNKNOWN, NVIDIA, AMD
 	};
 
-	struct Info
+	struct SystemInfo
 	{
 		virtual void Log(void) const = 0;
 	};
 
-	struct SystemMemoryInfo : public Info
+	struct SystemMemoryInfo final : public SystemInfo
 	{
 		uint64_t AvailablePhysMemory;
 		uint64_t TotalPhysMemory;
@@ -39,7 +39,7 @@ namespace Engine
 		void Log(void) const override;
 	};
 	
-	struct SystemVideoBrandingInfo : public Info
+	struct SystemVideoBrandingInfo final : public SystemInfo
 	{
 		GpuBrand Brand = GpuBrand::UNKNOWN;
 
@@ -50,7 +50,7 @@ namespace Engine
 	};
 
 	/** Parsed from GL_NVX_gpu_memory_info */
-	struct SystemNvidiaVideoMemoryInfo : public Info
+	struct SystemNvidiaVideoMemoryInfo final : public SystemInfo
 	{
 		int64_t DedicatedVideoMemory		= None;	// Dedicated video memory, total size (in kb) of the GPU memory
 		int64_t TotalAvailableVideoMemory	= None;	// Total available memory, total size (in Kb) of the memory available for allocations
@@ -63,7 +63,7 @@ namespace Engine
 	};
 
 	/** Parsed from GL_ATI_meminfo */
-	struct SystemAMDVideoMemoryInfo : public Info
+	struct SystemAMDVideoMemoryInfo final : public SystemInfo
 	{
 		int64_t TotalPool		= None;				// Total memory free in the pool
 		int64_t LargestBlock	= None;				// Largest available free block in the pool
