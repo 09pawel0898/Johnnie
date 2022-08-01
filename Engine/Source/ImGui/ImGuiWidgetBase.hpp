@@ -24,7 +24,6 @@ private:
 	std::unordered_map<ActionName, SimpleActionDelegate, ActionNameClassHash> m_SimpleActions;
 
 protected:
-
 	void ExecuteActionDelegate(ActionName Name)
 	{
 		const auto existingAction = m_SimpleActions.find(Name);
@@ -41,4 +40,5 @@ public:
 	}
 
 	virtual void OnRenderGui(void) = 0;
+	virtual void OnTick(void) {}
 };

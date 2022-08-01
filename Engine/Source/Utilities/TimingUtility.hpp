@@ -13,6 +13,10 @@
 
 namespace Engine::Utility
 {
+	using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
+	using Time = std::chrono::high_resolution_clock;
+	using Duration = std::chrono::duration<double>;
+
 	template<typename TimeUnit>
 	struct is_duration : std::false_type {};
 
@@ -31,9 +35,6 @@ namespace Engine::Utility
 		requires is_duration<TimeUnit>::value
 	class Timer
 	{
-	private:
-		using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
-
 	private:
 		std::string_view	m_OnEndMessage;
 		TimePoint			m_StartTimepoint;

@@ -5,11 +5,9 @@
 
 void ConsoleLogWidget::OnRenderGui(void)
 {
-    static bool renderOutputLog = true;
-
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
     
-    if (!ImGui::Begin("Output Log", &renderOutputLog))
+    if (!ImGui::Begin("Output Log"))
     {
         ImGui::End();
         return;

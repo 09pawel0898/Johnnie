@@ -5,6 +5,7 @@
 
 #include "Gui/MainMenuBarWidget.hpp"
 #include "Gui/ConsoleLogWidget.hpp"
+#include "Gui/SystemStatisticsWidget.hpp"
 
 class JohnnieLayer final : public Engine::Layer
 {
@@ -13,8 +14,9 @@ public:
 
 private:
 	/** UI Widgets */
-	MainMenuBarWidget m_MainMenuBar;
-	ConsoleLogWidget m_ConsoleLog;
+	MainMenuBarWidget		m_MainMenuBar;
+	ConsoleLogWidget		m_ConsoleLog;
+	SystemStatisticsWidget	m_SystemStatistics;
 
 private:
 	/** Layer Interface Impl*/
