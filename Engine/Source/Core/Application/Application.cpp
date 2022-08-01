@@ -1,5 +1,5 @@
 #include "Application.hpp"
-#include "Utilities/Log.hpp"
+#include "Log/Log.hpp"
 #include "Events/WindowEvent.hpp"
 #include "System/System.hpp"
 #include "Utilities/OpenGL/OpenGLCallCheck.hpp"
@@ -109,8 +109,8 @@ namespace Engine::Core
     {
         Check(s_Instance == nullptr);
 
-        DEFINE_CONSOLE_LOG_CATEGORY(Core);
-        DEFINE_CONSOLE_LOG_CATEGORY(Events);
+        DEFINE_LOG_CATEGORY(Core);
+        DEFINE_LOG_CATEGORY(Events);
 
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_EVENT_FUNCTION(OnEvent));

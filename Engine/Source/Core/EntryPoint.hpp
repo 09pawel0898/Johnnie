@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Application/Application.hpp"
-#include "Utilities/Log.hpp"
+#include "Log/Log.hpp"
 #include "Exceptions/InitializationException.hpp"
 #include "PlatformCheck.hpp"
 

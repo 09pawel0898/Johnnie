@@ -1,6 +1,6 @@
 #include "System.hpp"
 
-#include "Utilities/Log.hpp"
+#include "Log/Log.hpp"
 #include "Utilities/StringUtility.hpp"
 
 #include "Core/PlatformCheck.hpp"

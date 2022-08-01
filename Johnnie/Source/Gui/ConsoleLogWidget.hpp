@@ -2,26 +2,41 @@
 
 #include <Engine/Gui.hpp>
 #include "ImGui/ImGuiWidgetBase.hpp"
+#include <list>
 
 enum class ConsoleLogActions : uint8_t
-{
+{};
 
-};
+
 
 class ConsoleLogWidget : ImGuiWidgetBase<ConsoleLogActions>
 {
 public:
+    ConsoleLogWidget(void);
+
 	virtual void OnRenderGui(void) override;
 
-public:
-    ImGuiTextBuffer     Buf;
-    ImGuiTextFilter     Filter;
-    ImVector<int>       LineOffsets; // Index to lines offset. We maintain this with AddLog() calls.
-    bool                AutoScroll;  // Keep scrolling if already at the bottom.
+private:
+    using Line = std::pair<std::string, ImVec4>;
 
-    ConsoleLogWidget();
+    struct TextBuffer
+    {
+        std::list<Line> Lines;
 
-    void Clear();
-    void AddLog(const char* fmt, ...);
-    void Draw(const char* title, bool* p_open = nullptr);
+        FORCEINLINE void Clear(void)
+        {
+            Lines.clear();
+        }
+    };
+
+    TextBuffer      TextBuf;
+    ImGuiTextFilter Filter;
+
+private:
+    /** Properties */
+    bool AutoScroll; 
+
+private:
+    void InitLoggerSink(void);
+    void AddLog(std::string const& LogMsg);
 };

@@ -1,6 +1,6 @@
 #include "MemoryManager.hpp"
 
-#include "Utilities/Log.hpp"
+#include "Log/Log.hpp"
 #include "Utilities/StringUtility.hpp"
 
 namespace Engine

@@ -25,7 +25,7 @@ private:
 
 protected:
 
-	void Execute(ActionName Name)
+	void ExecuteActionDelegate(ActionName Name)
 	{
 		const auto existingAction = m_SimpleActions.find(Name);
 		CheckMsg(existingAction != m_SimpleActions.cend(), "No delegate is bound to this action.");
@@ -33,7 +33,7 @@ protected:
 	}
 
 public:
-	void BindDelegate(ActionName Name, SimpleActionDelegate Callback)
+	void BindActionDelegate(ActionName Name, SimpleActionDelegate Callback)
 	{
 		const auto existingAction = m_SimpleActions.find(Name);
 		CheckMsg(existingAction == m_SimpleActions.cend(), "Tried to bind already bound action.");

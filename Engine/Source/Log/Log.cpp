@@ -16,6 +16,17 @@ namespace Engine
 		s_Loggers[CategoryName]->set_level(spdlog::level::trace);
 	}
 
+	void Log::RegisterOutputLogSink_mt(std::shared_ptr<OutputLogSink_mt> OutputLogSink_mt)
+	{
+		for (auto& [loggerName, logger] : s_Loggers)
+		{
+			OutputLogSink_mt->set_pattern(s_InitialPattern);
+			OutputLogSink_mt->set_level(spdlog::level::trace);
+
+			logger->sinks().emplace_back(OutputLogSink_mt);
+		}
+	}
+
 	std::shared_ptr<Log::Logger>& Log::GetLogger(std::string_view const& CategoryName)
 	{
 		auto logger = s_Loggers.find(CategoryName);

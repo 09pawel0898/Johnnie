@@ -3,6 +3,8 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
+#include "OutputLogSink.hpp"
+
 namespace Engine
 {
 	class Log
@@ -16,19 +18,29 @@ namespace Engine
 	private:
 		using Logger = spdlog::logger;
 
-		static inline const char* s_InitialPattern = "%^[%T] %n: %v%$";
+		static inline const char* s_InitialPattern = "%^[%T][%n][%l]:  %v%$";
 
 		static std::unordered_map<	std::string_view, 
 									std::shared_ptr<Logger>> s_Loggers;
 
 	public:
+		static const char* GetDefaultPattern(void) 
+		{ 
+			return s_InitialPattern; 
+		}
+
 		static void RegisterLogger(std::string_view const& CategoryName, std::shared_ptr<Logger> Logger);
-		
+
+		static void RegisterOutputLogSink_mt(std::shared_ptr<OutputLogSink_mt> OutputLogSink_mt);
+
 		static std::shared_ptr<Logger>& GetLogger(std::string_view const& CategoryName);
 	};
 	
-	#define DEFINE_CONSOLE_LOG_CATEGORY(LogCategory)\
+	#define DEFINE_LOG_CATEGORY(LogCategory)\
 		Log::RegisterLogger(#LogCategory,spdlog::stdout_color_mt(#LogCategory))
+
+	#define DEFINE_OUTPUT_LOG_SINK(_OutputLogSink)\
+		Log::RegisterOutputLogSink_mt(_OutputLogSink)
 
 	#define LOG(LogCategory,LogVerbosity,...) \
 		switch(Log::Verbosity::##LogVerbosity) \

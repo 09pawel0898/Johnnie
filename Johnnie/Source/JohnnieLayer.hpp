@@ -12,6 +12,7 @@ public:
 	explicit JohnnieLayer(std::string_view Name) noexcept;
 
 private:
+	/** UI Widgets */
 	MainMenuBarWidget m_MainMenuBar;
 	ConsoleLogWidget m_ConsoleLog;
 

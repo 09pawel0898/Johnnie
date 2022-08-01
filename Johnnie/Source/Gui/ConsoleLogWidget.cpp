@@ -1,146 +1,140 @@
 #include "ConsoleLogWidget.hpp"
 
+#include "Log/OutputLogSink.hpp"
+#include <regex>
+
 void ConsoleLogWidget::OnRenderGui(void)
 {
-    bool x = true;
-    // For the demo: add a debug button _BEFORE_ the normal log window contents
-    // We take advantage of a rarely used feature: multiple calls to Begin()/End() are appending to the _same_ window.
-    // Most of the contents of the window will be added by the log.Draw() call.
+    static bool renderOutputLog = true;
+
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
-
-    ImGui::Begin("Example: Log", &x);
-    if (ImGui::SmallButton("[Debug] Add 5 entries"))
-    {
-        static int counter = 0;
-        const char* categories[3] = { "info", "warn", "error" };
-        const char* words[] = { "Bumfuzzled", "Cattywampus", "Snickersnee", "Abibliophobia", "Absquatulate", "Nincompoop", "Pauciloquent" };
-        for (int n = 0; n < 5; n++)
-        {
-            const char* category = categories[counter % IM_ARRAYSIZE(categories)];
-            const char* word = words[counter % IM_ARRAYSIZE(words)];
-            AddLog("[%05d] [%s] Hello, current time is %.1f, here's a word: '%s'\n",
-                ImGui::GetFrameCount(), category, ImGui::GetTime(), word);
-            counter++;
-        }
-    }
-    ImGui::End();
-
-    // Actually call in the regular Log helper (which will Begin() into the same window as we just did)
-    Draw("Example: Log", &x);
-}
-
-ConsoleLogWidget::ConsoleLogWidget()
-{
-    AutoScroll = true;
-    Clear();
-}
-
-void ConsoleLogWidget::Clear()
-{
-    Buf.clear();
-    LineOffsets.clear();
-    LineOffsets.push_back(0);
-}
-
-void ConsoleLogWidget::Draw(const char* title, bool* p_open)
-{
-    if (!ImGui::Begin(title, p_open))
+    
+    if (!ImGui::Begin("Output Log", &renderOutputLog))
     {
         ImGui::End();
         return;
     }
 
-    // Options menu
     if (ImGui::BeginPopup("Options"))
     {
         ImGui::Checkbox("Auto-scroll", &AutoScroll);
         ImGui::EndPopup();
     }
 
-    // Main window
     if (ImGui::Button("Options"))
+    {
         ImGui::OpenPopup("Options");
+    }
+
     ImGui::SameLine();
-    bool clear = ImGui::Button("Clear");
+    if (ImGui::Button("Clear"))
+    {
+        TextBuf.Clear();
+    }
+
     ImGui::SameLine();
-    bool copy = ImGui::Button("Copy");
+    if (ImGui::Button("Copy"))
+    {
+        ImGui::LogToClipboard();
+    }
     ImGui::SameLine();
     Filter.Draw("Filter", -100.0f);
 
     ImGui::Separator();
-    ImGui::BeginChild("scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
-
-    if (clear)
-        Clear();
-    if (copy)
-        ImGui::LogToClipboard();
-
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
-    const char* buf = Buf.begin();
-    const char* buf_end = Buf.end();
-    if (Filter.IsActive())
+    ImGui::BeginChild("Scrolling", ImVec2(0, 0), false, ImGuiWindowFlags_HorizontalScrollbar);
     {
-        // In this example we don't use the clipper when Filter is enabled.
-        // This is because we don't have a random access on the result on our filter.
-        // A real application processing logs with ten of thousands of entries may want to store the result of
-        // search/filter.. especially if the filtering function is not trivial (e.g. reg-exp).
-        for (int line_no = 0; line_no < LineOffsets.Size; line_no++)
+        ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 0));
+
+        for (auto const& [logMsg, color] : TextBuf.Lines)
         {
-            const char* line_start = buf + LineOffsets[line_no];
-            const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-            if (Filter.PassFilter(line_start, line_end))
-                ImGui::TextUnformatted(line_start, line_end);
-        }
-    }
-    else
-    {
-        // The simplest and easy way to display the entire buffer:
-        //   ImGui::TextUnformatted(buf_begin, buf_end);
-        // And it'll just work. TextUnformatted() has specialization for large blob of text and will fast-forward
-        // to skip non-visible lines. Here we instead demonstrate using the clipper to only process lines that are
-        // within the visible area.
-        // If you have tens of thousands of items and their processing cost is non-negligible, coarse clipping them
-        // on your side is recommended. Using ImGuiListClipper requires
-        // - A) random access into your data
-        // - B) items all being the  same height,
-        // both of which we can handle since we an array pointing to the beginning of each line of text.
-        // When using the filter (in the block of code above) we don't have random access into the data to display
-        // anymore, which is why we don't use the clipper. Storing or skimming through the search result would make
-        // it possible (and would be recommended if you want to search through tens of thousands of entries).
-        ImGuiListClipper clipper;
-        clipper.Begin(LineOffsets.Size);
-        while (clipper.Step())
-        {
-            for (int line_no = clipper.DisplayStart; line_no < clipper.DisplayEnd; line_no++)
+            ImGui::PushStyleColor(ImGuiCol_Text, color);
+            if (Filter.IsActive())
             {
-                const char* line_start = buf + LineOffsets[line_no];
-                const char* line_end = (line_no + 1 < LineOffsets.Size) ? (buf + LineOffsets[line_no + 1] - 1) : buf_end;
-                ImGui::TextUnformatted(line_start, line_end);
+                if (Filter.PassFilter(logMsg.c_str(), logMsg.c_str() + logMsg.length()))
+                {
+                    ImGui::Text(logMsg.c_str());
+                }
             }
+            else
+            {
+                ImGui::Text(logMsg.c_str());
+            }
+            ImGui::PopStyleColor();
         }
-        clipper.End();
+
+        ImGui::PopStyleVar();
+
+        if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+        {
+            ImGui::SetScrollHereY(1.0f);
+        }
     }
-    ImGui::PopStyleVar();
-
-    if (AutoScroll && ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
-        ImGui::SetScrollHereY(1.0f);
-
     ImGui::EndChild();
     ImGui::End();
 }
 
-void ConsoleLogWidget::AddLog(const char* fmt, ...) IM_FMTARGS(2)
+ConsoleLogWidget::ConsoleLogWidget(void)
 {
-    int old_size = Buf.size();
-    va_list args;
-    va_start(args, fmt);
-    Buf.appendfv(fmt, args);
-    va_end(args);
-    for (int new_size = Buf.size(); old_size < new_size; old_size++)
+    AutoScroll = true;
+    InitLoggerSink();
+}
+
+void ConsoleLogWidget::InitLoggerSink(void)
+{
+    std::shared_ptr<OutputLogSink_mt> outputLogSink = std::make_shared<OutputLogSink_mt>();
+    outputLogSink->BindCustomLoggerFunction(std::bind(&ConsoleLogWidget::AddLog,this,std::placeholders::_1));
+    
+    DEFINE_OUTPUT_LOG_SINK(std::move(outputLogSink));
+}
+
+static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
+{
+    auto tryReplaceVerbosity = [&LogMsg](std::string_view ToReplace, std::string_view ReplaceWith) -> bool
     {
-        if (Buf[old_size] == '\n')
+        try
         {
-            LineOffsets.push_back(old_size + 1);
+            LogMsg.replace(LogMsg.find(ToReplace), ReplaceWith.length(), ReplaceWith);
+            return true;
         }
+        catch (std::exception Ex)
+        {
+            return false;
+        }    
+    };
+
+    if (tryReplaceVerbosity("[trace]:", "[Trace]:  "))
+    {
+        return Log::Verbosity::Trace;
     }
+    else if(tryReplaceVerbosity("[info]:", "[Info]:   "))
+    {
+        return Log::Verbosity::Info;
+    } 
+    else if(tryReplaceVerbosity("[warning]:", "[Warning]:"))
+    {
+        return Log::Verbosity::Warning;
+    }
+    else
+    {
+        return Log::Verbosity::Error;
+    }
+}
+
+void ConsoleLogWidget::AddLog(std::string const& LogMsg)
+{
+    static std::unordered_map<Log::Verbosity, ImVec4> colors =
+    {
+        {Log::Verbosity::Trace,     ImVec4(255,255,255,255)},
+        {Log::Verbosity::Info,      ImVec4(0,255,0, 255)},
+        {Log::Verbosity::Warning,   ImVec4(255,255,0, 255)},
+        {Log::Verbosity::Error,     ImVec4(255,0,0,255)}
+    };
+
+    std::string fmtLogMsg = LogMsg;
+
+    /** Format verbosity and assign color */
+    ImVec4 color = colors[GetVerbosityAndReplace(fmtLogMsg)];
+
+    /** Append new log */
+    TextBuf.Lines.emplace_back(std::make_pair(fmtLogMsg, std::move(color)));
 }

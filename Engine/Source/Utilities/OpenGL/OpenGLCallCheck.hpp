@@ -3,7 +3,7 @@
 /** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include <glad/glad.h>
 
-#include "Utilities/Log.hpp"
+#include "Log/Log.hpp"
 #include "Core/Debug/Asserts.hpp"
 
 inline void GLClearError(void) 
