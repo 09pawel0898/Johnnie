@@ -1,5 +1,6 @@
 #pragma once
 
-#include "../Source/Utilities/TimingUtility.hpp"
+#include "Utilities/TimingUtility.hpp"
+#include "Utilities/StringUtility.hpp"
 
 using namespace Engine;

@@ -3,6 +3,8 @@
 #include "ImGui/ImGuiWidgetBase.hpp"
 
 #include <System/MemoryManager.hpp>
+#include <System/System.hpp>
+
 
 enum class SystemStatisticsAction : uint8_t
 {};
@@ -16,15 +18,24 @@ private:
 		double Fps;
 	};
 
-	ApplicationStats			ApplicationStats;
-	Engine::MemoryStatistics	MemoryStats;
+	ApplicationStats		ApplicationStats;
+	MemoryStatistics		MemoryStats;
+	SystemVideoBrandingInfo GraphicsCardInfo;
+	SystemMemoryInfo		MemoryInfo;
+	SystemVideoMemoryInfo	VideoMemoryInfo;
 
 
 public:
+	SystemStatisticsWidget();
+
+	void InitStaticStats(void);
+
 	virtual void OnRenderGui(void) override;
 	virtual void OnTick(void) override;
 
 private:
 	void UpdateApplicationStats(void);
+	void UpdateMemoryAllocationStats(void);
 	void UpdateMemoryStats(void);
+	void UpdateVideoMemoryStats(void);
 };

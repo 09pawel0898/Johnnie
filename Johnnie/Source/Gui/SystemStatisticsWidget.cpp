@@ -3,8 +3,21 @@
 #include <Engine/Gui.hpp>
 #include <Engine/Core.hpp>
 #include <Engine/System.hpp>
+#include <Engine/Utilities.hpp>
 
 #include <Core/Application/Application.hpp>
+
+#include <inttypes.h>
+
+SystemStatisticsWidget::SystemStatisticsWidget()
+{
+	InitStaticStats();
+}
+
+void SystemStatisticsWidget::InitStaticStats(void)
+{
+	GraphicsCardInfo = System::GetGraphicsCardBrandingInfo();
+}
 
 void SystemStatisticsWidget::OnRenderGui(void)
 {
@@ -12,29 +25,97 @@ void SystemStatisticsWidget::OnRenderGui(void)
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	
 	ImGui::Begin("System Stats");
-	
-	
-	ImGui::Text("Frame");
-	ImGui::Separator();
-	ImGui::Text("Delta Time	: %.2f",		ApplicationStats.DeltaTime);
-	ImGui::Text("FPS		   : %.2f",	ApplicationStats.Fps);
-	ImGui::Separator(); 
-	
-	ImGui::Text("Memory Allocations");
-	ImGui::Separator();
-	ImGui::Text("Currently Allocated : %lx", MemoryStats.CurrentlyAllocated);
-	ImGui::Text("Total Allocated : %lx", MemoryStats.TotalAllocated);
-	ImGui::Text("Total Allocations : %d", MemoryStats.TotalAllocations);
-	ImGui::Text("Total Freed : %lx", MemoryStats.TotalFreed);
-	ImGui::Separator(); 
+	{
+		{
+			ImGui::Text("Frame");
+			ImGui::Separator();
+			ImGui::Text("Delta Time	: %.2f",	ApplicationStats.DeltaTime);
+			ImGui::Text("FPS		   : %.2f",	ApplicationStats.Fps);
+			ImGui::Separator(); 
+			ImGui::Dummy(ImVec2(0.0f, 20.0f));
+		}
 
+		{
+			ImGui::Text("Memory Allocations");
+			ImGui::Separator();
+			ImGui::Text("Currently Allocated : %s", Utilities::BytesToString(MemoryStats.CurrentlyAllocated).c_str());
+			ImGui::Text("Total Allocated : %s",		Utilities::BytesToString(MemoryStats.TotalAllocated).c_str());
+			ImGui::Text("Total Allocations : %d",	MemoryStats.TotalAllocations);
+			ImGui::Text("Total Freed : %s ",		Utilities::BytesToString(MemoryStats.TotalFreed).c_str());
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0f, 20.0f));
+		}
+
+		{
+			ImGui::Text("Memory Statistics");
+			ImGui::Separator();
+			ImGui::Text("Physical Memory (Available/Total)");
+			ImGui::Text("%s / %s",	Utilities::BytesToString(MemoryInfo.AvailablePhysMemory).c_str(), 
+									Utilities::BytesToString(MemoryInfo.TotalPhysMemory).c_str());
+
+			ImGui::Text("Virtual Memory (Available/Total)");
+			ImGui::Text("%s / %s",	Utilities::BytesToString(MemoryInfo.AvailableVirtualMemory).c_str(), 
+									Utilities::BytesToString(MemoryInfo.TotalVirtualMemory).c_str());
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0f, 20.0f));
+		}
+
+		{
+			ImGui::Text("Graphics Card");
+			ImGui::Separator();
+			ImGui::Text("Brand : %s", GraphicsCardInfo.Vendor.c_str());
+	
+			ImGui::Text("Model : %s", GraphicsCardInfo.Renderer.c_str());
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0f, 20.0f));
+		}
+		
+		{
+			if (GraphicsCardInfo.Brand == GpuBrand::NVIDIA)
+			{
+				auto NvidiaVideoMemInfo = VideoMemoryInfo.Get<SystemNvidiaVideoMemoryInfo>();
+				if (NvidiaVideoMemInfo)
+				{
+					SystemNvidiaVideoMemoryInfo videoInfo = NvidiaVideoMemInfo.value();
+					ImGui::Text("Video Memory");
+
+					ImGui::Separator();
+					ImGui::Text("Dedicated Video Memory : %s",	Utilities::BytesToString(1024 * videoInfo.DedicatedVideoMemory).c_str());
+					ImGui::Text("Current Available : %s",		Utilities::BytesToString(1024 * videoInfo.CurrentAvailableVideoMemory).c_str());
+					ImGui::Text("Total Available : %s",			Utilities::BytesToString(1024 * videoInfo.TotalAvailableVideoMemory).c_str());
+					ImGui::Text("Evicted Count : %d",			videoInfo.EvictedCount);
+					ImGui::Text("Evicted Size: %s",				Utilities::BytesToString(1024 * videoInfo.EvictedSize).c_str());
+					ImGui::Separator();
+				}
+
+			}
+			else if (GraphicsCardInfo.Brand == GpuBrand::AMD)
+			{
+				auto AMDVideoMemInfo = VideoMemoryInfo.Get<SystemAMDVideoMemoryInfo>();
+				if (AMDVideoMemInfo)
+				{
+					SystemAMDVideoMemoryInfo videoInfo = AMDVideoMemInfo.value();
+					ImGui::Text("Video Memory");
+
+					ImGui::Separator();
+					ImGui::Text("Current Available : % s",		Utilities::BytesToString(1024 * videoInfo.TotalPool).c_str());
+					ImGui::Text("Total Available : %s",			Utilities::BytesToString(1024 * videoInfo.LargestBlock).c_str());
+					ImGui::Text("Total Aux Free : %s",			Utilities::BytesToString(1024 * videoInfo.TotalAux).c_str());
+					ImGui::Text("Largest Aux Free Block : %d",	Utilities::BytesToString(1024 * videoInfo.LargestAux).c_str());
+					ImGui::Separator();
+				}
+			}
+		}
+	}
 	ImGui::End();
 }
 
 void SystemStatisticsWidget::OnTick(void)
 {
 	UpdateApplicationStats();
+	UpdateMemoryAllocationStats();
 	UpdateMemoryStats();
+	UpdateVideoMemoryStats();
 }
 
 void SystemStatisticsWidget::UpdateApplicationStats(void)
@@ -47,7 +128,20 @@ void SystemStatisticsWidget::UpdateApplicationStats(void)
 	ApplicationStats.Fps		= app->GetFPS();
 }
 
-void SystemStatisticsWidget::UpdateMemoryStats(void)
+void SystemStatisticsWidget::UpdateMemoryAllocationStats(void)
 {
 	MemoryStats = System::GetMemoryStatistics();
+}
+
+void SystemStatisticsWidget::UpdateMemoryStats(void)
+{
+	if (auto memoryInfo = System::GetMemoryInfo())
+	{
+		MemoryInfo = memoryInfo.value();
+	}
+}
+
+void SystemStatisticsWidget::UpdateVideoMemoryStats(void)
+{
+	VideoMemoryInfo = System::GetVideoMemoryInfo();
 }

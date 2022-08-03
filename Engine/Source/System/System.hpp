@@ -32,6 +32,7 @@ namespace Engine
 		uint64_t AvailableVirtualMemory;
 		uint64_t TotalVirtualMemory;
 
+		SystemMemoryInfo() = default;
 		SystemMemoryInfo(uint64_t AvailablePhysMemory, uint64_t TotalPhysMemory, uint64_t AvailableVirtualMemory, uint64_t TotalVirtualMemory)
 			:	AvailablePhysMemory(AvailablePhysMemory), TotalPhysMemory(TotalPhysMemory), AvailableVirtualMemory(AvailableVirtualMemory), TotalVirtualMemory(TotalVirtualMemory)
 		{}
@@ -80,6 +81,7 @@ namespace Engine
 					SystemNvidiaVideoMemoryInfo,
 					SystemAMDVideoMemoryInfo> Info;
 	public:
+		SystemVideoMemoryInfo() = default;
 
 		template <typename BrandVideoMemoryInfoType>
 		explicit SystemVideoMemoryInfo(BrandVideoMemoryInfoType&& VideoMemoryInfo) noexcept
@@ -87,7 +89,7 @@ namespace Engine
 		{}
 
 		template<typename BrandVideoMemoryInfoType>
-		std::optional<BrandVideoMemoryInfoType> Get(void)
+		[[nodiscard]] std::optional<BrandVideoMemoryInfoType> Get(void)
 		{
 			BrandVideoMemoryInfoType* resultInfo = std::get_if<BrandVideoMemoryInfoType>(&Info);
 			if (resultInfo)
