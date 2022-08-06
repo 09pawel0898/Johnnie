@@ -19,8 +19,13 @@
 
 #define FORCEINLINE __forceinline
 
+#define __CLASS__ std::remove_reference<decltype(ClassMacro_Impl(this))>::type
+template<class T> T& ClassMacro_Impl(const T* t);
+
 #define DEFINE_SUPER(ClassName)\
     protected:\
     using Super = ClassName
+
+#define PROFILE_RESULT_LOG 1
 
 #include "System/Memory.hpp"

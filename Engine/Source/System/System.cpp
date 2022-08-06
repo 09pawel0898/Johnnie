@@ -44,7 +44,7 @@ namespace Engine
 		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &kb));
 		NvidiaMemoryInfo.EvictedSize = kb;
 		
-		return SystemVideoMemoryInfo(std::move(NvidiaMemoryInfo));
+		return SystemVideoMemoryInfo(NvidiaMemoryInfo);
 	}
 
 	static SystemVideoMemoryInfo GetAMDVideoMemoryInfo()
@@ -59,7 +59,7 @@ namespace Engine
 		AMDMemoryInfo.TotalAux		= kb[2];
 		AMDMemoryInfo.LargestAux	= kb[3];
 
-		return SystemVideoMemoryInfo(std::move(AMDMemoryInfo));
+		return SystemVideoMemoryInfo(AMDMemoryInfo);
 	}
 
 	static SystemVideoMemoryInfo GetMemoryInfo_NotSupported()
@@ -70,7 +70,7 @@ namespace Engine
 
 	void System::InitVideoMemoryInfo(void)
 	{
-		using namespace Utilities::OpenGL;
+		using namespace Utility::OpenGL;
 		
 		if (IsExtensionSupported("GL_NVX_gpu_memory_info"))
 		{
@@ -160,12 +160,12 @@ namespace Engine
 		LOG(Core, Trace, "-------------------------------Memory Info-------------------------------");
 
 		LOG(Core, Trace, "\tPhysical Memory (Available/Total): {0} / {1}",
-			Utilities::BytesToString(AvailablePhysMemory),
-			Utilities::BytesToString(TotalPhysMemory));
+			Utility::BytesToString(AvailablePhysMemory),
+			Utility::BytesToString(TotalPhysMemory));
 
 		LOG(Core, Trace, "\tVirtual Memory  (Available/Total): {0} / {1}",
-			Utilities::BytesToString(AvailableVirtualMemory),
-			Utilities::BytesToString(TotalVirtualMemory));
+			Utility::BytesToString(AvailableVirtualMemory),
+			Utility::BytesToString(TotalVirtualMemory));
 
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}
@@ -184,11 +184,11 @@ namespace Engine
 	{
 		LOG(Core, Trace, "------------------------------Video Memory-------------------------------");
 
-		LOG(Core, Trace, "\tDedicated video memory : {0}",			Utilities::BytesToString(1024*DedicatedVideoMemory));
-		LOG(Core, Trace, "\tTotal available video memory : {0}",	Utilities::BytesToString(1024 * TotalAvailableVideoMemory));
-		LOG(Core, Trace, "\tCurrent available video memory : {0}",	Utilities::BytesToString(1024 * CurrentAvailableVideoMemory));
+		LOG(Core, Trace, "\tDedicated video memory : {0}",			Utility::BytesToString(1024*DedicatedVideoMemory));
+		LOG(Core, Trace, "\tTotal available video memory : {0}",	Utility::BytesToString(1024 * TotalAvailableVideoMemory));
+		LOG(Core, Trace, "\tCurrent available video memory : {0}",	Utility::BytesToString(1024 * CurrentAvailableVideoMemory));
 		LOG(Core, Trace, "\tEvicted memory count  : {0}",			EvictedCount);
-		LOG(Core, Trace, "\tEvicted memory size : {0}",				Utilities::BytesToString(1024 * EvictedSize));
+		LOG(Core, Trace, "\tEvicted memory size : {0}",				Utility::BytesToString(1024 * EvictedSize));
 
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}
@@ -197,10 +197,10 @@ namespace Engine
 	{
 		LOG(Core, Trace, "------------------------------Video Memory-------------------------------");
 
-		LOG(Core, Trace, "\tTotal memory free in the pool : {0}",				Utilities::BytesToString(1024 * TotalPool));
-		LOG(Core, Trace, "\tLargest available free block in the pool : {0}",	Utilities::BytesToString(1024 * LargestBlock));
-		LOG(Core, Trace, "\tTotal auxiliary memory free : {0}",					Utilities::BytesToString(1024 * TotalAux));
-		LOG(Core, Trace, "\tLargest auxiliary free block  : {0}",				Utilities::BytesToString(1024 * LargestAux));
+		LOG(Core, Trace, "\tTotal memory free in the pool : {0}",				Utility::BytesToString(1024 * TotalPool));
+		LOG(Core, Trace, "\tLargest available free block in the pool : {0}",	Utility::BytesToString(1024 * LargestBlock));
+		LOG(Core, Trace, "\tTotal auxiliary memory free : {0}",					Utility::BytesToString(1024 * TotalAux));
+		LOG(Core, Trace, "\tLargest auxiliary free block  : {0}",				Utility::BytesToString(1024 * LargestAux));
 
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}

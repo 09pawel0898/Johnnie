@@ -111,6 +111,7 @@ namespace Engine::Core
 
         DEFINE_LOG_CATEGORY(Core);
         DEFINE_LOG_CATEGORY(Events);
+        DEFINE_LOG_CATEGORY(Profile);
 
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_FUNCTION(OnEvent));

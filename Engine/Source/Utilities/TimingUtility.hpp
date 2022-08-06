@@ -1,6 +1,7 @@
 #pragma once
 
-#include "Log/Log.hpp"
+#include "Core/CoreMinimal.hpp"
+#include "Core/Debug/ProfilingManager.hpp"
 
 #include <chrono>
 #include <utility>
@@ -13,9 +14,9 @@
 
 namespace Engine::Utility
 {
+	using Duration = std::chrono::duration<double>;
 	using TimePoint = std::chrono::time_point<std::chrono::high_resolution_clock>;
 	using Time = std::chrono::high_resolution_clock;
-	using Duration = std::chrono::duration<double>;
 
 	template<typename TimeUnit>
 	struct is_duration : std::false_type {};
@@ -36,13 +37,13 @@ namespace Engine::Utility
 	class Timer
 	{
 	private:
-		std::string_view	m_OnEndMessage;
+		std::string_view	m_ProfileName;
 		TimePoint			m_StartTimepoint;
 
 	public:
 
-		explicit Timer(std::string_view OnEndMessage = "Timer finished execution")
-			:	m_OnEndMessage(OnEndMessage)
+		explicit Timer(std::string_view Name)
+			:	m_ProfileName(Name)
 		{
 			m_StartTimepoint = std::chrono::high_resolution_clock::now();
 		}
@@ -50,12 +51,14 @@ namespace Engine::Utility
 		~Timer()
 		{
 			TimePoint endTimepoint = std::chrono::high_resolution_clock::now();
-
 			auto duration = std::chrono::time_point_cast<TimeUnit>(endTimepoint).time_since_epoch() -
 							std::chrono::time_point_cast<TimeUnit>(m_StartTimepoint).time_since_epoch();
 			auto _duration = duration.count();
 
-			LOG(Core,Trace,"{0} : {1} {2}", m_OnEndMessage,_duration, TimeUnitToStringV<TimeUnit>())
+#if PROFILE_RESULT_LOG
+			LOG(Profile, Trace, "{0} : {1} {2}", m_ProfileName, _duration, TimeUnitToStringV<TimeUnit>())
+#endif
+			ProfilingManager::Get()->UpdateScopeProfile(m_ProfileName, duration);
 		}
 
 		Timer(const Timer& rhs) = delete;
@@ -67,9 +70,8 @@ namespace Engine::Utility
 	
 	template <typename TimeUnit = std::chrono::milliseconds, typename Invocable, typename... Args>
 		requires std::invocable<Invocable,Args...> && is_duration<TimeUnit>::value
-	void ExecuteAndMeasure(std::string_view OnEndMessage, Invocable&& Func, Args&&... Params)
+	void ExecuteAndMeasure(std::string_view ProfileName, Invocable&& Func, Args&&... Params)
 	{
-		std::string_view onEndMessage = OnEndMessage;
 		auto startTimepoint = std::chrono::high_resolution_clock::now();
 
 		std::forward<decltype(Func)>(Func)(
@@ -80,6 +82,9 @@ namespace Engine::Utility
 						std::chrono::time_point_cast<TimeUnit>(startTimepoint).time_since_epoch();
 		auto _duration = duration.count();
 		
-		LOG(Core, Trace, "{0} : {1} {2}", onEndMessage, _duration, TimeUnitToStringV<TimeUnit>())
+#if PROFILE_RESULT_LOG
+		LOG(Profile, Trace, "{0} : {1} {2}", ProfileName, _duration, TimeUnitToStringV<TimeUnit>())
+#endif
+		ProfilingManager::Get()->UpdateScopeProfile(ProfileName, duration);
 	}
 }

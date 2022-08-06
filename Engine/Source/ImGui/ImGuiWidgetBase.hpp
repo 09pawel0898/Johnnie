@@ -5,14 +5,14 @@
 
 #include "Core/Debug/Asserts.hpp"
 
-template <typename ActionName>
+template <typename Action>
 class ImGuiWidgetBase
 {
 public:
 	using SimpleActionDelegate = std::function<void()>;
 
 private:
-	struct ActionNameClassHash
+	struct ActionClassHash
 	{
 		template <typename T>
 		std::size_t operator()(T t) const
@@ -21,22 +21,22 @@ private:
 		}
 	};
 
-	std::unordered_map<ActionName, SimpleActionDelegate, ActionNameClassHash> m_SimpleActions;
+	std::unordered_map<Action, SimpleActionDelegate, ActionClassHash> m_SimpleActions;
 
 protected:
-	void ExecuteActionDelegate(ActionName Name)
+	void ExecuteActionDelegate(Action Action)
 	{
-		const auto existingAction = m_SimpleActions.find(Name);
+		const auto existingAction = m_SimpleActions.find(Action);
 		CheckMsg(existingAction != m_SimpleActions.cend(), "No delegate is bound to this action.");
-		m_SimpleActions[Name]();
+		m_SimpleActions[Action]();
 	}
 
 public:
-	void BindActionDelegate(ActionName Name, SimpleActionDelegate Callback)
+	void BindActionDelegate(Action Action, SimpleActionDelegate Callback)
 	{
-		const auto existingAction = m_SimpleActions.find(Name);
+		const auto existingAction = m_SimpleActions.find(Action);
 		CheckMsg(existingAction == m_SimpleActions.cend(), "Tried to bind already bound action.");
-		m_SimpleActions[Name] = Callback;
+		m_SimpleActions[Action] = Callback;
 	}
 
 	virtual void OnRenderGui(void) = 0;

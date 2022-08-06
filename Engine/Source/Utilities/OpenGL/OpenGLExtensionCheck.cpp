@@ -6,7 +6,7 @@
 #include <cstring>
 #include "OpenGLCallCheck.hpp"
 
-namespace Engine::Utilities::OpenGL
+namespace Engine::Utility::OpenGL
 {
 	bool IsExtensionSupported(const char* Extension)
 	{

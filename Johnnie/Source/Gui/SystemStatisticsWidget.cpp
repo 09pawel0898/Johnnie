@@ -4,6 +4,7 @@
 #include <Engine/Core.hpp>
 #include <Engine/System.hpp>
 #include <Engine/Utilities.hpp>
+#include <Engine/Debug.hpp>
 
 #include <Core/Application/Application.hpp>
 
@@ -21,7 +22,6 @@ void SystemStatisticsWidget::InitStaticStats(void)
 
 void SystemStatisticsWidget::OnRenderGui(void)
 {
-
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	
 	ImGui::Begin("System Stats");
@@ -38,10 +38,10 @@ void SystemStatisticsWidget::OnRenderGui(void)
 		{
 			ImGui::Text("Memory Allocations");
 			ImGui::Separator();
-			ImGui::Text("Currently Allocated : %s", Utilities::BytesToString(MemoryStats.CurrentlyAllocated).c_str());
-			ImGui::Text("Total Allocated : %s",		Utilities::BytesToString(MemoryStats.TotalAllocated).c_str());
+			ImGui::Text("Currently Allocated : %s",	Utility::BytesToString(MemoryStats.CurrentlyAllocated).c_str());
+			ImGui::Text("Total Allocated : %s",		Utility::BytesToString(MemoryStats.TotalAllocated).c_str());
 			ImGui::Text("Total Allocations : %d",	MemoryStats.TotalAllocations);
-			ImGui::Text("Total Freed : %s ",		Utilities::BytesToString(MemoryStats.TotalFreed).c_str());
+			ImGui::Text("Total Freed : %s ",		Utility::BytesToString(MemoryStats.TotalFreed).c_str());
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0.0f, 20.0f));
 		}
@@ -50,12 +50,12 @@ void SystemStatisticsWidget::OnRenderGui(void)
 			ImGui::Text("Memory Statistics");
 			ImGui::Separator();
 			ImGui::Text("Physical Memory (Available/Total)");
-			ImGui::Text("%s / %s",	Utilities::BytesToString(MemoryInfo.AvailablePhysMemory).c_str(), 
-									Utilities::BytesToString(MemoryInfo.TotalPhysMemory).c_str());
+			ImGui::Text("%s / %s",	Utility::BytesToString(MemoryInfo.AvailablePhysMemory).c_str(), 
+									Utility::BytesToString(MemoryInfo.TotalPhysMemory).c_str());
 
 			ImGui::Text("Virtual Memory (Available/Total)");
-			ImGui::Text("%s / %s",	Utilities::BytesToString(MemoryInfo.AvailableVirtualMemory).c_str(), 
-									Utilities::BytesToString(MemoryInfo.TotalVirtualMemory).c_str());
+			ImGui::Text("%s / %s",	Utility::BytesToString(MemoryInfo.AvailableVirtualMemory).c_str(), 
+									Utility::BytesToString(MemoryInfo.TotalVirtualMemory).c_str());
 			ImGui::Separator();
 			ImGui::Dummy(ImVec2(0.0f, 20.0f));
 		}
@@ -80,11 +80,11 @@ void SystemStatisticsWidget::OnRenderGui(void)
 					ImGui::Text("Video Memory");
 
 					ImGui::Separator();
-					ImGui::Text("Dedicated Video Memory : %s",	Utilities::BytesToString(1024 * videoInfo.DedicatedVideoMemory).c_str());
-					ImGui::Text("Current Available : %s",		Utilities::BytesToString(1024 * videoInfo.CurrentAvailableVideoMemory).c_str());
-					ImGui::Text("Total Available : %s",			Utilities::BytesToString(1024 * videoInfo.TotalAvailableVideoMemory).c_str());
+					ImGui::Text("Dedicated Video Memory : %s",	Utility::BytesToString(1024 * videoInfo.DedicatedVideoMemory).c_str());
+					ImGui::Text("Current Available : %s",		Utility::BytesToString(1024 * videoInfo.CurrentAvailableVideoMemory).c_str());
+					ImGui::Text("Total Available : %s",			Utility::BytesToString(1024 * videoInfo.TotalAvailableVideoMemory).c_str());
 					ImGui::Text("Evicted Count : %d",			videoInfo.EvictedCount);
-					ImGui::Text("Evicted Size: %s",				Utilities::BytesToString(1024 * videoInfo.EvictedSize).c_str());
+					ImGui::Text("Evicted Size: %s",				Utility::BytesToString(1024 * videoInfo.EvictedSize).c_str());
 					ImGui::Separator();
 				}
 
@@ -98,10 +98,10 @@ void SystemStatisticsWidget::OnRenderGui(void)
 					ImGui::Text("Video Memory");
 
 					ImGui::Separator();
-					ImGui::Text("Current Available : % s",		Utilities::BytesToString(1024 * videoInfo.TotalPool).c_str());
-					ImGui::Text("Total Available : %s",			Utilities::BytesToString(1024 * videoInfo.LargestBlock).c_str());
-					ImGui::Text("Total Aux Free : %s",			Utilities::BytesToString(1024 * videoInfo.TotalAux).c_str());
-					ImGui::Text("Largest Aux Free Block : %d",	Utilities::BytesToString(1024 * videoInfo.LargestAux).c_str());
+					ImGui::Text("Current Available : % s",		Utility::BytesToString(1024 * videoInfo.TotalPool).c_str());
+					ImGui::Text("Total Available : %s",			Utility::BytesToString(1024 * videoInfo.LargestBlock).c_str());
+					ImGui::Text("Total Aux Free : %s",			Utility::BytesToString(1024 * videoInfo.TotalAux).c_str());
+					ImGui::Text("Largest Aux Free Block : %d",	Utility::BytesToString(1024 * videoInfo.LargestAux).c_str());
 					ImGui::Separator();
 				}
 			}

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Engine::Utilities::OpenGL
+namespace Engine::Utility::OpenGL
 {
 	bool IsExtensionSupported(const char* Extension);
 }

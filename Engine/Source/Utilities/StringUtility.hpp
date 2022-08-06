@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-namespace Engine::Utilities
+namespace Engine::Utility
 {
 	std::string BytesToString(uint64_t Bytes);
 }

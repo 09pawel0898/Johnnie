@@ -31,11 +31,11 @@ namespace Engine::Core
 		explicit Application(const WindowProperties& WindowProperties = WindowProperties());
 		virtual ~Application() = default;
 
-		Application(const Application & App) = delete;
-		Application(Application && App) = delete;
+		Application(Application const&) = delete;
+		Application(Application &&) = delete;
 
-		Application& operator =(const Application & App) = delete;
-		Application& operator =(Application && App) = delete;
+		Application& operator =(Application const& ) = delete;
+		Application& operator =(Application &&) = delete;
 
 		/** Window */
 	private:		
