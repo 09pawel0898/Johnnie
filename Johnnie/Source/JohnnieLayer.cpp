@@ -17,7 +17,10 @@ void JohnnieLayer::OnDetach(void)
 {}
 
 void JohnnieLayer::OnRender(void) const
-{}
+{
+	
+
+}
 
 void JohnnieLayer::OnTick(double DeltaTime)
 {

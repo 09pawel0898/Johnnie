@@ -163,7 +163,6 @@ namespace Engine::Core
 		{
 			return false;
 		}
-		DEFINE_LOG_CATEGORY(OpenGL);
 		return true;
 	}
 }
