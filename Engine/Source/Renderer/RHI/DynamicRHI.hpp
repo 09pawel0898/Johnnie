@@ -38,7 +38,6 @@ namespace Engine::RHI
 		}
 
 		virtual void Init(void) = 0;
-		virtual void PostInit(void) {}
 
 		virtual void Shutdown(void) = 0;
 	};

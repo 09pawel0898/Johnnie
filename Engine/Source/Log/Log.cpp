@@ -34,4 +34,12 @@ namespace Engine
 		
 		return logger->second;
 	}
+
+	void Log::RegisterEngineLoggers(void)
+	{
+		DEFINE_LOG_CATEGORY(Core);
+		DEFINE_LOG_CATEGORY(Events);
+		DEFINE_LOG_CATEGORY(Profile);
+		DEFINE_LOG_CATEGORY(RHI);
+	}
 }

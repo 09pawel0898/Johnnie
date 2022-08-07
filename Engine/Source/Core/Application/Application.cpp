@@ -3,6 +3,7 @@
 #include "Events/WindowEvent.hpp"
 #include "System/System.hpp"
 #include "Utilities/OpenGL/OpenGLCallCheck.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include "imgui.h"
 
@@ -52,7 +53,7 @@ namespace Engine::Core
         m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
         m_LayerManager->PushOverlay(m_ImGuiLayer);
     }
-
+    /*
     static void Test()
     {
         static unsigned int VAO = 0;
@@ -155,7 +156,7 @@ namespace Engine::Core
         glBindVertexArray(0);
 
     }
-
+    */
     void Application::Run(void)
     { 
         LOG(Core, Trace, "Application::Run()");
@@ -186,7 +187,7 @@ namespace Engine::Core
                         layer->OnRender();
                     }
                 }
-                Test();
+                //Test();
                 {
                     m_ImGuiLayer->BeginFrame();
                     for (auto& layer : *m_LayerManager)
@@ -212,15 +213,14 @@ namespace Engine::Core
     {
         Check(s_Instance == nullptr);
 
-        DEFINE_LOG_CATEGORY(Core);
-        DEFINE_LOG_CATEGORY(Events);
-        DEFINE_LOG_CATEGORY(Profile);
-        DEFINE_LOG_CATEGORY(RHI);
+        Log::RegisterEngineLoggers();
 
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_FUNCTION(OnEvent));
 
+        Renderer::Init(RHI::RenderingAPI::OpenGL);
         System::Init();
+
         InitLayerManager();
 
 #if (_MSC_VER >= 1910)
@@ -236,5 +236,6 @@ namespace Engine::Core
     void Application::Shutdown(void)
     {
         System::Shutdown();
+        Renderer::Shutdown();
     }
 }

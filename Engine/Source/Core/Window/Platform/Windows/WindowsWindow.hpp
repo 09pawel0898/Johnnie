@@ -29,9 +29,6 @@ namespace Engine::Core
 		{ 
 			return m_WindowHandle; 
 		}
-
-		/** OpenGL Context */
-		bool InitOpenGLContext(void);
 		
 		/** Events */
 		virtual void InitEvents(void) override;

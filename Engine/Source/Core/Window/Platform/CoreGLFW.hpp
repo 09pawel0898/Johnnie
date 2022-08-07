@@ -10,7 +10,7 @@ namespace Engine::Core
 	namespace GLFW
 	{
 		constexpr int8_t CONTEXT_VERSION_MAJOR = 4;
-		constexpr int8_t CONTEXT_VERSION_MINOR = 0;
+		constexpr int8_t CONTEXT_VERSION_MINOR = 6;
 
 		constexpr int8_t WINDOW_RESIZEABLE = 0;
 	}

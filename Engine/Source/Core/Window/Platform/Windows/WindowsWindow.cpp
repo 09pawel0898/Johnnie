@@ -27,16 +27,11 @@ namespace Engine::Core
 		{
 			throw InitializationException("Failed to initialize GLFW window handle.");
 		}
-
-		if (!InitOpenGLContext())
-		{
-			throw InitializationException("Failed to initialize OpenGL context.");
-		}
 		
 		/** GLFW events must be initialized before ImGui context */
 		InitEvents();
 
-		LOG(Core,Info,"GLFW Window initialized with OpenGL context.")
+		LOG(Core, Info, "GLFW Window initialized.");
 	}
 
 	WindowsWindow::~WindowsWindow()
@@ -155,14 +150,5 @@ namespace Engine::Core
 			return true;
 		}
 		return false;
-	}
-
-	bool WindowsWindow::InitOpenGLContext()
-	{
-		if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-		{
-			return false;
-		}
-		return true;
 	}
 }

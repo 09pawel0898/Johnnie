@@ -34,6 +34,9 @@ namespace Engine
 		static void RegisterOutputLogSink_mt(std::shared_ptr<OutputLogSink_mt> OutputLogSink_mt);
 
 		static std::shared_ptr<Logger>& GetLogger(std::string_view const& CategoryName);
+
+	public:
+		static void RegisterEngineLoggers(void);
 	};
 	
 	#define DEFINE_LOG_CATEGORY(LogCategory)\
