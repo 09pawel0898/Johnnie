@@ -35,18 +35,19 @@ namespace Engine::Core
 	public:
 		/** Native Window Handle */
 		virtual bool InitNativeWindow(WindowProperties const& Properties) = 0;
-		virtual void* GetNativeWindow() const = 0;
+		virtual void* GetNativeWindow(void) const = 0;
 
 		/** Events */
-		virtual void InitEvents() = 0;
+		virtual void InitEvents(void) = 0;
 		virtual void SetEventCallback(const EventCallback& Callback) = 0;
 
 		/** Update */
-		virtual void OnTick() = 0;
+		virtual void OnTick(void) = 0;
 
 		/** Properties */
-		virtual uint16_t GetWidth()	 const = 0;
-		virtual uint16_t GetHeight() const = 0;
+		virtual uint16_t GetWidth(void)	 const = 0;
+		virtual uint16_t GetHeight(void) const = 0;
 		virtual void SetVSync(bool Enabled) = 0;
+		virtual bool IsResizeable(void) const = 0;
 	};
 }

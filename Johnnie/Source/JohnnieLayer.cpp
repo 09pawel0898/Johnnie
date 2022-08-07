@@ -18,7 +18,6 @@ void JohnnieLayer::OnDetach(void)
 
 void JohnnieLayer::OnRender(void) const
 {
-	
 
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../IWindow.hpp"
+#include "../CoreGLFW.hpp"
 
 struct GLFWwindow;
 struct ImGuiIO;
@@ -42,10 +43,17 @@ namespace Engine::Core
 
 		virtual uint16_t GetHeight(void)	const override { return m_Properties.Height;}
 		virtual uint16_t GetWidth(void)		const override { return m_Properties.Width;	}
+
+		virtual bool IsResizeable(void) const override;
 	};
 
 	FORCEINLINE void WindowsWindow::SetEventCallback(EventCallback const& Callback)
 	{
 		m_Properties.EventCallback = Callback;
+	}
+
+	FORCEINLINE bool WindowsWindow::IsResizeable(void) const
+	{
+		return (bool)GLFW::WINDOW_RESIZEABLE;
 	}
 }

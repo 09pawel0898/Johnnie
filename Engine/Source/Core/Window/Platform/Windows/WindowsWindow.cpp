@@ -1,8 +1,5 @@
 #include "WindowsWindow.hpp"
 
-/** TO BE REMOVED (no explicit glad includes despite RHI) */
-#include "glad/glad.h"
-
 #include "Events/WindowEvent.hpp"
 #include "Events/KeyEvent.hpp"
 #include "Events/MouseEvent.hpp"
@@ -139,6 +136,9 @@ namespace Engine::Core
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW::WINDOW_RESIZEABLE);
 
+#ifndef NDEBUG
+		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
+#endif
 		m_WindowHandle = glfwCreateWindow(	Properties.Width,
 											Properties.Height,
 											Properties.Title.c_str(),

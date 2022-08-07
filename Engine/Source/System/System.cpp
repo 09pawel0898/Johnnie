@@ -7,8 +7,7 @@
 
 /** TO BE REMOVED (no explicit glad includes despite RHI) */
 #include <glad/glad.h>
-#include "Utilities/OpenGL/OpenGLExtensionCheck.hpp"
-#include "Utilities/OpenGL/OpenGLCallCheck.hpp"
+#include "Renderer/RHI/Platform/OpenGL/Extensions/OpenGLExtensionCheck.hpp"
 //
 
 #ifdef PLATFORM_WINDOWS
@@ -32,16 +31,16 @@ namespace Engine
 
 		GLint kb;
 
-		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &kb));
+		glGetIntegerv(GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX, &kb);
 		NvidiaMemoryInfo.DedicatedVideoMemory = kb;
-		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &kb));
+		glGetIntegerv(GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX, &kb);
 		NvidiaMemoryInfo.TotalAvailableVideoMemory = kb;
-		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &kb));
+		glGetIntegerv(GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX, &kb);
 		NvidiaMemoryInfo.CurrentAvailableVideoMemory = kb;
 
-		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX, &kb));
+		glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX, &kb);
 		NvidiaMemoryInfo.EvictedCount = kb;
-		GLCall(glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &kb));
+		glGetIntegerv(GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX, &kb);
 		NvidiaMemoryInfo.EvictedSize = kb;
 		
 		return SystemVideoMemoryInfo(NvidiaMemoryInfo);
@@ -53,7 +52,7 @@ namespace Engine
 
 		GLint kb[4];
 
-		GLCall(glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, kb));
+		glGetIntegerv(GL_VBO_FREE_MEMORY_ATI, kb);
 		AMDMemoryInfo.TotalPool		= kb[0];
 		AMDMemoryInfo.LargestBlock	= kb[1];
 		AMDMemoryInfo.TotalAux		= kb[2];
