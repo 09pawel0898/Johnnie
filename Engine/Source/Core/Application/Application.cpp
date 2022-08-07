@@ -159,7 +159,7 @@ namespace Engine::Core
     */
     void Application::Run(void)
     { 
-        LOG(Core, Trace, "Application::Run()");
+        LOG(Core, Trace, "Application::Run");
 
         using TimePoint = std::chrono::high_resolution_clock;
         std::chrono::steady_clock::time_point tFrameStart, tLastUpdate = TimePoint::now();

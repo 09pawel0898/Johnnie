@@ -22,7 +22,7 @@ namespace Engine
 		Layer& operator = (const Layer& rhs) = delete;
 		Layer& operator = (Layer&& rhs) = delete;
 
-		inline std::string_view GetName(void) const
+		std::string_view GetName(void) const
 		{
 			return m_LayerName;
 		}

@@ -30,7 +30,7 @@ namespace Engine::Events
 		{}
 
 	public:
-		inline KeyCode GetKeyCode(void) const
+		KeyCode GetKeyCode(void) const
 		{
 			return m_KeyCode;
 		}

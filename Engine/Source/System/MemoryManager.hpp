@@ -25,12 +25,12 @@ namespace Engine
 		MemoryManager() 
 		{}
 
-		inline MemoryStatistics& GetMutableMemoryStats(void)
+		MemoryStatistics& GetMutableMemoryStats(void)
 		{
 			return m_MemoryStats;
 		}
 
-		inline MemoryStatistics const& GetMemoryStats(void) const
+		MemoryStatistics const& GetMemoryStats(void) const
 		{
 			return m_MemoryStats;
 		}

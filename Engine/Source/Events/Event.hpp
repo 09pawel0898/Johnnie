@@ -30,7 +30,7 @@ namespace Engine::Events
 			return Category & GetCategoryFlags();
 		}
 
-		inline bool Handled() const { return m_Handled; }
+		bool Handled() const { return m_Handled; }
 	};
 
 	class EventDispatcher

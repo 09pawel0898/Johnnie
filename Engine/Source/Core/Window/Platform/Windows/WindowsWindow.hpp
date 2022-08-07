@@ -25,7 +25,7 @@ namespace Engine::Core
 		GLFWwindow* m_WindowHandle;
 
 		virtual bool InitNativeWindow(WindowProperties const& Properties) override;
-		virtual FORCEINLINE void* GetNativeWindow(void)	const override 
+		virtual void* GetNativeWindow(void)	const override 
 		{ 
 			return m_WindowHandle; 
 		}
@@ -40,8 +40,8 @@ namespace Engine::Core
 	public:
 		virtual void SetVSync(bool Enabled) override;
 
-		virtual FORCEINLINE uint16_t GetHeight(void)	const override { return m_Properties.Height;}
-		virtual FORCEINLINE uint16_t GetWidth(void)		const override { return m_Properties.Width;	}
+		virtual uint16_t GetHeight(void)	const override { return m_Properties.Height;}
+		virtual uint16_t GetWidth(void)		const override { return m_Properties.Width;	}
 	};
 
 	FORCEINLINE void WindowsWindow::SetEventCallback(EventCallback const& Callback)

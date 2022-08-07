@@ -32,7 +32,7 @@ namespace Engine::RHI
 	public:
 		RenderingAPI m_RHIType;
 
-		FORCEINLINE RenderingAPI GetType(void) const
+		RenderingAPI GetType(void) const
 		{
 			return m_RHIType;
 		}

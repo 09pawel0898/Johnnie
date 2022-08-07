@@ -31,8 +31,8 @@ namespace Engine::Events
 				m_MouseY(Y)
 		{}
 
-		inline double GetX(void) const { return m_MouseX; }
-		inline double GetY(void) const { return m_MouseY; }
+		double GetX(void) const { return m_MouseX; }
+		double GetY(void) const { return m_MouseY; }
 
 		DECLARE_EVENT_CLASS_TYPE(MouseMoved)
 		DECLARE_EVENT_CATEGORY(EventCategory_Input | EventCategory_Mouse)
@@ -48,7 +48,7 @@ namespace Engine::Events
 		{}
 
 	public:
-		inline MouseButtonCode GetButtonCode(void) const
+		MouseButtonCode GetButtonCode(void) const
 		{
 			return m_ButtonCode;
 		}

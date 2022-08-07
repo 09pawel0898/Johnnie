@@ -23,7 +23,7 @@ private:
     {
         std::list<Line> Lines;
 
-        FORCEINLINE void Clear(void)
+        void Clear(void)
         {
             Lines.clear();
         }

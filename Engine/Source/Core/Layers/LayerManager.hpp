@@ -33,7 +33,7 @@ namespace Engine
 		void RemoveLayer	(std::string_view LayerName);
 		void RemoveOverlay	(std::string_view LayerName);
 
-		FORCEINLINE bool IsEmpty(void) const
+		bool IsEmpty(void) const
 		{
 			return m_Layers.empty();
 		}

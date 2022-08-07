@@ -29,5 +29,6 @@ namespace Engine::RHI
 				return nullptr; 
 				break;
 		}
+		return nullptr;
 	}
 }

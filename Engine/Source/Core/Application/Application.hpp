@@ -23,7 +23,7 @@ namespace Engine::Core
 		static std::shared_ptr<Application> s_Instance;
 
 	public:
-		static FORCEINLINE std::shared_ptr<Application>& Get(void)
+		static std::shared_ptr<Application>& Get(void)
 		{ 
 			return s_Instance; 
 		};
@@ -43,7 +43,7 @@ namespace Engine::Core
 		WindowPointer m_Window;
 
 	public:
-		FORCEINLINE WindowPointer const& GetWindow(void) const { return m_Window; }
+		WindowPointer const& GetWindow(void) const { return m_Window; }
 
 		/** Layers */
 	private:
@@ -53,8 +53,8 @@ namespace Engine::Core
 		void InitImGuiLayer(void);
 
 	public:
-		FORCEINLINE ImGuiProperties& GetGuiProperties() { return m_ImGuiLayer->GetImGuiProperties(); };
-		FORCEINLINE LayerManager& GetLayerManager(void) { return *m_LayerManager; }
+		ImGuiProperties& GetGuiProperties() { return m_ImGuiLayer->GetImGuiProperties(); };
+		LayerManager& GetLayerManager(void) { return *m_LayerManager; }
 		
 		/** Initialization/Runtime */
 	private:
@@ -72,9 +72,9 @@ namespace Engine::Core
 		unsigned	m_FPSLIMIT = 9999;
 
 	public:
-		FORCEINLINE void SetFPSLimit(unsigned FpsLimit) { m_FPSLIMIT = FpsLimit; }
-		FORCEINLINE double GetDT(void) const { return m_DeltaTime; }
-		FORCEINLINE double GetFPS(void) const { return m_FPS; }
+		void SetFPSLimit(unsigned FpsLimit) { m_FPSLIMIT = FpsLimit; }
+		double GetDT(void) const { return m_DeltaTime; }
+		double GetFPS(void) const { return m_FPS; }
 
 	public:
 		/** Event Handling */

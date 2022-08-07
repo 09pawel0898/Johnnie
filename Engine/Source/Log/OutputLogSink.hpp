@@ -23,7 +23,7 @@ protected:
     {}
 
 public:
-    inline void BindCustomLoggerFunction(CustomOutputLoggerFunc CustomOutputLoggerFunc)
+    void BindCustomLoggerFunction(CustomOutputLoggerFunc CustomOutputLoggerFunc)
     {
         m_CustomOutputLogFunc = std::move(CustomOutputLoggerFunc);
     }
