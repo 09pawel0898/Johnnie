@@ -20,6 +20,7 @@ namespace Engine::RHI
             return "vertex";
         if (Type == GL_FRAGMENT_SHADER)
             return "fragment";
+        return "";
     }
 
     std::tuple<std::string_view, std::string_view> OpenGLShader::ParseGLSLShader(std::string_view Filepath)
