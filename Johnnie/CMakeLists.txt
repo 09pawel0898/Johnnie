@@ -9,26 +9,18 @@ add_subdirectory(Source)
 
 GroupSourcesByFolder(${SANDBOX_TARGET_NAME})
 
-set (Resources shader.glsl)
-
-get_property(GENERATOR_IS_MULTI_CONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
-set(TO_COPY "${CMAKE_CURRENT_SOURCE_DIR}/$<JOIN:${Resources},;${CMAKE_CURRENT_SOURCE_DIR}/>")
-set(COPY_TO "${CMAKE_CURRENT_BINARY_DIR}/$<$<BOOL:${GENERATOR_IS_MULTI_CONFIG}>:$<CONFIG>>")
-set(OUTPUT_AND_DEPENDS "${COPY_TO}/$<JOIN:${Resources},;${COPY_TO}/>")
 add_custom_command(
-  OUTPUT "${OUTPUT_AND_DEPENDS}"
-  COMMAND ${CMAKE_COMMAND}
-    ARGS
-      -E copy_if_different
-      "${TO_COPY}"
-      "${COPY_TO}"
-  COMMENT "Copying resources for ${SANDBOX_TARGET_NAME}"
-  COMMAND_EXPAND_LISTS
-  DEPENDS ${Resources}
+	TARGET ${SANDBOX_TARGET_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_CURRENT_SOURCE_DIR}/Assets $<TARGET_FILE_DIR:${SANDBOX_TARGET_NAME}>/Assets
+	COMMENT "Copying resources for ${SANDBOX_TARGET_NAME} into binary directory."
+	COMMAND_EXPAND_LISTS
 )
-add_custom_target(${SANDBOX_TARGET_NAME}-CopyResources
-  DEPENDS "${OUTPUT_AND_DEPENDS}"
-)
-add_dependencies(${SANDBOX_TARGET_NAME}
-  ${SANDBOX_TARGET_NAME}-CopyResources
+
+add_custom_command(
+	TARGET ${SANDBOX_TARGET_NAME} POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_directory
+	${CMAKE_CURRENT_SOURCE_DIR}/Assets $<TARGET_FILE_DIR:${SANDBOX_TARGET_NAME}>/../Assets
+	COMMENT "Copying resources for ${SANDBOX_TARGET_NAME} into build directory."
+	COMMAND_EXPAND_LISTS
 )

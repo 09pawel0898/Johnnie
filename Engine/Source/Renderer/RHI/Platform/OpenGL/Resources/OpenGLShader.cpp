@@ -29,7 +29,7 @@ namespace Engine::RHI
         std::cout << "Current root path is: " << fs::current_path().root_path() << '\n';
 
         std::ifstream file(Filepath.data());
-
+        
         if (!file.good())
         {
             LOG(RHI, Error, "Failed to open shader file named {0}", Filepath);

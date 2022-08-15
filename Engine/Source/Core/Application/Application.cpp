@@ -56,11 +56,11 @@ namespace Engine::Core
     {
        //static unsigned int VAO = 0;
        //static GLuint shaderProgram = 0;
-       //static bool init = false;
-       //static std::unique_ptr<RHIShader> s = nullptr;
+       static bool init = false;
+       static std::unique_ptr<RHIShader> s = nullptr;
        //
-       //if(!init)
-       //{
+       if(!init)
+       {
        //    const char* vertShader = R"(
        //    #version 460 core
        //    layout (location = 0) in vec3 aPos;
@@ -87,7 +87,7 @@ namespace Engine::Core
        //    0.0f,  0.5f, 0.0f
        //    };
        //
-       //    s = RHI::RHIShader::Create("Basic", "shader.glsl");
+            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
        //
        //    glGenVertexArrays(1, &VAO);
        //
@@ -150,7 +150,7 @@ namespace Engine::Core
        //    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
        //    glBindVertexArray(0);
        //    init = true;
-       //}
+       }
        //s->Bind();
        //glBindVertexArray(VAO);
        //glDrawArrays(GL_TRIANGLES, 0, 3);
