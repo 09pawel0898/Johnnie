@@ -1,8 +1,9 @@
+#include "EnginePCH.hpp"
+
 #include "Allocator.hpp"
 #include "Core/Debug/Asserts.hpp"
 #include "MemoryManager.hpp"
 
-#include <cstddef>
 
 void* Engine::Allocator::Allocate(size_t Size)
 {

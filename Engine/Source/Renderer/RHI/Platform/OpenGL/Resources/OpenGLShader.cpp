@@ -1,6 +1,6 @@
-#include "OpenGLShader.hpp"
+#include "EnginePCH.hpp"
 
-#include <fstream>
+#include "OpenGLShader.hpp"
 #include <glad/glad.h>
 
 #include "Log/Log.hpp"
@@ -8,8 +8,6 @@
 #include "Utilities/VariantUtility.hpp"
 #include "Utilities/FileUtility.hpp"
 
-#include <filesystem>
-#include <iostream>
 namespace fs = std::filesystem;
 
 namespace Engine::RHI
@@ -23,11 +21,8 @@ namespace Engine::RHI
         return "";
     }
 
-    std::tuple<std::string_view, std::string_view> OpenGLShader::ParseGLSLShader(std::string_view Filepath)
+    std::tuple<std::string, std::string> OpenGLShader::ParseGLSLShader(std::string_view Filepath)
     {
-        std::cout << "Current path is: " << fs::current_path() << '\n';
-        std::cout << "Current root path is: " << fs::current_path().root_path() << '\n';
-
         std::ifstream file(Filepath.data());
         
         if (!file.good())
@@ -49,7 +44,10 @@ namespace Engine::RHI
                 else if (line.find("fragment") != std::string::npos)
                     type = RHIShaderType::FRAGMENT;
             }
-            parsedShaders[static_cast<int32_t>(type)] << line << '\n';
+            else
+            {
+                parsedShaders[static_cast<int32_t>(type)] << line << '\n';
+            }
         }
 
         return std::make_tuple( parsedShaders[static_cast<int32_t>(RHIShaderType::VERTEX)].str(),
@@ -186,25 +184,25 @@ namespace Engine::RHI
         glUniform1f(location, Value);
     }
 
-    void OpenGLShader::SetFloat2(std::string_view Name, const glm::vec2& Value)
+    void OpenGLShader::SetFloat2(std::string_view Name, glm::vec2 const& Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());
         glUniform2f(location, Value.x, Value.y);
     }
 
-    void OpenGLShader::SetFloat3(std::string_view Name, const glm::vec3& Value)
+    void OpenGLShader::SetFloat3(std::string_view Name, glm::vec3 const& Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());
         glUniform3f(location, Value.x, Value.y, Value.z);
     }
 
-    void OpenGLShader::SetFloat4(std::string_view Name, const glm::vec4& Value)
+    void OpenGLShader::SetFloat4(std::string_view Name, glm::vec4 const& Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());
         glUniform4f(location, Value.x, Value.y, Value.z, Value.w);
     }
 
-    void OpenGLShader::SetMat4(std::string_view Name, const glm::mat4& Value)
+    void OpenGLShader::SetMat4(std::string_view Name, glm::mat4 const& Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());
         glUniformMatrix4fv(location, 1, GL_FALSE, &Value[0][0]);

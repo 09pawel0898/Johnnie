@@ -1,5 +1,6 @@
-#include "ImGuiProperties.hpp"
+#include "EnginePCH.hpp"
 
+#include "ImGuiProperties.hpp"
 #include "imgui.h"
 
 namespace Engine

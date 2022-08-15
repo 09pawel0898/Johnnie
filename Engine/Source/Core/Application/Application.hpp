@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Core/CoreMinimal.hpp"
+
 #include "Core/Window/IWindow.hpp"
 #include "Core/Layers/LayerManager.hpp"
 #include "ImGui/ImGuiLayer.hpp"

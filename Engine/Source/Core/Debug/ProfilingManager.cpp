@@ -1,3 +1,5 @@
+#include "EnginePCH.hpp"
+
 #include "ProfilingManager.hpp"
 #include "Core/Debug/Asserts.hpp"
 

@@ -1,7 +1,7 @@
-#include "OpenGLExtensionCheck.hpp"
+#include "EnginePCH.hpp"
 
+#include "OpenGLExtensionCheck.hpp"
 #include <glad/glad.h>
-#include <cstring>
 
 namespace Engine::Utility::OpenGL
 {

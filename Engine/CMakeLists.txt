@@ -19,3 +19,8 @@ target_include_directories(${ENGINE_TARGET_NAME} PUBLIC Include)
 target_include_directories(${ENGINE_TARGET_NAME} PUBLIC Source)
 
 GroupSourcesByFolder(${ENGINE_TARGET_NAME})
+
+if (MSVC)
+   set_target_properties(${ENGINE_TARGET_NAME} PROPERTIES COMPILE_FLAGS "/YuEnginePCH.hpp")
+   set_source_files_properties(Source/EnginePCH.cpp PROPERTIES COMPILE_FLAGS "/YcEnginePCH.hpp")
+endif(MSVC)

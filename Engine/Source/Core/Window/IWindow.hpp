@@ -3,8 +3,6 @@
 #include "Core/CoreMinimal.hpp"
 #include "Events/Event.hpp"
 
-#include <memory>
-
 namespace Engine::Core
 {
 	using EventCallback = std::function<void(Events::Event&)>;

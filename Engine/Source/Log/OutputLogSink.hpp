@@ -1,7 +1,6 @@
 #pragma once
 
 #include "spdlog/sinks/base_sink.h"
-#include <functional>
 
 template<typename Mutex>
 class OutputLogSink : public spdlog::sinks::base_sink<Mutex>

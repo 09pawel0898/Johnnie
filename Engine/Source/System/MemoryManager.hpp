@@ -1,9 +1,5 @@
 #pragma once
 
-#include <stdint.h>
-#include <iostream>
-#include <optional>
-
 namespace Engine 
 {
 	struct MemoryStatistics

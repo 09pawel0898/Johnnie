@@ -55,6 +55,6 @@ void JohnnieLayer::OnRenderGui(void)
 	m_ConsoleLog.OnRenderGui();
 	m_SystemStatistics.OnRenderGui();
 
-	static bool bShowDemoWindow = true;
-	ImGui::ShowDemoWindow(&bShowDemoWindow);
+	//static bool bShowDemoWindow = false;
+	//ImGui::ShowDemoWindow(&bShowDemoWindow);
 }

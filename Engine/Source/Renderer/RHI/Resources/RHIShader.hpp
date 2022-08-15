@@ -1,9 +1,5 @@
 #pragma once
 
-#include <string>
-#include <memory>
-#include <variant>
-
 #include <glm/glm.hpp>
 
 #include "RHIResource.hpp"

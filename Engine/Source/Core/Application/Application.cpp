@@ -1,3 +1,5 @@
+#include "EnginePCH.hpp"
+
 #include "Application.hpp"
 #include "Log/Log.hpp"
 #include "Events/WindowEvent.hpp"
@@ -54,106 +56,45 @@ namespace Engine::Core
     
     static void Test()
     {
-       //static unsigned int VAO = 0;
-       //static GLuint shaderProgram = 0;
+       static unsigned int VAO = 0;
+       static GLuint shaderProgram = 0;
        static bool init = false;
        static std::unique_ptr<RHIShader> s = nullptr;
-       //
+       
        if(!init)
        {
-       //    const char* vertShader = R"(
-       //    #version 460 core
-       //    layout (location = 0) in vec3 aPos;
-       //
-       //    void main()
-       //    {
-       //        gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-       //    }
-       //    )";
-       //
-       //    const char* fragShader = R"(
-       //    #version 330 core
-       //    out vec4 FragColor;
-       //
-       //    void main()
-       //    {
-       //        FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
-       //    }
-       //    )";
-       //
-       //    float vertices[] = {
-       //    -0.5f, -0.5f, 0.0f,
-       //    0.5f, -0.5f, 0.0f,
-       //    0.0f,  0.5f, 0.0f
-       //    };
-       //
-            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
-       //
-       //    glGenVertexArrays(1, &VAO);
-       //
-       //    GLuint VBO;
-       //    glGenBuffers(1, &VBO);
-       //    glBindVertexArray(VAO);
-       //
-       //    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-       //    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-       //
-       //    //GLuint vertexShader;
-       //    //vertexShader = glCreateShader(GL_VERTEX_SHADER);
-       //    //glShaderSource(vertexShader, 1, &vertShader, nullptr);
-       //    //glCompileShader(vertexShader);
-       //    //
-       //    //int  success;
-       //    //char infoLog[512];
-       //    //glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-       //    //
-       //    //if (!success)
-       //    //{
-       //    //    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-       //    //    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-       //    //}
-       //
-       //    //GLuint fragmentShader;
-       //    //fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-       //    //glShaderSource(fragmentShader, 1, &fragShader, nullptr);
-       //    //glCompileShader(fragmentShader);
-       //    //
-       //    //glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-       //    //if (!success)
-       //    //{
-       //    //    glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-       //    //    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-       //    //}
-       //
-       //    // Shader program
-       //
-       //    //shaderProgram = glCreateProgram();
-       //    //glAttachShader(shaderProgram, vertexShader);
-       //    //glAttachShader(shaderProgram, fragmentShader);
-       //    //glLinkProgram(shaderProgram);
-       //    //
-       //    //glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-       //    //if (!success) {
-       //    //    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-       //    //}
-       //    //glUseProgram(shaderProgram);
-       //    //glDeleteShader(vertexShader);
-       //    //glDeleteShader(fragmentShader);
-       //
-       //    // Vertex attrib
-       //    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-       //    glEnableVertexAttribArray(0);
-       //    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-       //    glBindBuffer(GL_ARRAY_BUFFER, 0);
-       //
-       //    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-       //    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-       //    glBindVertexArray(0);
-       //    init = true;
+           float vertices[] = {
+           -0.5f, -0.5f, 0.0f,
+           0.5f, -0.5f, 0.0f,
+           0.0f,  0.5f, 0.0f
+           };
+       
+          s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
+       
+           glGenVertexArrays(1, &VAO);
+       
+           GLuint VBO;
+           glGenBuffers(1, &VBO);
+           glBindVertexArray(VAO);
+       
+           glBindBuffer(GL_ARRAY_BUFFER, VBO);
+           glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+       
+          
+           // Vertex attrib
+           glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+           glEnableVertexAttribArray(0);
+           // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+           glBindBuffer(GL_ARRAY_BUFFER, 0);
+       
+           // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+           // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+           glBindVertexArray(0);
+           init = true;
        }
-       //s->Bind();
-       //glBindVertexArray(VAO);
-       //glDrawArrays(GL_TRIANGLES, 0, 3);
+       s->Bind();
+       glBindVertexArray(VAO);
+       glDrawArrays(GL_TRIANGLES, 0, 3);
     }
       
     void Application::Run(void)

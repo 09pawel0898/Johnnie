@@ -3,8 +3,6 @@
 #include "Core/CoreMinimal.hpp"
 #include "../../../Resources/RHIShader.hpp"
 
-#include <variant>
-
 namespace Engine::RHI
 {
 	class OpenGLShader : public RHIShader
@@ -23,7 +21,7 @@ namespace Engine::RHI
 
 	private:
 		/** Parses Vertex and Fragment shaders from one file. */
-		std::tuple<std::string_view, std::string_view> ParseGLSLShader(std::string_view Filepath);
+		std::tuple<std::string, std::string> ParseGLSLShader(std::string_view Filepath);
 		
 		/** Compiles GLSL Shader */
 		uint32_t CompileGLSLShader(std::string_view Source, uint32_t Type);
@@ -35,14 +33,14 @@ namespace Engine::RHI
 		std::string_view GetSourceFileName(int32_t Type) const;
 
 	public:
-		/* Data */
+		/* Uniforms */
 
 		virtual void SetFloat(std::string_view Name, float Value) override;
-		virtual void SetFloat2(std::string_view Name, const glm::vec2& Value) override;
-		virtual void SetFloat3(std::string_view Name, const glm::vec3& Value) override;
-		virtual void SetFloat4(std::string_view Name, const glm::vec4& Value) override;
-		virtual void SetMat4(std::string_view Name, const glm::mat4& Value) override;
-		virtual void SetInt(std::string_view Name, int32_t Value)override;
-		virtual void SetIntArray(std::string_view Name, int32_t* Values, uint32_t Count)override;
+		virtual void SetFloat2(std::string_view Name, glm::vec2 const& Value) override;
+		virtual void SetFloat3(std::string_view Name, glm::vec3 const& Value) override;
+		virtual void SetFloat4(std::string_view Name, glm::vec4 const& Value) override;
+		virtual void SetMat4(std::string_view Name, glm::mat4 const& Value) override;
+		virtual void SetInt(std::string_view Name, int32_t Value) override;
+		virtual void SetIntArray(std::string_view Name, int32_t* Values, uint32_t Count) override;
 	};
 }
