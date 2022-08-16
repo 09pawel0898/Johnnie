@@ -69,7 +69,7 @@ namespace Engine::Core
            0.0f,  0.5f, 0.0f
            };
        
-          s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
+           s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
        
            glGenVertexArrays(1, &VAO);
        
