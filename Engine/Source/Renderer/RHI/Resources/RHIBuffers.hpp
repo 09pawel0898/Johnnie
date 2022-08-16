@@ -37,7 +37,7 @@ namespace Engine::RHI
 
 	public:
 		RHIVertexBufferLayout() = default;
-		~RHIVertexBufferLayout() = default;
+		virtual ~RHIVertexBufferLayout() = default;
 
 		RHIVertexBufferLayout(std::initializer_list<RHIVertexBufferElement> Elements);
 

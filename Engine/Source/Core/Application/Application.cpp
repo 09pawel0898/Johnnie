@@ -7,6 +7,7 @@
 #include "Renderer/Renderer.hpp"
 
 #include "Renderer/RHI/Resources/RHIShader.hpp"
+#include "Renderer/RHI/Resources/RHIBuffers.hpp"
 
 #include <glad/glad.h>
 
@@ -68,7 +69,9 @@ namespace Engine::Core
            0.5f, -0.5f, 0.0f,
            0.0f,  0.5f, 0.0f
            };
-       
+           
+           auto vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
+
            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
        
            glGenVertexArrays(1, &VAO);

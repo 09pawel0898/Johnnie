@@ -30,6 +30,7 @@ namespace Engine::RHI
 	public:
 		OpenGLVertexBuffer(uint32_t Size);
 		OpenGLVertexBuffer(void const* Vertices, uint32_t Size);
+		~OpenGLVertexBuffer();
 
 	public:
 		virtual void Bind(void) const override;

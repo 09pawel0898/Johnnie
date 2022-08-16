@@ -41,19 +41,28 @@ namespace Engine::RHI
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(void const* Vertices, uint32_t Size)
 	{
+		glGenBuffers(1, &m_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glBufferData(GL_ARRAY_BUFFER, Size, Vertices, GL_STATIC_DRAW);
+	}
+
+	OpenGLVertexBuffer::~OpenGLVertexBuffer()
+	{
+		glDeleteBuffers(1, &m_ID);
 	}
 
 	void OpenGLVertexBuffer::Bind(void) const
 	{
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 	}
 
 	void OpenGLVertexBuffer::Unbind(void) const
 	{
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	void OpenGLVertexBuffer::SetData(const void* Data, uint32_t Size)
-	{
-	}
+	{}
 
 	void const* OpenGLVertexBuffer::GetData(void) const
 	{
@@ -67,5 +76,6 @@ namespace Engine::RHI
 
 	void OpenGLVertexBuffer::SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout)
 	{
+		m_VertexBufferLayout = std::move(Layout);
 	}
 }

@@ -1,6 +1,6 @@
 #include "EnginePCH.hpp"
 
-#include "../../Renderer.hpp"
+#include "Renderer/Renderer.hpp"
 #include "RHIBuffers.hpp"
 
 #include "../Platform/OpenGL/Resources/OpenGLBuffers.hpp"
