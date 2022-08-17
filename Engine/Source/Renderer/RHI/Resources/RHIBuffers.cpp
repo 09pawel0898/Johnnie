@@ -7,23 +7,9 @@
 
 namespace Engine::RHI
 {
-	size_t RHIGetVertexBufferElementTypeSize(RHIVertexBufferElementType VBOElementType)
+	size_t RHIGetVertexBufferElementTypeSize(RHIElementType VBOElementType)
 	{
-		static const std::unordered_map<RHIVertexBufferElementType, size_t> sizes =
-		{
-			{RHIVertexBufferElementType::Int,		4},
-			{RHIVertexBufferElementType::Int2,		4*2},
-			{RHIVertexBufferElementType::Int3,		4*3},
-			{RHIVertexBufferElementType::Int3,		4*3},
-			{RHIVertexBufferElementType::Bool,		1},
-			{RHIVertexBufferElementType::Float,		4},
-			{RHIVertexBufferElementType::Float2,	4*2},
-			{RHIVertexBufferElementType::Float3,	4*3},
-			{RHIVertexBufferElementType::Float4,	4*4},
-			{RHIVertexBufferElementType::Mat3,		4*3*3},
-			{RHIVertexBufferElementType::Mat4,		4*4*4},
-		};
-		return sizes.at(VBOElementType);
+		return GetRHIElementTypeSize(VBOElementType);
 	}
 
 	void RHIVertexBufferLayout::CalculateOffsetAndStride(void)

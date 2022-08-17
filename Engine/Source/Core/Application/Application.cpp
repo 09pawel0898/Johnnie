@@ -64,13 +64,14 @@ namespace Engine::Core
        
        if(!init)
        {
-           float vertices[] = {
-           -0.5f, -0.5f, 0.0f,
-           0.5f, -0.5f, 0.0f,
-           0.0f,  0.5f, 0.0f
+           float vertices[] = 
+           {
+                -0.5f, -0.5f, 0.0f, 1.0f,0.0f,0.0f,
+                0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,
+                0.0f,  0.5f, 0.0f,  0.0f,0.0f,1.0f
            };
            
-           auto vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
+           //auto vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
 
            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
        
@@ -78,6 +79,7 @@ namespace Engine::Core
        
            GLuint VBO;
            glGenBuffers(1, &VBO);
+
            glBindVertexArray(VAO);
        
            glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -87,6 +89,7 @@ namespace Engine::Core
            // Vertex attrib
            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
            glEnableVertexAttribArray(0);
+
            // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
            glBindBuffer(GL_ARRAY_BUFFER, 0);
        

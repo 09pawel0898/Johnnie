@@ -2,18 +2,15 @@
 
 #include "RHIResource.hpp"
 
+#include "../RHITypes.hpp"
+
 namespace Engine::RHI
 {
-	enum class RHIVertexBufferElementType : uint8_t
-	{
-		None = 0, Int, Int2, Int3, Int4, Bool, Float, Float2, Float3, Float4, Mat3, Mat4,
-	};
-
-	size_t RHIGetVertexBufferElementTypeSize(RHIVertexBufferElementType VBOElementType);
+	size_t RHIGetVertexBufferElementTypeSize(RHIElementType VBOElementType);
 
 	struct RHIVertexBufferElement final
 	{
-		RHIVertexBufferElementType	VBOElementType;
+		RHIElementType				VBOElementType;
 		std::string_view			ElementName;
 		bool						bNormalized;
 		size_t						Offset = 0;
@@ -21,7 +18,7 @@ namespace Engine::RHI
 
 		RHIVertexBufferElement() = default;
 
-		RHIVertexBufferElement(RHIVertexBufferElementType Type, std::string_view ElementName, bool Normalized = false)
+		RHIVertexBufferElement(RHIElementType Type, std::string_view ElementName, bool Normalized = false)
 			:	VBOElementType(Type), ElementName(ElementName), bNormalized(Normalized), Size(RHIGetVertexBufferElementTypeSize(Type))
 		{}
 	};
