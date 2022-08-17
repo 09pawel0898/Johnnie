@@ -77,6 +77,9 @@ namespace Engine::RHI
 
 	class RHIVertexBuffer : public RHIResource
 	{
+	protected:
+		std::unique_ptr<RHIVertexBufferLayout> m_VertexBufferLayout;
+
 	public:
 		virtual ~RHIVertexBuffer() = default;
 

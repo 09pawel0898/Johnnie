@@ -34,8 +34,6 @@ namespace Engine::RHI
 		Bind();
 		VertexBuffer->Bind();
 
-
-
 		m_VertexBuffers.emplace_back(std::move(VertexBuffer));
 	}
 

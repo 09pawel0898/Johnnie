@@ -20,5 +20,6 @@ namespace Engine::RHI
 
 		virtual void SetIndexBuffer(std::shared_ptr<RHIIndexBuffer> IndexBuffer) override;
 		virtual void AddVertexBuffer(std::shared_ptr<RHIVertexBuffer> VertexBuffer) override;
+
 	};
 }

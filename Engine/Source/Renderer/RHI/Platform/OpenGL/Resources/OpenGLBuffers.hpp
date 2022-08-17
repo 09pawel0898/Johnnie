@@ -25,8 +25,7 @@ namespace Engine::RHI
 	{
 	private:
 		uint32_t m_ID = 0;
-		std::unique_ptr<RHIVertexBufferLayout> m_VertexBufferLayout;
-
+		
 	public:
 		OpenGLVertexBuffer(uint32_t Size);
 		OpenGLVertexBuffer(void const* Vertices, uint32_t Size);
