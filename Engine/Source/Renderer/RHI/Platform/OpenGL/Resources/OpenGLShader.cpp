@@ -104,8 +104,8 @@ namespace Engine::RHI
         return (compilationResult == GL_FALSE) ? -1 : ID;
     }
 
-	OpenGLShader::OpenGLShader(std::string_view ShaderName, std::string_view Filepath)
-        :   RHIShader(ShaderName), 
+	OpenGLShader::OpenGLShader(std::string_view Name, std::string_view Filepath)
+        :   RHIShader(Name), 
             m_ID(0)
 	{
         m_ShaderView.Source = Filepath;
@@ -114,8 +114,8 @@ namespace Engine::RHI
         m_ID = CreateOpenGLShader(vertexShaderSource,fragmentShaderSource);
 	}
 
-    OpenGLShader::OpenGLShader(std::string_view ShaderName, std::string_view VertFilepath, std::string_view FragFilepath)
-        :   RHIShader(ShaderName), 
+    OpenGLShader::OpenGLShader(std::string_view Name, std::string_view VertFilepath, std::string_view FragFilepath)
+        :   RHIShader(Name), 
             m_ID(0)
     {
         m_ShaderView.Source = std::make_pair(VertFilepath, FragFilepath);

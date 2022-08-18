@@ -8,6 +8,7 @@
 
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/RHI/Resources/RHIBuffers.hpp"
+#include "Renderer/RHI/Resources/RHIVertexArray.hpp"
 
 #include <glad/glad.h>
 
@@ -61,48 +62,80 @@ namespace Engine::Core
        static GLuint shaderProgram = 0;
        static bool init = false;
        static std::unique_ptr<RHIShader> s = nullptr;
-       
+       static std::unique_ptr<RHIVertexArray> _vao;
+
        if(!init)
        {
            float vertices[] = 
            {
-                -0.5f, -0.5f, 0.0f, 1.0f,0.0f,0.0f,
+                0.5f, 0.5f, 0.0f, 1.0f,0.0f,0.0f,
                 0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,
-                0.0f,  0.5f, 0.0f,  0.0f,0.0f,1.0f
+                -0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,
+                -0.5f,  0.5f, 0.0f,  0.0f,0.0f,1.0f
            };
            
-           //auto vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
+           uint32_t indices[] =
+           {
+               0,1,3,
+               1,2,3
+           };
+
+           _vao = RHI::RHIVertexArray::Create();
+           //_vao->Bind();
+
+           RHIVertexBufferElement ePosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
+           RHIVertexBufferElement eColor    = RHIVertexBufferElement(RHIElementType::Float3, "aColor");
+
+           RHIVertexBufferLayout _layout{ePosition, eColor};
+           
+           
+           auto _vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
+
+           //_vbo->Bind();
+
+           _vbo->SetLayout(std::make_unique<RHIVertexBufferLayout>(std::move(_layout)));
+
+           auto _ib = RHIIndexBuffer::Create(indices, 6);
+           _ib->Unbind();
+
+           _vao->SetIndexBuffer(std::move(_ib));
+           _vao->AddVertexBuffer(std::move(_vbo));
+           
 
            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
        
-           glGenVertexArrays(1, &VAO);
-       
-           GLuint VBO;
-           glGenBuffers(1, &VBO);
-
-           glBindVertexArray(VAO);
-       
-           glBindBuffer(GL_ARRAY_BUFFER, VBO);
-           glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-       
-          
-           // Vertex attrib
-           glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void const*)0);
-           glEnableVertexAttribArray(0);
-           glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void const*)(3*sizeof(float)));
-           glEnableVertexAttribArray(1);
-
-           // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-           glBindBuffer(GL_ARRAY_BUFFER, 0);
-       
-           // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-           // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-           glBindVertexArray(0);
+           //glGenVertexArrays(1, &VAO);
+           //
+           //GLuint VBO;
+           //glGenBuffers(1, &VBO);
+           //
+           //glBindVertexArray(VAO);
+           //
+           //glBindBuffer(GL_ARRAY_BUFFER, VBO);
+           //glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+           //
+           //
+           //// Vertex attrib
+           //glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void const*)0);
+           //glEnableVertexAttribArray(0);
+           //glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void const*)(3*sizeof(float)));
+           //glEnableVertexAttribArray(1);
+           //
+           //// note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+           //glBindBuffer(GL_ARRAY_BUFFER, 0);
+           //
+           //// You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+           //// VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+           //glBindVertexArray(0);
+           s->Bind();
            init = true;
        }
+       
        s->Bind();
-       glBindVertexArray(VAO);
-       glDrawArrays(GL_TRIANGLES, 0, 3);
+       _vao->Bind();
+       //glBindVertexArray(VAO);
+       //glDrawArrays(GL_TRIANGLES, 0, 3);
+       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
       
     void Application::Run(void)

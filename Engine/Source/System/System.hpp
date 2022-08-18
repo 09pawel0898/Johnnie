@@ -83,6 +83,11 @@ namespace Engine
 	public:
 		SystemVideoMemoryInfo() = default;
 
+		explicit SystemVideoMemoryInfo(nullptr_t)
+		{
+			Info = nullptr;
+		}
+
 		template <typename BrandVideoMemoryInfoType>
 		explicit SystemVideoMemoryInfo(BrandVideoMemoryInfoType&& VideoMemoryInfo) noexcept
 			:	Info(std::forward<BrandVideoMemoryInfoType>(VideoMemoryInfo))

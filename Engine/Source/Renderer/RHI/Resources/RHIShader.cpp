@@ -7,8 +7,8 @@
 
 namespace Engine::RHI
 {
-	RHIShader::RHIShader(std::string_view ShaderName)
-		:	m_ShaderView(ShaderName)
+	RHIShader::RHIShader(std::string_view Name)
+		:	m_ShaderView(Name)
 	{}
 
 	RHIShaderView const& RHIShader::GetShaderView(void)

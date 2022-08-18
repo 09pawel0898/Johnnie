@@ -11,8 +11,8 @@ namespace Engine::RHI
 		uint32_t m_ID;
 
 	public:
-		OpenGLShader(std::string_view ShaderName, std::string_view Filepath);
-		OpenGLShader(std::string_view ShaderName, std::string_view VertFilepath, std::string_view FragFilepath);
+		OpenGLShader(std::string_view Name, std::string_view Filepath);
+		OpenGLShader(std::string_view Name, std::string_view VertFilepath, std::string_view FragFilepath);
 
 		~OpenGLShader();
 

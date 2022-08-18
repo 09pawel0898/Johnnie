@@ -1,8 +1,6 @@
 #include "EnginePCH.hpp"
 #include "OpenGLBuffers.hpp"
 
-#include "../OpenGLTypes.hpp"
-
 #include <glad/glad.h>
 
 namespace Engine::RHI
@@ -79,33 +77,5 @@ namespace Engine::RHI
 	void OpenGLVertexBuffer::SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout)
 	{
 		m_VertexBufferLayout = std::move(Layout);
-
-		uint8_t currentAttribIndex = 0;
-
-		for (auto& element : m_VertexBufferLayout->GetElements())
-		{
-			switch (element.VBOElementType)
-			{
-				using enum RHIElementType;
-
-				case Float3:
-					glEnableVertexAttribArray(currentAttribIndex);
-					glVertexAttribPointer(	currentAttribIndex, 3, RHIElementTypeToOpenGL(element.VBOElementType),
-											element.bNormalized ? GL_TRUE : GL_FALSE, m_VertexBufferLayout->GetStride(), (void const*)element.Offset);
-					currentAttribIndex++;
-				break;
-
-				case Float4:
-					glEnableVertexAttribArray(currentAttribIndex);
-					glVertexAttribPointer(	currentAttribIndex, 4, RHIElementTypeToOpenGL(element.VBOElementType),
-											element.bNormalized ? GL_TRUE : GL_FALSE, m_VertexBufferLayout->GetStride(), (void const*)element.Offset);
-					currentAttribIndex++;
-				break;
-			
-				default:
-					CheckMsg(false, "Unsupported Element for OpenGL VertexBufferLayout!");
-				break;
-			}
-		}
 	}
 }

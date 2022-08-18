@@ -17,12 +17,13 @@ namespace Engine::RHI
 
 	struct RHIShaderView
 	{
-		std::string_view ShaderName;
+		std::string_view Name;
 		std::string_view Filename;
+
 		std::variant<SingleSourceView,DoubleSourceView> Source;
 
-		explicit RHIShaderView(std::string_view ShaderName)
-			:	ShaderName(ShaderName)
+		explicit RHIShaderView(std::string_view Name)
+			:	Name(Name)
 		{}
 	};
 
@@ -32,7 +33,7 @@ namespace Engine::RHI
 		RHIShaderView m_ShaderView;
 
 	public:
-		explicit RHIShader(std::string_view ShaderName);
+		explicit RHIShader(std::string_view Name);
 		virtual ~RHIShader() = default;
 	
 	public:

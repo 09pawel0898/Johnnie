@@ -33,7 +33,7 @@ namespace Engine::RHI
 		void CalculateOffsetAndStride(void);
 
 	public:
-		RHIVertexBufferLayout() = default;
+		RHIVertexBufferLayout() = delete;
 		virtual ~RHIVertexBufferLayout() = default;
 
 		RHIVertexBufferLayout(std::initializer_list<RHIVertexBufferElement> Elements);
@@ -48,6 +48,14 @@ namespace Engine::RHI
 		{
 			return m_Stride;
 		}
+
+		using Iterator		= std::vector<RHIVertexBufferElement>::iterator;
+		using ConstIterator = std::vector<RHIVertexBufferElement>::const_iterator;
+
+		Iterator		begin()			{ return m_Elements.begin();}
+		Iterator		end()			{ return m_Elements.end();	}
+		ConstIterator	begin() const	{ return m_Elements.begin();}
+		ConstIterator	end()	const	{ return m_Elements.end();	}
 	};
 
 	class RHIIndexBuffer : public RHIResource

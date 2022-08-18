@@ -100,11 +100,11 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
         }    
     };
 
-    if (tryReplaceVerbosity("[trace]:", "[Trace]:  "))
+    if (tryReplaceVerbosity("[trace]:", "[Trace]:"))
     {
         return Log::Verbosity::Trace;
     }
-    else if(tryReplaceVerbosity("[info]:", "[Info]:   "))
+    else if(tryReplaceVerbosity("[info]:", "[Info]:"))
     {
         return Log::Verbosity::Info;
     } 
@@ -112,7 +112,7 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
     {
         return Log::Verbosity::Warning;
     }
-    else
+    else if(tryReplaceVerbosity("[error]:", "[Error]: "))
     {
         return Log::Verbosity::Error;
     }
