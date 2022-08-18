@@ -11,6 +11,7 @@
 #include "Renderer/RHI/Resources/RHIVertexArray.hpp"
 
 #include <glad/glad.h>
+#include <stb_image.h>
 
 namespace Engine::Core
 {

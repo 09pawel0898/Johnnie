@@ -1,0 +1,1 @@
+/** It's just for creating target with only header file included. */

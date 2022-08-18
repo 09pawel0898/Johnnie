@@ -52,3 +52,11 @@ set_target_properties(
     update_mappings
     PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/glfw
 )
+
+# STB_IMAGE
+
+add_subdirectory(stb_image)
+set_target_properties(
+    stb_image
+    PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/stb_image
+)
