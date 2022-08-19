@@ -5,7 +5,8 @@
 #include <Engine/Utilities.hpp>
 
 JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
-	:	Layer(Name)
+	:	Layer(Name),
+		m_Camera(glm::radians(45.f), (float)(1280.f / 720.f), 0.1f, 100.0f)
 {}
 
 void JohnnieLayer::OnAwake(void)

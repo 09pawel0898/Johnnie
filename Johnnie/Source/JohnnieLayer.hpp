@@ -2,6 +2,7 @@
 
 #include <Engine/CoreMinimal.hpp>
 #include <Engine/Layers.hpp>
+#include <Engine/Camera.hpp>
 
 #include "Gui/MainMenuBarWidget.hpp"
 #include "Gui/ConsoleLogWidget.hpp"
@@ -17,6 +18,9 @@ private:
 	MainMenuBarWidget		m_MainMenuBar;
 	ConsoleLogWidget		m_ConsoleLog;
 	SystemStatisticsWidget	m_SystemStatistics;
+
+	/** Floating Camera */
+	Camera m_Camera;
 
 private:
 	/** Layer Interface Impl*/

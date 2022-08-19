@@ -36,12 +36,12 @@ namespace Engine::Utility
 		explicit Timer(std::string_view Name)
 			:	m_ProfileName(Name)
 		{
-			m_StartTimepoint = std::chrono::high_resolution_clock::now();
+			m_StartTimepoint = Time::now();
 		}
 
 		~Timer()
 		{
-			TimePoint endTimepoint = std::chrono::high_resolution_clock::now();
+			TimePoint endTimepoint = Time::now();
 			auto duration = std::chrono::time_point_cast<TimeUnit>(endTimepoint).time_since_epoch() -
 							std::chrono::time_point_cast<TimeUnit>(m_StartTimepoint).time_since_epoch();
 			auto _duration = duration.count();

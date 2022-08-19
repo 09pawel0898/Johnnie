@@ -3,7 +3,6 @@ add_library(${ENGINE_TARGET_NAME} STATIC "")
 target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 	glad
     	glfw
-	glm
 	spdlog
 	stb_image
 )
@@ -11,6 +10,7 @@ target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 
 target_link_libraries(${ENGINE_TARGET_NAME} PUBLIC
 	imgui
+	glm
 )
 
 add_subdirectory(Source)

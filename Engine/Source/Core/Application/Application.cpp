@@ -10,6 +10,13 @@
 #include "Renderer/RHI/Resources/RHIBuffers.hpp"
 #include "Renderer/RHI/Resources/RHIVertexArray.hpp"
 #include "Renderer/RHI/Resources/RHITexture.hpp"
+#include "Renderer/Camera/Camera.hpp"
+
+#include <glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
+#include<glm/gtc/type_ptr.hpp>
+
+#include "Utilities/TimingUtility.hpp"
 
 #include <glad/glad.h>
 
@@ -65,22 +72,31 @@ namespace Engine::Core
        static std::unique_ptr<RHIShader> s = nullptr;
        static std::unique_ptr<RHIVertexArray> _vao;
        static std::unique_ptr<RHITexture2D> texture;
+       static std::unique_ptr<RHITexture2D> texture2;
+
+
+       static float vertices[] =
+       { //     COORDINATES         /      COLORS      /      TexCoord  //
+            -0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+            -0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
+             0.5f, 0.0f, -0.5f,     0.83f, 0.70f, 0.44f,	0.0f, 0.0f,
+             0.5f, 0.0f,  0.5f,     0.83f, 0.70f, 0.44f,	1.0f, 0.0f,
+             0.0f, 0.8f,  0.0f,     0.92f, 0.86f, 0.76f,	0.5f, 1.0f
+       };
+
+       static uint32_t indices[] =
+       {
+            0, 1, 2,
+            0, 2, 3,
+            0, 1, 4,
+            1, 2, 4,
+            2, 3, 4,
+            3, 0, 4
+       };
 
        if(!init)
        {
-           float vertices[] = 
-           {
-                0.4f, 0.65f, 0.0f,   1.0f,0.0f,0.0f, 1.0f, 1.0f,
-                0.4f, -0.65f, 0.0f,  0.0f,1.0f,0.0f, 1.0f, 0.0f,
-                -0.4f, -0.65f, 0.0f, 0.0f,1.0f,0.0f, 0.0f, 0.0f,
-                -0.4f,  0.65f, 0.0f, 0.0f,0.0f,1.0f, 0.0f, 1.0f
-           };
            
-           uint32_t indices[] =
-           {
-               0,1,3,
-               1,2,3
-           };
 
            _vao = RHI::RHIVertexArray::Create();
            //_vao->Bind();
@@ -97,16 +113,24 @@ namespace Engine::Core
 
            _vbo->SetLayout(std::make_unique<RHIVertexBufferLayout>(std::move(_layout)));
 
-           auto _ib = RHIIndexBuffer::Create(indices, 6);
+           auto _ib = RHIIndexBuffer::Create(indices, sizeof(indices) / sizeof(int));
            _ib->Unbind();
 
            _vao->SetIndexBuffer(std::move(_ib));
            _vao->AddVertexBuffer(std::move(_vbo));
            
 
-           s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
-            
+           
            texture = RHI::RHITexture2D::Create("Assets/Textures/texture.jpg");
+           texture->Bind(0);
+           texture2 = RHI::RHITexture2D::Create("Assets/Textures/texture2.png");
+           texture2->Bind(1);
+
+           s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
+           s->Bind();
+
+           s->SetInt("tex1", 0);
+           s->SetInt("tex2", 1);
 
            //glGenVertexArrays(1, &VAO);
            //
@@ -134,12 +158,38 @@ namespace Engine::Core
            s->Bind();
            init = true;
        }
-       
+      
+       glm::mat4 model = glm::mat4(1.0f);
+       glm::mat4 view = glm::mat4(1.0f);
+       glm::mat4 proj = glm::mat4(1.0f);
+
+       static double prevTime = Utility::Time::now().time_since_epoch().count();
+       static double rotation = 0.0;
+
+       double nowTime = Utility::Time::now().time_since_epoch().count();
+
+       if (nowTime - prevTime >= 1 / 60)
+       {
+           rotation += 0.5f;
+           prevTime = nowTime;
+       }
+
+       model = glm::rotate(model,(float)glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+       view = glm::translate(view, glm::vec3(0.0f, -0.5f, -3.0f));
+       proj = glm::perspective(glm::radians(45.0f), (float)(1280 / 720), 0.1f,100.0f);
+
        s->Bind();
+       s->SetMat4("model", model);
+       s->SetMat4("view", view);
+       s->SetMat4("proj", proj);
+
        _vao->Bind();
+
+       texture->Bind(0);
+       texture2->Bind(1);
        //glBindVertexArray(VAO);
        //glDrawArrays(GL_TRIANGLES, 0, 3);
-       glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+       glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int) , GL_UNSIGNED_INT, 0);
     }
       
     void Application::Run(void)

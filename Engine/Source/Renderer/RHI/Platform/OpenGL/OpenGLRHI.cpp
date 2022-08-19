@@ -14,35 +14,41 @@ namespace Engine::RHI
 			return;
 		}
 
+		auto generateInfoHeader = [Source,Type]() -> std::string
+		{
+			std::string sourceInfo, typeInfo;
+
+			switch (Source)
+			{
+				case GL_DEBUG_SOURCE_API:				sourceInfo = "Source: API";				break;
+				case GL_DEBUG_SOURCE_WINDOW_SYSTEM:		sourceInfo = "Source: Window System";	break;
+				case GL_DEBUG_SOURCE_SHADER_COMPILER:	sourceInfo = "Source: Shader Compiler"; break;
+				case GL_DEBUG_SOURCE_THIRD_PARTY:		sourceInfo = "Source: Third Party";		break;
+				case GL_DEBUG_SOURCE_APPLICATION:		sourceInfo = "Source: Application";		break;
+				case GL_DEBUG_SOURCE_OTHER:				sourceInfo = "Source: Other";			break;
+			}
+
+			switch (Type)
+			{
+				case GL_DEBUG_TYPE_ERROR:               typeInfo = "Type: Error";				break;
+				case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: typeInfo = "Type: Deprecated Behaviour";break;
+				case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  typeInfo = "Type: Undefined Behaviour";	break;
+				case GL_DEBUG_TYPE_PORTABILITY:         typeInfo = "Type: Portability";			break;
+				case GL_DEBUG_TYPE_PERFORMANCE:         typeInfo = "Type: Performance";			break;
+				case GL_DEBUG_TYPE_MARKER:              typeInfo = "Type: Marker";				break;
+				case GL_DEBUG_TYPE_PUSH_GROUP:          typeInfo = "Type: Push Group";			break;
+				case GL_DEBUG_TYPE_POP_GROUP:           typeInfo = "Type: Pop Group";			break;
+				case GL_DEBUG_TYPE_OTHER:               typeInfo = "Type: Other";				break;
+			}
+			return "(OpenGL) (" + typeInfo + ") (" + sourceInfo + ") ";
+		};
+
 		switch (Severity)
 		{
-			case GL_DEBUG_SEVERITY_HIGH:         LOG(RHI, Error, Msg);		return;
-			case GL_DEBUG_SEVERITY_MEDIUM:       LOG(RHI, Error, Msg);		return;
-			case GL_DEBUG_SEVERITY_LOW:          LOG(RHI, Warning, Msg);	return;
-			case GL_DEBUG_SEVERITY_NOTIFICATION: LOG(RHI, Trace, Msg);		return;
-		}
-
-		switch (Source)
-		{
-			case GL_DEBUG_SOURCE_API:				LOG(RHI, Error, "Source: API");				break;
-			case GL_DEBUG_SOURCE_WINDOW_SYSTEM:		LOG(RHI, Error, "Source: Window System");	break;
-			case GL_DEBUG_SOURCE_SHADER_COMPILER:	LOG(RHI, Error, "Source: Shader Compiler"); break;
-			case GL_DEBUG_SOURCE_THIRD_PARTY:		LOG(RHI, Error, "Source: Third Party");		break;
-			case GL_DEBUG_SOURCE_APPLICATION:		LOG(RHI, Error, "Source: Application");		break;
-			case GL_DEBUG_SOURCE_OTHER:				LOG(RHI, Error, "Source: Other");			break;
-		}
-
-		switch (Type)
-		{
-			case GL_DEBUG_TYPE_ERROR:               LOG(RHI, Error, "Type: Error");					break;
-			case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: LOG(RHI, Error, "Type: Deprecated Behaviour");	break;
-			case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  LOG(RHI, Error, "Type: Undefined Behaviour");	break;
-			case GL_DEBUG_TYPE_PORTABILITY:         LOG(RHI, Error, "Type: Portability");			break;
-			case GL_DEBUG_TYPE_PERFORMANCE:         LOG(RHI, Error, "Type: Performance");			break;
-			case GL_DEBUG_TYPE_MARKER:              LOG(RHI, Error, "Type: Marker");				break;
-			case GL_DEBUG_TYPE_PUSH_GROUP:          LOG(RHI, Error, "Type: Push Group");			break;
-			case GL_DEBUG_TYPE_POP_GROUP:           LOG(RHI, Error, "Type: Pop Group");				break;
-			case GL_DEBUG_TYPE_OTHER:               LOG(RHI, Error, "Type: Other");					break;
+			case GL_DEBUG_SEVERITY_HIGH:         LOG(RHI, Error, "{0} {1}", generateInfoHeader(), Msg);	break;
+			case GL_DEBUG_SEVERITY_MEDIUM:       LOG(RHI, Error, Msg);		break;
+			case GL_DEBUG_SEVERITY_LOW:          LOG(RHI, Warning, Msg);	break;
+			case GL_DEBUG_SEVERITY_NOTIFICATION: LOG(RHI, Trace, Msg);		break;
 		}
 	}
 
@@ -81,7 +87,7 @@ namespace Engine::RHI
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		/** Enable depth buffer */
-		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 
 		/** Enable draw lines with correct filtering instead of aliased. */
 		glEnable(GL_LINE_SMOOTH);
@@ -100,6 +106,6 @@ namespace Engine::RHI
 	void OpenGLRHI::Clear(void)
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 }
