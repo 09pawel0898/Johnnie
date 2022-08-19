@@ -36,8 +36,15 @@ namespace Engine::RHI
 		VertexBuffer->Bind();
 
 		uint8_t currentAttribIndex = 0;
-		
 		auto const& layout = VertexBuffer->GetLayout();
+
+		auto add1DVertexAttribArray = [&currentAttribIndex](auto const& Layout, auto const& Element, uint8_t Size)
+		{
+			glEnableVertexAttribArray(currentAttribIndex);
+			glVertexAttribPointer(currentAttribIndex, Size, RHIElementTypeToOpenGL(Element->VBOElementType),
+				Element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)Layout->GetStride(), (void const*)Element->Offset);
+			currentAttribIndex++;
+		};
 
 		for (auto element = layout->begin(); element != layout->end(); element++)
 		{
@@ -45,23 +52,13 @@ namespace Engine::RHI
 			{
 				using enum RHIElementType;
 
-			case Float3:
-				glEnableVertexAttribArray(currentAttribIndex);
-				glVertexAttribPointer(currentAttribIndex, 3, RHIElementTypeToOpenGL(element->VBOElementType),
-					element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)layout->GetStride(), (void const*)element->Offset);
-				currentAttribIndex++;
-				break;
+				case Float2:	add1DVertexAttribArray(layout, element, 2);	break;
+				case Float3:	add1DVertexAttribArray(layout, element, 3);	break;
+				case Float4:	add1DVertexAttribArray(layout, element, 4);	break;
 
-			case Float4:
-				glEnableVertexAttribArray(currentAttribIndex);
-				glVertexAttribPointer(currentAttribIndex, 4, RHIElementTypeToOpenGL(element->VBOElementType),
-					element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)layout->GetStride(), (void const*)element->Offset);
-				currentAttribIndex++;
-				break;
-
-			default:
-				CheckMsg(false, "Unsupported Element for OpenGL VertexBufferLayout!");
-				break;
+				default:
+					CheckMsg(false, "Unsupported Element for OpenGL VertexBufferLayout!");
+					break;
 			}
 		}
 		

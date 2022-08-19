@@ -9,9 +9,9 @@
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/RHI/Resources/RHIBuffers.hpp"
 #include "Renderer/RHI/Resources/RHIVertexArray.hpp"
+#include "Renderer/RHI/Resources/RHITexture.hpp"
 
 #include <glad/glad.h>
-#include <stb_image.h>
 
 namespace Engine::Core
 {
@@ -64,15 +64,16 @@ namespace Engine::Core
        static bool init = false;
        static std::unique_ptr<RHIShader> s = nullptr;
        static std::unique_ptr<RHIVertexArray> _vao;
+       static std::unique_ptr<RHITexture2D> texture;
 
        if(!init)
        {
            float vertices[] = 
            {
-                0.5f, 0.5f, 0.0f, 1.0f,0.0f,0.0f,
-                0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,
-                -0.5f, -0.5f, 0.0f,  0.0f,1.0f,0.0f,
-                -0.5f,  0.5f, 0.0f,  0.0f,0.0f,1.0f
+                0.4f, 0.65f, 0.0f,   1.0f,0.0f,0.0f, 1.0f, 1.0f,
+                0.4f, -0.65f, 0.0f,  0.0f,1.0f,0.0f, 1.0f, 0.0f,
+                -0.4f, -0.65f, 0.0f, 0.0f,1.0f,0.0f, 0.0f, 0.0f,
+                -0.4f,  0.65f, 0.0f, 0.0f,0.0f,1.0f, 0.0f, 1.0f
            };
            
            uint32_t indices[] =
@@ -84,11 +85,11 @@ namespace Engine::Core
            _vao = RHI::RHIVertexArray::Create();
            //_vao->Bind();
 
-           RHIVertexBufferElement ePosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
-           RHIVertexBufferElement eColor    = RHIVertexBufferElement(RHIElementType::Float3, "aColor");
+           RHIVertexBufferElement aPosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
+           RHIVertexBufferElement aColor    = RHIVertexBufferElement(RHIElementType::Float3, "aColor");
+           RHIVertexBufferElement aTexCoord   = RHIVertexBufferElement(RHIElementType::Float2, "aTextCoord");
 
-           RHIVertexBufferLayout _layout{ePosition, eColor};
-           
+           RHIVertexBufferLayout _layout{aPosition, aColor, aTexCoord};
            
            auto _vbo = RHI::RHIVertexBuffer::Create(vertices, sizeof(vertices));
 
@@ -104,7 +105,9 @@ namespace Engine::Core
            
 
            s = RHI::RHIShader::Create("Basic", "Assets/Shaders/shader.glsl");
-       
+            
+           texture = RHI::RHITexture2D::Create("Assets/Textures/texture.jpg");
+
            //glGenVertexArrays(1, &VAO);
            //
            //GLuint VBO;

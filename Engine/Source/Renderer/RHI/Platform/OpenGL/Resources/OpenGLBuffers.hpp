@@ -10,7 +10,7 @@ namespace Engine::RHI
 	class OpenGLIndexBuffer final : public RHIIndexBuffer
 	{
 	private:
-		uint32_t m_ID;
+		uint32_t m_ID = 0;
 
 	public:
 		OpenGLIndexBuffer(uint32_t* Indices, uint32_t Count);
