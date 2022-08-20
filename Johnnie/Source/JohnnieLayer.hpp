@@ -20,7 +20,7 @@ private:
 	SystemStatisticsWidget	m_SystemStatistics;
 
 	/** Floating Camera */
-	Camera m_Camera;
+	OCamera m_Camera;
 
 private:
 	/** Layer Interface Impl*/

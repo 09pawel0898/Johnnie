@@ -4,13 +4,15 @@
 
 namespace Engine
 {
-	std::unique_ptr<DynamicRHI> Renderer::s_RHI = nullptr;
-
 	void Renderer::Init(RenderingAPI RenderingAPI)
 	{
-		if (s_RHI = DynamicRHI::Create(RenderingAPI))
+		Construct();
+
+		auto& _this = Get();
+
+		if (_this->m_RHI = DynamicRHI::Create(RenderingAPI))
 		{
-			s_RHI->Init();
+			_this->m_RHI->Init();
 		}
 		else
 		{
@@ -20,16 +22,23 @@ namespace Engine
 	
 	void Renderer::Shutdown(void)
 	{
-		s_RHI->Shutdown();
+		auto& _this = Get();
+
+		_this->m_RHI->Shutdown();
 	}
 	
 	std::unique_ptr<DynamicRHI>& Renderer::GetRHI(void)
 	{
-		return s_RHI;
+		return m_RHI;
 	}
 
 	RenderingAPI Renderer::GetApiType(void)
 	{
-		return s_RHI->GetType();
+		return m_RHI->GetType();
+	}
+
+	void Renderer::SetRenderTarget(std::shared_ptr<Camera> RenderTarget)
+	{
+		m_Camera = std::move(RenderTarget);
 	}
 }

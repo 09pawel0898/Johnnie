@@ -201,8 +201,8 @@ namespace Engine::Core
         
         double tMinTimePerFrame = 1000.0 / m_FPSLIMIT;
 
-        Renderer::GetRHI()->SetClearColor(glm::vec4(0.45f, 0.55f, 0.60f, 1.00f));
-        Renderer::GetRHI()->SetViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
+        Renderer::Get()->GetRHI()->SetClearColor(glm::vec4(0.45f, 0.55f, 0.60f, 1.00f));
+        Renderer::Get()->GetRHI()->SetViewport(0, 0, m_Window->GetWidth(), m_Window->GetHeight());
 
         while (m_bRunning)
         {
@@ -235,7 +235,7 @@ namespace Engine::Core
                 }
                 m_Window->OnTick();
 
-                Renderer::GetRHI()->Clear();
+                Renderer::Get()->GetRHI()->Clear();
 
                 tLastUpdate = TimePoint::now();
                 m_FPS = (1.0 / m_DeltaTime) * 1000;;

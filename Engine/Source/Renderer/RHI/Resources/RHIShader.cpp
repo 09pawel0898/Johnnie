@@ -18,7 +18,7 @@ namespace Engine::RHI
 
 	std::unique_ptr<RHIShader> RHIShader::Create(std::string_view Name, std::string_view FilePath)
 	{
-		switch (Renderer::GetApiType())
+		switch (Renderer::Get()->GetApiType())
 		{
 			case RenderingAPI::OpenGL: return std::make_unique<OpenGLShader>(Name, FilePath); break;
 		}
@@ -27,7 +27,7 @@ namespace Engine::RHI
 
 	std::unique_ptr<RHIShader> RHIShader::Create(std::string_view Name, std::string_view VertShaderFilePath, std::string_view FragShaderFilePath)
 	{
-		switch (Renderer::GetApiType())
+		switch (Renderer::Get()->GetApiType())
 		{
 			case RenderingAPI::OpenGL: return std::make_unique<OpenGLShader>(Name, VertShaderFilePath, FragShaderFilePath); break;
 		}

@@ -7,6 +7,7 @@
 
 namespace Engine::RHI
 {
+	/** OpenGL Error Handler */
 	static void OpenGLDebugOutput(GLuint Source, GLuint Type, GLuint Id, GLuint Severity, int Length, const char* Msg, const void* UserParam)
 	{
 		if (Id == 131169 || Id == 131185 || Id == 131218 || Id == 131204)
