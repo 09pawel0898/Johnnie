@@ -6,8 +6,12 @@
 
 namespace Engine
 {
-	class Camera;
+	class OCamera;
 
+	namespace RHI
+	{
+		class RHIShader;
+	}
 	using namespace RHI;
 
 	class Renderer final : public Singleton<Renderer>
@@ -17,17 +21,16 @@ namespace Engine
 
 		static void Shutdown(void);
 	
-	private:
-		std::unique_ptr<DynamicRHI> m_RHI = nullptr;
-
 	public:
 		std::unique_ptr<DynamicRHI>& GetRHI(void);
 		RenderingAPI GetApiType(void);
 
 	private:
-		std::shared_ptr<Camera> m_Camera = nullptr;
+		std::shared_ptr<OCamera> m_Camera = nullptr;
 	public:
 
-		void SetRenderTarget(std::shared_ptr<Camera> RenderTarget);
+		void SetViewTarget(std::shared_ptr<OCamera> ViewTarget);
+
+		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
 	};
 }

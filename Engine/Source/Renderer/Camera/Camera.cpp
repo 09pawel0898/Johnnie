@@ -22,7 +22,7 @@ namespace Engine
 	void OCamera::UpdateWorldCamera(void)
 	{
 
-		m_Target = { 0.f,-0.5f,0.f };
+		m_Target = { 0.0f,0.0f,0.0f };
 
 		m_Forward	= glm::normalize(m_Target - GetLocation());
 		m_Right		= glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), m_Forward));
@@ -35,7 +35,7 @@ namespace Engine
 
 	void OCamera::UpdateProjection(void)
 	{
-		m_AspectRatio = 1280.f / 720.f;
+		m_AspectRatio = 1280 / 720;
 		m_ProjectionMat = glm::perspective(glm::radians(m_FielfOfView), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 

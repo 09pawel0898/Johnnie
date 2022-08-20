@@ -31,7 +31,7 @@ namespace Engine
 
 		virtual ~OCamera() = default;
 		
-		OCamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation = { 0.f,-0.5f,-3.f });
+		OCamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation = { 0.f,0.0f,-3.f });
 
 		glm::mat4 const& GetProjectionMat(void) const;
 		glm::mat4 const& GetViewMat(void) const;

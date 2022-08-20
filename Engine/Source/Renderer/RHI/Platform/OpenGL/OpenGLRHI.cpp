@@ -1,6 +1,7 @@
 #include "EnginePCH.hpp"
 
 #include "OpenGLRHI.hpp"
+#include "Resources/OpenGLBuffers.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -90,7 +91,7 @@ namespace Engine::RHI
 		/** Enable depth buffer */
 		glEnable(GL_DEPTH_TEST);
 
-		/** Enable draw lines with correct filtering instead of aliased. */
+		/** Enable draw lines with correct filtering instead of aliased */
 		glEnable(GL_LINE_SMOOTH);
 	}
 
@@ -99,14 +100,26 @@ namespace Engine::RHI
 		glViewport(X, Y, Width, Height);
 	}
 
-	void OpenGLRHI::SetClearColor(const glm::vec4& color)
+	void OpenGLRHI::SetClearColor(const glm::vec4& Color)
 	{
-		glClearColor(color.r,color.g,color.b,color.a);
+		glClearColor(Color.r,Color.g,Color.b,Color.a);
 	}
 
 	void OpenGLRHI::Clear(void)
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void OpenGLRHI::DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount)
+	{
+		VertexArray->Bind();
+		glDrawArrays(GL_LINES, 0, VertexCount);
+	}
+
+	void OpenGLRHI::DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount)
+	{
+		VertexArray->Bind();
+		uint32_t count = IndexCount ? IndexCount : VertexArray->GetIndexBuffer()->GetCount();
+		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
 }

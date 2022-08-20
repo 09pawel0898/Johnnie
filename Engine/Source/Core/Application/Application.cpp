@@ -11,6 +11,7 @@
 #include "Renderer/RHI/Resources/RHIVertexArray.hpp"
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/Camera/Camera.hpp"
+#include "Renderer/RHI/RHICommand.hpp"
 
 #include <glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
@@ -69,10 +70,10 @@ namespace Engine::Core
        static unsigned int VAO = 0;
        static GLuint shaderProgram = 0;
        static bool init = false;
-       static std::unique_ptr<RHIShader> s = nullptr;
-       static std::unique_ptr<RHIVertexArray> _vao;
-       static std::unique_ptr<RHITexture2D> texture;
-       static std::unique_ptr<RHITexture2D> texture2;
+       static std::shared_ptr<RHIShader> s = nullptr;
+       static std::shared_ptr<RHIVertexArray> _vao;
+       static std::shared_ptr<RHITexture2D> texture;
+       static std::shared_ptr<RHITexture2D> texture2;
 
 
        static float vertices[] =
@@ -179,17 +180,21 @@ namespace Engine::Core
        proj = glm::perspective(glm::radians(45.0f), (float)(1280 / 720), 0.1f,100.0f);
 
        s->Bind();
-       s->SetMat4("model", model);
-       s->SetMat4("view", view);
-       s->SetMat4("proj", proj);
+       //s->SetMat4("model", model);
+       //s->SetMat4("view", view);
+       //s->SetMat4("proj", proj);
 
        _vao->Bind();
 
        texture->Bind(0);
        texture2->Bind(1);
+
+       //RHICommand::DrawIndexed(_vao);
+
+       Renderer::Get()->Draw(s, _vao, model);
        //glBindVertexArray(VAO);
        //glDrawArrays(GL_TRIANGLES, 0, 3);
-       glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int) , GL_UNSIGNED_INT, 0);
+       //glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(int) , GL_UNSIGNED_INT, 0);
     }
       
     void Application::Run(void)

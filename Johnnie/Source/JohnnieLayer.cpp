@@ -3,15 +3,18 @@
 #include <Engine/Gui.hpp>
 #include <Engine/System.hpp>
 #include <Engine/Utilities.hpp>
+#include <Engine/Renderer.hpp>
 
 JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
 	:	Layer(Name),
-		m_Camera(glm::radians(45.f), (float)(1280.f / 720.f), 0.1f, 100.0f)
+		m_Camera(std::make_shared<OCamera>(45.f, (float)(1280 / 720), 0.1f, 100.0f))
 {}
 
 void JohnnieLayer::OnAwake(void)
 {
 	InitGui();
+
+	Renderer::Get()->SetViewTarget(m_Camera);
 }
 
 void JohnnieLayer::OnDetach(void)

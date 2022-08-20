@@ -7,13 +7,14 @@ class Singleton
 {
     static inline std::unique_ptr<T> s_Instance;
 
-public:
+protected:
     template <typename... Args>
     static void Construct(Args...)
     {
         s_Instance = std::make_unique<T>(std::forward(Args)...);
     }
 
+public:
     static std::unique_ptr<T>& Get()
     {
         Check(s_Instance != nullptr);
@@ -24,7 +25,6 @@ protected:
     Singleton() = default;
     virtual ~Singleton() = default;
 
-public:
     Singleton(Singleton const&) = delete;
     Singleton& operator=(Singleton const&) = delete;
 

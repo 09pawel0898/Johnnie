@@ -20,7 +20,7 @@ private:
 	SystemStatisticsWidget	m_SystemStatistics;
 
 	/** Floating Camera */
-	OCamera m_Camera;
+	std::shared_ptr<OCamera> m_Camera;
 
 private:
 	/** Layer Interface Impl*/

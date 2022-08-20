@@ -1,6 +1,10 @@
 #include "EnginePCH.hpp"
 
 #include "Renderer.hpp"
+#include "Camera/Camera.hpp"
+#include "RHI/Resources/RHIShader.hpp"
+
+#include "RHI/RHICommand.hpp"
 
 namespace Engine
 {
@@ -8,37 +12,36 @@ namespace Engine
 	{
 		Construct();
 
-		auto& _this = Get();
-
-		if (_this->m_RHI = DynamicRHI::Create(RenderingAPI))
-		{
-			_this->m_RHI->Init();
-		}
-		else
-		{
-			Check(false);
-		}
+		RHI::RHICommand::Initialize(RenderingAPI);
 	}
 	
 	void Renderer::Shutdown(void)
 	{
-		auto& _this = Get();
-
-		_this->m_RHI->Shutdown();
+		RHI::RHICommand::Shutdown();
 	}
 	
 	std::unique_ptr<DynamicRHI>& Renderer::GetRHI(void)
 	{
-		return m_RHI;
+		return RHI::RHICommand::GetRHI();
 	}
 
 	RenderingAPI Renderer::GetApiType(void)
 	{
-		return m_RHI->GetType();
+		return RHI::RHICommand::GetRHI()->GetType();
 	}
 
-	void Renderer::SetRenderTarget(std::shared_ptr<Camera> RenderTarget)
+	void Renderer::SetViewTarget(std::shared_ptr<OCamera> ViewTarget)
 	{
-		m_Camera = std::move(RenderTarget);
+		m_Camera = std::move(ViewTarget);
+	}
+
+	void Renderer::Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
+	{
+		Shader->Bind();
+		Shader->SetMat4("model", ModelMat);
+		Shader->SetMat4("view", m_Camera->GetViewMat());
+		Shader->SetMat4("proj", m_Camera->GetProjectionMat());
+
+		RHICommand::DrawIndexed(VertexArray);
 	}
 }
