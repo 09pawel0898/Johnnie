@@ -27,6 +27,8 @@ void JohnnieLayer::OnRender(void) const
 
 void JohnnieLayer::OnTick(double DeltaTime)
 {
+	m_Camera->UpdateView();
+
 	/** TO DO : Implement tickable widgets with fixed interval **/
 	{
 		static Utility::TimePoint lastStatsUpdTime = Utility::Time::now();

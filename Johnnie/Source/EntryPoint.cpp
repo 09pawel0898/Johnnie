@@ -3,6 +3,8 @@
 
 #include "JohnnieLayer.hpp"
 
+#include "Engine/Camera.hpp"
+
 class JohnnieApplication final : public Core::Application
 {
 public:

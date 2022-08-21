@@ -26,6 +26,51 @@ template<class T> T& ClassMacro_Impl(const T* t);
     protected:\
     using Super = ClassName
 
+/** Should define console log sing by default */
 #define PROFILE_RESULT_LOG 1
+
+template<typename Base, typename T>
+FORCEINLINE constexpr bool InstanceOf(T const* Ptr)
+{
+    return dynamic_cast<const Base*>(Ptr) != nullptr;
+}
+
+template<typename Base, typename Derived>
+FORCEINLINE constexpr bool BaseOf()
+{
+    return std::is_base_of<Base, Derived>::value;
+}
+
+template<typename To, typename From>
+FORCEINLINE constexpr To* Cast(From* Ptr)
+{
+    return dynamic_cast<To*>(Ptr);
+}
+
+template<typename To, typename From>
+FORCEINLINE constexpr To* Cast(From const* Ptr)
+{
+    return dynamic_cast<To const*>(Ptr);
+}
+
+#include <concepts>
+
+template <typename T>
+concept SmartPtr =
+requires(T t) {
+    { t.get() };
+};
+
+template<typename To>
+FORCEINLINE constexpr To* Cast(SmartPtr auto& Ptr)
+{
+    return dynamic_cast<To*>(Ptr.get());
+}
+
+template<typename To>
+FORCEINLINE constexpr To* Cast(SmartPtr auto const& Ptr)
+{
+    return dynamic_cast<To const*>(Ptr.get());
+}
 
 #include "System/Memory.hpp"

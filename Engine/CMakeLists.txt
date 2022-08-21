@@ -5,6 +5,7 @@ target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
     	glfw
 	spdlog
 	stb_image
+	stduuid
 )
 
 

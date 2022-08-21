@@ -60,3 +60,12 @@ set_target_properties(
     stb_image
     PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/stb_image
 )
+
+# STDUUID
+
+add_subdirectory(stduuid)
+set_target_properties(
+    stduuid
+    PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/stduuid
+)
+

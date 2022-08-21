@@ -14,7 +14,7 @@ namespace Engine
 	}
 	using namespace RHI;
 
-	class Renderer final : public Singleton<Renderer>
+	class Renderer final : public MSingleton<Renderer>
 	{
 	public:
 		static void Init(RenderingAPI RenderingAPI);

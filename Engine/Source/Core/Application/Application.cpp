@@ -12,6 +12,7 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/Camera/Camera.hpp"
 #include "Renderer/RHI/RHICommand.hpp"
+#include "Scene/Entities/Tickable.hpp"
 
 #include <glm/glm.hpp>
 #include<glm/gtc/matrix_transform.hpp>
@@ -97,8 +98,6 @@ namespace Engine::Core
 
        if(!init)
        {
-           
-
            _vao = RHI::RHIVertexArray::Create();
            //_vao->Bind();
 
@@ -164,10 +163,10 @@ namespace Engine::Core
        glm::mat4 view = glm::mat4(1.0f);
        glm::mat4 proj = glm::mat4(1.0f);
 
-       static double prevTime = Utility::Time::now().time_since_epoch().count();
+       static double prevTime = (double)(Utility::Time::now().time_since_epoch().count());
        static double rotation = 0.0;
 
-       double nowTime = Utility::Time::now().time_since_epoch().count();
+       double nowTime = (double)(Utility::Time::now().time_since_epoch().count());
 
        if (nowTime - prevTime >= 1 / 60)
        {
@@ -223,7 +222,9 @@ namespace Engine::Core
                     {
                         layer->OnTick(m_DeltaTime);
                     }
-                
+                    
+                    TickableManager::Get()->UdateTickableEntities(m_DeltaTime);
+
                     for (auto& layer : *m_LayerManager)
                     {
                         layer->OnRender();
