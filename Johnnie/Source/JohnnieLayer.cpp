@@ -31,7 +31,7 @@ void JohnnieLayer::OnAwake(void)
 {
 	InitGui();
 
-	Renderer::Get()->SetViewTarget(m_Camera);
+    CameraController::Get()->SetViewTarget(m_Camera);
 }
 
 void JohnnieLayer::OnDetach(void)
@@ -145,7 +145,7 @@ static void Test()
         prevTime = nowTime;
     }
 
-    model = glm::rotate(model, (float)glm::radians(rotation), glm::vec3(0.0f, 1.0f, 0.0f));
+    model = glm::rotate(model, 45.0f, glm::vec3(0.0f, 1.0f, 0.0f));
     view = glm::translate(view, glm::vec3(0.0f, -0.5f, -3.0f));
     proj = glm::perspective(glm::radians(45.0f), (float)(1280 / 720), 0.1f, 100.0f);
 

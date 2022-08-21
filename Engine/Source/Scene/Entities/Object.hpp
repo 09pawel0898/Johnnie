@@ -15,6 +15,7 @@ namespace Engine
 
 	public:
 		glm::vec3 const& GetLocation(void) const;
+		glm::vec3& GetLocation(void);
 		void SetLocation(glm::vec3 const& Location);
 		
 		glm::vec3 const& GetRotation(void) const;
@@ -25,6 +26,11 @@ namespace Engine
 	};
 
 	FORCEINLINE glm::vec3 const& Object::GetLocation(void) const
+	{
+		return m_Location;
+	}
+
+	FORCEINLINE glm::vec3& Object::GetLocation(void) 
 	{
 		return m_Location;
 	}

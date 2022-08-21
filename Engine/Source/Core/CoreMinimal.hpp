@@ -57,7 +57,8 @@ FORCEINLINE constexpr To* Cast(From const* Ptr)
 
 template <typename T>
 concept SmartPtr =
-requires(T t) {
+requires(T t) 
+{
     { t.get() };
 };
 

@@ -43,7 +43,10 @@ namespace Engine
 	{
 		UpdateWorldCamera();
 
-		m_ViewMat = glm::lookAt(GetLocation(), m_Target, m_Up);
+		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+		m_ViewMat = glm::lookAt(GetLocation(), GetLocation() + cameraFront, cameraUp);
 	}
 
 	void OCamera::OnTick(double DeltaTime)

@@ -12,7 +12,7 @@ namespace Engine
 
 	using namespace Events;
 
-	class CameraController : public IEventListener, Singleton<CameraController>
+	class CameraController : public IEventListener, public Singleton<CameraController>
 	{
 	private:
 		std::shared_ptr<OCamera> m_ControlledCamera;
@@ -20,11 +20,18 @@ namespace Engine
 	public:
 		virtual void OnEvent(Event& Event) override;
 
-	private:
-		void SetCameraToControl(std::shared_ptr<OCamera> Camera);
+		void OnTick(double DeltaTime);
+
+		void SetViewTarget(std::shared_ptr<OCamera> Camera);
+
+	public:
+		std::shared_ptr<OCamera> const& GetCamera(void) const
+		{
+			return m_ControlledCamera;
+		}
 	};
 
-	FORCEINLINE void CameraController::SetCameraToControl(std::shared_ptr<OCamera> Camera)
+	FORCEINLINE void CameraController::SetViewTarget(std::shared_ptr<OCamera> Camera)
 	{
 		m_ControlledCamera = std::move(Camera);
 	}

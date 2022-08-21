@@ -25,12 +25,8 @@ namespace Engine
 		std::unique_ptr<DynamicRHI>& GetRHI(void);
 		RenderingAPI GetApiType(void);
 
-	private:
-		std::shared_ptr<OCamera> m_Camera = nullptr;
 	public:
 		void InitializeViewport(glm::i32vec4 ViewportBounds);
-
-		void SetViewTarget(std::shared_ptr<OCamera> ViewTarget);
 
 		void Clear(void);
 

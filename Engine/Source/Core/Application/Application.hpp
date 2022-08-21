@@ -4,6 +4,7 @@
 
 #include "Core/Window/IWindow.hpp"
 #include "Core/Layers/LayerManager.hpp"
+#include "Core/Layers/EngineLayers/EngineBaseLayer.hpp"
 #include "ImGui/ImGuiLayer.hpp"
 
 int main(void);
@@ -53,6 +54,9 @@ namespace Engine::Core
 		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
 		void InitLayerManager(void);
 		void InitImGuiLayer(void);
+
+		std::shared_ptr<EngineBaseLayer> m_EngineBaseLayer;
+		void InitEngineLayer(void);
 
 	public:
 		ImGuiProperties& GetGuiProperties() { return m_ImGuiLayer->GetImGuiProperties(); };

@@ -31,8 +31,8 @@ void SystemStatisticsWidget::OnRenderGui(void)
 		{
 			ImGui::Text("Frame");
 			ImGui::Separator();
-			ImGui::Text("Delta Time	: %.2f",	ApplicationStats.DeltaTime);
-			ImGui::Text("FPS		   : %.2f",	ApplicationStats.Fps);
+			ImGui::Text("Delta Time    : %.4f ms",	ApplicationStats.DeltaTime * 1000.0f);
+			ImGui::Text("FPS		   : %.2f",		ApplicationStats.Fps);
 			ImGui::Separator(); 
 			ImGui::Dummy(ImVec2(0.0f, 20.0f));
 		}

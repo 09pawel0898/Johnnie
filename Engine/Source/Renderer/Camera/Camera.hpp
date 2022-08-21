@@ -4,10 +4,13 @@
 
 #include "Scene/Entities/Object.hpp"
 #include "Scene/Entities/Tickable.hpp"
+#include "Events/IEventListener.hpp"
 
 namespace Engine
 {
-	class OCamera : public Object, public Tickable
+	using namespace Events;
+
+	class OCamera : public Object, public Tickable, public IEventListener
 	{
 	protected:
 		/** View Parameters */
@@ -42,7 +45,8 @@ namespace Engine
 		glm::vec3 const& GetUpVec(void) const;
 		glm::vec3 const& GetRightVec(void) const;
 
-		void OnTick(double DeltaTime);
+		virtual void OnTick(double DeltaTime) override;
+		virtual void OnEvent(Event& Event) override {}
 
 	private:
 		void UpdateWorldCamera(void);

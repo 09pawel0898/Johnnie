@@ -51,11 +51,17 @@ namespace Engine::Core
         m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
         m_LayerManager->PushOverlay(m_ImGuiLayer);
     }
+
+    void Application::InitEngineLayer(void)
+    {
+        m_EngineBaseLayer = std::make_shared<EngineBaseLayer>("EngineBaseLayer");
+        m_LayerManager->PushLayer(m_EngineBaseLayer);
+    }
     
     void Application::Run(void)
     { 
         Utility::TimePoint tFrameStart, tLastUpdate = Utility::Time::now();
-        double tMinTimePerFrame = 1000.0 / m_FPSLIMIT;
+        double tMinTimePerFrame = (1000.0 / m_FPSLIMIT);
 
         Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
 
@@ -63,10 +69,12 @@ namespace Engine::Core
         {
             tFrameStart = Utility::Time::now();
 
-            m_DeltaTime = std::chrono::duration<double, std::milli>
+            float timeSinceLastUpdate = std::chrono::duration<double, std::milli>
                 (tFrameStart - tLastUpdate).count();
 
-            if (m_DeltaTime >= tMinTimePerFrame)
+            m_DeltaTime = timeSinceLastUpdate / 1000.0f;
+
+            if (timeSinceLastUpdate >= tMinTimePerFrame)
             {
                 {
                     for (auto& layer : *m_LayerManager)
@@ -95,7 +103,7 @@ namespace Engine::Core
                 Renderer::Get()->Clear();
 
                 tLastUpdate = Utility::Time::now();
-                m_FPS = (1.0 / m_DeltaTime) * 1000;
+                m_FPS = (1.0 / m_DeltaTime);
             }
 
             
@@ -124,6 +132,7 @@ namespace Engine::Core
 
     void Application::PostInitApplication(void)
     {
+        InitEngineLayer();
         InitImGuiLayer();
     }
 
