@@ -5,8 +5,9 @@
 #include <Engine/Utilities.hpp>
 #include <Engine/Renderer.hpp>
 #include <Engine/CoreObject.hpp>
-
 #include <Engine/Camera.hpp>
+
+#include "Gui/SystemStatisticsWidget.hpp"
 
 /// test
 #include "Renderer/RHI/Resources/RHIShader.hpp"
@@ -21,9 +22,10 @@
 /// 
 
 JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
-	:	Layer(Name),
-		m_Camera(NewObject<OFloatingCamera>(45.0f,(float)(1280/720),0.1f,100.0f))
-{}
+	:	Layer(Name)
+{
+    m_Camera = NewObject<OFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);
+}
 
 void JohnnieLayer::OnAwake(void)
 {
@@ -168,26 +170,18 @@ void JohnnieLayer::OnRender(void) const
 }
 
 void JohnnieLayer::OnTick(double DeltaTime)
-{
-	/** TO DO : Implement tickable widgets with fixed interval **/
-	{
-		static Utility::TimePoint lastStatsUpdTime = Utility::Time::now();
-		Utility::TimePoint timeNow = Utility::Time::now();
-		Utility::Duration timeAfterLastUpd = timeNow - lastStatsUpdTime;
-
-		if (timeAfterLastUpd.count() > .1f)
-		{
-			m_SystemStatistics.OnTick();
-			lastStatsUpdTime = Utility::Time::now();
-		}
-	}
-}
+{}
 
 void JohnnieLayer::OnEvent(Events::Event& Event)
 {}
 
 void JohnnieLayer::InitGui(void)
 {
+    /** Register tickable widgets manually */
+    m_SystemStatistics = std::make_shared<SystemStatisticsWidget>();
+    TickableManager::Get()->RegisterTickable(m_SystemStatistics);
+
+    /** Init widgets delegates */
 	m_MainMenuBar.BindActionDelegate(MainMenuBarAction::Open,
 	[]()
 	{
@@ -199,7 +193,7 @@ void JohnnieLayer::OnRenderGui(void)
 {
 	m_MainMenuBar.OnRenderGui();
 	m_ConsoleLog.OnRenderGui();
-	m_SystemStatistics.OnRenderGui();
+	m_SystemStatistics->OnRenderGui();
 
 	//static bool bShowDemoWindow = false;
 	//ImGui::ShowDemoWindow(&bShowDemoWindow);

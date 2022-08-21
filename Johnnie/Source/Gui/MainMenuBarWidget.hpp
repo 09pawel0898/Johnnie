@@ -11,5 +11,7 @@ enum class MainMenuBarAction : uint8_t
 class MainMenuBarWidget final : public ImGuiWidgetBase<MainMenuBarAction>
 {
 public:
+	MainMenuBarWidget();
+
 	virtual void OnRenderGui(void) override;
 };

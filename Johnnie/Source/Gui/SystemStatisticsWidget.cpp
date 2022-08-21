@@ -13,6 +13,8 @@
 SystemStatisticsWidget::SystemStatisticsWidget()
 {
 	InitStaticStats();
+
+	SetTickInterval(0.1f);
 }
 
 void SystemStatisticsWidget::InitStaticStats(void)
@@ -110,7 +112,7 @@ void SystemStatisticsWidget::OnRenderGui(void)
 	ImGui::End();
 }
 
-void SystemStatisticsWidget::OnTick(void)
+void SystemStatisticsWidget::OnTick(double DeltaTime)
 {
 	UpdateApplicationStats();
 	UpdateMemoryAllocationStats();

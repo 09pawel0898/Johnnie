@@ -74,6 +74,8 @@ void ConsoleLogWidget::OnRenderGui(void)
 ConsoleLogWidget::ConsoleLogWidget(void)
 {
     AutoScroll = true;
+    SetTickEnabled(false);
+
     InitLoggerSink();
 }
 
@@ -116,6 +118,7 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
     {
         return Log::Verbosity::Error;
     }
+    return Log::Verbosity::Trace;
 }
 
 void ConsoleLogWidget::AddLog(std::string const& LogMsg)

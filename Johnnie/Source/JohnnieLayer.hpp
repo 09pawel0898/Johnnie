@@ -5,7 +5,10 @@
 
 #include "Gui/MainMenuBarWidget.hpp"
 #include "Gui/ConsoleLogWidget.hpp"
-#include "Gui/SystemStatisticsWidget.hpp"
+
+class MainMenuBarWidget;
+class ConsoleLogWidget;
+class SystemStatisticsWidget;
 
 namespace Engine
 {
@@ -19,9 +22,9 @@ public:
 
 private:
 	/** UI Widgets */
-	MainMenuBarWidget		m_MainMenuBar;
-	ConsoleLogWidget		m_ConsoleLog;
-	SystemStatisticsWidget	m_SystemStatistics;
+	MainMenuBarWidget	m_MainMenuBar;
+	ConsoleLogWidget	m_ConsoleLog;
+	std::shared_ptr<SystemStatisticsWidget>	m_SystemStatistics;	// SharedPtr to be properly registered and managed as a Tickable object.
 
 	/** Floating Camera */
 	std::shared_ptr<OFloatingCamera> m_Camera;

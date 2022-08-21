@@ -15,7 +15,7 @@ namespace Engine
 		if (!TickableEntity->m_bRegistered)
 		{
 			m_RegisteredTickables.emplace_back(std::make_pair(std::move(UUID), std::weak_ptr<Tickable>(TickableEntity)));
-			TickableEntity->m_LastUpdate = std::chrono::high_resolution_clock::now();
+			TickableEntity->m_LastUpdate = Utility::Time::now();
 			TickableEntity->m_bRegistered = true;
 
 			return true;

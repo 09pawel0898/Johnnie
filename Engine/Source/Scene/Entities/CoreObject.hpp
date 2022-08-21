@@ -6,7 +6,8 @@
 
 namespace Engine
 {
-	template <typename ObjectType, typename... Args> 
+	template <typename ObjectType, typename... Args>
+		requires std::is_base_of<Object, ObjectType>::value
 	FORCEINLINE std::shared_ptr<ObjectType> NewObject(Args... args)
 	{
 		/** Allocate object */

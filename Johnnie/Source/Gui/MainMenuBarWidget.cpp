@@ -3,6 +3,11 @@
 #include "Engine/Gui.hpp"
 #include <iostream>
 
+MainMenuBarWidget::MainMenuBarWidget()
+{
+	SetTickEnabled(false);
+}
+
 void MainMenuBarWidget::OnRenderGui(void)
 {
 	if (ImGui::BeginMainMenuBar())

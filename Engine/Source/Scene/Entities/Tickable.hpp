@@ -25,19 +25,22 @@ namespace Engine
 	public:
 		virtual void OnTick(double DeltaTime) = 0;
 
-		virtual void SetTickInterval(float TickInterval = 0.f)
-		{
-			CheckMsg(TickInterval >= 0.f, "Tick interval must be >= 0.f");
-			m_TickInterval = TickInterval;
-		}
-
-		virtual void SetTickEnabled(bool TickEnabled)
-		{
-			m_bTickEnabled = TickEnabled;
-		}
+		void SetTickInterval(float TickInterval = 0.f);
+		void SetTickEnabled(bool TickEnabled);
 	};
 
-	class TickableManager : public Singleton<TickableManager>
+	FORCEINLINE void Tickable::SetTickInterval(float TickInterval)
+	{
+		CheckMsg(TickInterval >= 0.f, "Tick interval must be >= 0.f");
+		m_TickInterval = TickInterval;
+	}
+
+	FORCEINLINE void Tickable::SetTickEnabled(bool TickEnabled)
+	{
+		m_bTickEnabled = TickEnabled;
+	}
+
+	class TickableManager final : public Singleton<TickableManager>
 	{
 	private:
 		using TickableUUID = std::string;

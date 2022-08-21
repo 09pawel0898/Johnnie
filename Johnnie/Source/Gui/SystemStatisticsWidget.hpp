@@ -24,14 +24,13 @@ private:
 	SystemMemoryInfo		MemoryInfo;
 	SystemVideoMemoryInfo	VideoMemoryInfo;
 
-
 public:
 	SystemStatisticsWidget();
 
 	void InitStaticStats(void);
 
 	virtual void OnRenderGui(void) override;
-	virtual void OnTick(void) override;
+	virtual void OnTick(double DeltaTime) override;
 
 private:
 	void UpdateApplicationStats(void);
