@@ -53,10 +53,4 @@ namespace Engine
 	{
 		m_Scale = Scale;
 	}
-
-	
-
-	//template <typename ObjectType>
-	//requires InstanceOf<
-	//FORCEINLINE
 }

@@ -28,8 +28,11 @@ namespace Engine
 	private:
 		std::shared_ptr<OCamera> m_Camera = nullptr;
 	public:
+		void InitializeViewport(glm::i32vec4 ViewportBounds);
 
 		void SetViewTarget(std::shared_ptr<OCamera> ViewTarget);
+
+		void Clear(void);
 
 		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
 	};

@@ -2,11 +2,15 @@
 
 #include <Engine/CoreMinimal.hpp>
 #include <Engine/Layers.hpp>
-#include <Engine/Camera.hpp>
 
 #include "Gui/MainMenuBarWidget.hpp"
 #include "Gui/ConsoleLogWidget.hpp"
 #include "Gui/SystemStatisticsWidget.hpp"
+
+namespace Engine
+{
+	class OFloatingCamera;
+}
 
 class JohnnieLayer final : public Engine::Layer
 {
@@ -20,7 +24,7 @@ private:
 	SystemStatisticsWidget	m_SystemStatistics;
 
 	/** Floating Camera */
-	std::shared_ptr<OCamera> m_Camera;
+	std::shared_ptr<OFloatingCamera> m_Camera;
 
 private:
 	/** Layer Interface Impl*/

@@ -45,4 +45,9 @@ namespace Engine
 
 		m_ViewMat = glm::lookAt(GetLocation(), m_Target, m_Up);
 	}
+
+	void OCamera::OnTick(double DeltaTime)
+	{
+		UpdateView();
+	}
 }

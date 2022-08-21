@@ -3,10 +3,11 @@
 #include "Core/CoreMinimal.hpp"
 
 #include "Scene/Entities/Object.hpp"
+#include "Scene/Entities/Tickable.hpp"
 
 namespace Engine
 {
-	class OCamera : public Object
+	class OCamera : public Object, public Tickable
 	{
 	protected:
 		/** View Parameters */
@@ -41,6 +42,7 @@ namespace Engine
 		glm::vec3 const& GetUpVec(void) const;
 		glm::vec3 const& GetRightVec(void) const;
 
+		void OnTick(double DeltaTime);
 
 	private:
 		void UpdateWorldCamera(void);
@@ -86,4 +88,5 @@ namespace Engine
 	{
 		return m_Right;
 	}
+
 }

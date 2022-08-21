@@ -30,9 +30,22 @@ namespace Engine
 		return RHI::RHICommand::GetRHI()->GetType();
 	}
 
+	void Renderer::InitializeViewport(glm::i32vec4 ViewportBounds)
+	{
+		static glm::vec4 defaultClearColor = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+		Renderer::Get()->GetRHI()->SetClearColor(defaultClearColor);
+		Renderer::Get()->GetRHI()->SetViewport(ViewportBounds.x, ViewportBounds.y, ViewportBounds.z, ViewportBounds.w);
+	}
+
 	void Renderer::SetViewTarget(std::shared_ptr<OCamera> ViewTarget)
 	{
 		m_Camera = std::move(ViewTarget);
+	}
+
+	void Renderer::Clear(void)
+	{
+		RHICommand::Clear();
 	}
 
 	void Renderer::Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
