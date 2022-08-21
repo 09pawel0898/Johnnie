@@ -69,8 +69,8 @@ namespace Engine::Core
         {
             tFrameStart = Utility::Time::now();
 
-            float timeSinceLastUpdate = std::chrono::duration<double, std::milli>
-                (tFrameStart - tLastUpdate).count();
+            float timeSinceLastUpdate = (float)(std::chrono::duration<double, std::milli>
+                (tFrameStart - tLastUpdate).count());
 
             m_DeltaTime = timeSinceLastUpdate / 1000.0f;
 

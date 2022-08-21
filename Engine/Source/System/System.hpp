@@ -93,6 +93,12 @@ namespace Engine
 			:	Info(std::forward<BrandVideoMemoryInfoType>(VideoMemoryInfo))
 		{}
 
+		bool IsValid(void) const
+		{
+			auto result = std::get_if<std::nullptr_t>(&Info);
+			return (result) ? false : true;
+		}
+
 		template<typename BrandVideoMemoryInfoType>
 		[[nodiscard]] std::optional<BrandVideoMemoryInfoType> Get(void)
 		{

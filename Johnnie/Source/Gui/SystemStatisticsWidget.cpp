@@ -145,5 +145,14 @@ void SystemStatisticsWidget::UpdateMemoryStats(void)
 
 void SystemStatisticsWidget::UpdateVideoMemoryStats(void)
 {
-	VideoMemoryInfo = System::GetVideoMemoryInfo();
+	static bool bSupported = true;
+
+	if(bSupported)
+	{
+		VideoMemoryInfo = System::GetVideoMemoryInfo();
+		if (!VideoMemoryInfo.IsValid())
+		{
+			bSupported = false;
+		}
+	}
 }

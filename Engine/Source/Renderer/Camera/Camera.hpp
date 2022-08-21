@@ -21,8 +21,6 @@ namespace Engine
 		glm::vec3 m_Up;
 		glm::vec3 m_Right;
 
-		glm::vec3 m_Target;
-
 		/** Frustrum Parameters*/
 		float m_FielfOfView;
 		float m_AspectRatio;

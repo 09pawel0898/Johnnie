@@ -14,6 +14,7 @@ namespace Engine
 			m_FarClip(FarClip)
 	{
 		SetLocation(SpawnLocation);
+		SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
 
 		UpdateProjection();
 		UpdateView();
@@ -21,10 +22,13 @@ namespace Engine
 
 	void OCamera::UpdateWorldCamera(void)
 	{
+		auto const& currentRotation = GetRotation();
 
-		m_Target = { 0.0f,0.0f,0.0f };
+		m_Forward = glm::normalize(glm::vec3(
+			cos(glm::radians(currentRotation.z)) * cos(glm::radians(currentRotation.y)),
+			sin(glm::radians(currentRotation.y)),
+			sin(glm::radians(currentRotation.z)) * cos(glm::radians(currentRotation.y))));
 
-		m_Forward	= glm::normalize(m_Target - GetLocation());
 		m_Right		= glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), m_Forward));
 		m_Up		= glm::cross(m_Forward, m_Right);
 
@@ -46,7 +50,7 @@ namespace Engine
 		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
 		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-		m_ViewMat = glm::lookAt(GetLocation(), GetLocation() + cameraFront, cameraUp);
+		m_ViewMat = glm::lookAt(GetLocation(), GetLocation() + m_Forward, m_Up);
 	}
 
 	void OCamera::OnTick(double DeltaTime)
