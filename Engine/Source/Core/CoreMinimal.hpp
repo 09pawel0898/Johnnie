@@ -69,7 +69,7 @@ FORCEINLINE constexpr To* Cast(SmartPtr auto& Ptr)
 }
 
 template<typename To>
-FORCEINLINE constexpr To* Cast(SmartPtr auto const& Ptr)
+FORCEINLINE constexpr const To* Cast(SmartPtr auto const& Ptr)
 {
     return dynamic_cast<To const*>(Ptr.get());
 }

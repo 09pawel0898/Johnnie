@@ -4,6 +4,7 @@
 #include "Core/Input/Input.hpp"
 #include "Core/Application/Application.hpp"
 
+//#include "glm/gtx/compatibility.hpp"
 
 //temp
 #include "GLFW/glfw3.h"
@@ -17,24 +18,54 @@ namespace Engine
 
 	void OFloatingCamera::OnTick(double DeltaTime)
 	{
-		const float radius = 3.0f;
-		static float mod = 99999;
 		static glm::vec2 prevFrameMousePos = glm::vec2(640, 360);
 
-		float camX = sin(mod) * radius;
-		float camZ = cos(mod) * radius;
+		const float cameraSpeed = m_Speed * DeltaTime; // adjust accordingly
+		
+		static float cammeraAccelerationMod = 0.1f;
 
-		const float cameraSpeed = 2.5f * DeltaTime; // adjust accordingly
-
-
+		auto IncreaseAccelerationMod = [this]() 
+		{
+			cammeraAccelerationMod = cammeraAccelerationMod * (100 + m_Acceleration)/100;
+			if (cammeraAccelerationMod > 1.0f)
+			{
+				cammeraAccelerationMod = 1.0f;
+			}
+		};
+		
 		if (Input::IsKeyPressed(KeyCode::W))
-			GetLocation() += cameraSpeed * m_Forward;
-		if (Input::IsKeyPressed(KeyCode::S))
-			GetLocation() -= cameraSpeed * m_Forward;
-		if (Input::IsKeyPressed(KeyCode::A))
-			GetLocation() -= glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed;
-		if (Input::IsKeyPressed(KeyCode::D))
-			GetLocation() += glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed;
+		{
+			GetLocation() += cameraSpeed * m_Forward * cammeraAccelerationMod;
+			IncreaseAccelerationMod();
+		}
+		else if (Input::IsKeyPressed(KeyCode::S))
+		{
+			GetLocation() -= cameraSpeed * m_Forward * cammeraAccelerationMod;
+			IncreaseAccelerationMod();
+		}
+		else if (Input::IsKeyPressed(KeyCode::A))
+		{
+			GetLocation() -= glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * cammeraAccelerationMod;
+			IncreaseAccelerationMod();
+		}
+		else if (Input::IsKeyPressed(KeyCode::D))
+		{
+			GetLocation() += glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * cammeraAccelerationMod;
+			IncreaseAccelerationMod();
+		}
+		else
+		{
+			cammeraAccelerationMod = std::lerp(cammeraAccelerationMod, 0.1f, (float)(1 - pow(0.8, DeltaTime)));
+		}
+
+		static bool test = true;
+		if (test)
+		{
+			glfwSetInputMode((GLFWwindow*)(Core::Application::Get()->GetWindow()->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+			Input::SetMousePosition(glm::vec2(640, 360));	
+			test = false;
+		}
 
 		static bool cursorHidden = false;
 		if (Input::IsKeyPressed(KeyCode::B))
@@ -57,7 +88,7 @@ namespace Engine
 
 		glm::vec2 mousePos = Input::GetMousePosition();
 
-		if(cursorHidden)
+		if(cursorHidden || !test)
 		{
 			float xOffset = mousePos.x - prevFrameMousePos.x;
 			float yOffset = prevFrameMousePos.y - mousePos.y;

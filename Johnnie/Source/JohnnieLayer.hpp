@@ -8,6 +8,7 @@
 
 class MainMenuBarWidget;
 class ConsoleLogWidget;
+class CameraDataWidget;
 class SystemStatisticsWidget;
 
 namespace Engine
@@ -22,9 +23,10 @@ public:
 
 private:
 	/** UI Widgets */
-	MainMenuBarWidget	m_MainMenuBar;
-	ConsoleLogWidget	m_ConsoleLog;
-	std::shared_ptr<SystemStatisticsWidget>	m_SystemStatistics;	// SharedPtr to be properly registered and managed as a Tickable object.
+	MainMenuBarWidget	m_MainMenuBarWidget;
+	ConsoleLogWidget	m_ConsoleLogWidget;
+	std::shared_ptr<SystemStatisticsWidget>	m_SystemStatisticsWidget;	// SharedPtr to be properly registered and managed as a Tickable object.
+	std::shared_ptr<CameraDataWidget>		m_CameraDataWidget;	
 
 	/** Floating Camera */
 	std::shared_ptr<OFloatingCamera> m_Camera;

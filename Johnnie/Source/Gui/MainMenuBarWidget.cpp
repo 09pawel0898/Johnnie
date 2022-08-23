@@ -1,7 +1,6 @@
 #include "MainMenuBarWidget.hpp"
 
-#include "Engine/Gui.hpp"
-#include <iostream>
+#include <Engine/Gui.hpp>
 
 MainMenuBarWidget::MainMenuBarWidget()
 {

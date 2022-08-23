@@ -8,6 +8,7 @@
 #include <Engine/Camera.hpp>
 
 #include "Gui/SystemStatisticsWidget.hpp"
+#include "Gui/CameraDataWidget.hpp"
 
 /// test
 #include "Renderer/RHI/Resources/RHIShader.hpp"
@@ -178,11 +179,14 @@ void JohnnieLayer::OnEvent(Events::Event& Event)
 void JohnnieLayer::InitGui(void)
 {
     /** Register tickable widgets manually */
-    m_SystemStatistics = std::make_shared<SystemStatisticsWidget>();
-    TickableManager::Get()->RegisterTickable(m_SystemStatistics);
+    m_SystemStatisticsWidget = std::make_shared<SystemStatisticsWidget>();
+    TickableManager::Get()->RegisterTickable(m_SystemStatisticsWidget);
+
+    m_CameraDataWidget = std::make_shared<CameraDataWidget>();
+    TickableManager::Get()->RegisterTickable(m_CameraDataWidget);
 
     /** Init widgets delegates */
-	m_MainMenuBar.BindActionDelegate(MainMenuBarAction::Open,
+	m_MainMenuBarWidget.BindActionDelegate(MainMenuBarAction::Open,
 	[]()
 	{
 		std::cout << "Open";
@@ -191,9 +195,10 @@ void JohnnieLayer::InitGui(void)
 
 void JohnnieLayer::OnRenderGui(void)
 {
-	m_MainMenuBar.OnRenderGui();
-	m_ConsoleLog.OnRenderGui();
-	m_SystemStatistics->OnRenderGui();
+	m_MainMenuBarWidget.OnRenderGui();
+	m_ConsoleLogWidget.OnRenderGui();
+	m_SystemStatisticsWidget->OnRenderGui();
+    m_CameraDataWidget->OnRenderGui();
 
 	//static bool bShowDemoWindow = false;
 	//ImGui::ShowDemoWindow(&bShowDemoWindow);
