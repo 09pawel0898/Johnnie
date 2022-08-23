@@ -5,6 +5,10 @@
 
 #include "GLFW/glfw3.h"
 
+#ifdef PLATFORM_WINDOWS
+#	include	"Windows.h"
+#endif
+
 namespace Engine
 {
 	glm::vec2 Input::GetMousePosition(void)
@@ -19,6 +23,13 @@ namespace Engine
 
 		return { (float)xPos,(float)yPos };
 	}
+
+	void Input::SetMousePosition(glm::vec2 MousePos)
+	{
+		GLFWwindow* window = static_cast<GLFWwindow*>(Core::Application::Get()->GetWindow()->GetNativeWindow());
+		glfwSetCursorPos(window, MousePos.x, MousePos.y);
+	}
+
 
 	bool Input::IsKeyPressed(Events::KeyCode KeyCode)
 	{

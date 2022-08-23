@@ -8,10 +8,10 @@
 namespace Engine
 {
 	OCamera::OCamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation)
-		:	m_FielfOfView(FieldOfView), 
-			m_AspectRatio(AspectRatio), 
-			m_NearClip(NearClip), 
-			m_FarClip(FarClip)
+		: m_FielfOfView(FieldOfView),
+		m_AspectRatio(AspectRatio),
+		m_NearClip(NearClip),
+		m_FarClip(FarClip)
 	{
 		SetLocation(SpawnLocation);
 		SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
@@ -29,12 +29,8 @@ namespace Engine
 			sin(glm::radians(currentRotation.y)),
 			sin(glm::radians(currentRotation.z)) * cos(glm::radians(currentRotation.y))));
 
-		m_Right		= glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), m_Forward));
-		m_Up		= glm::cross(m_Forward, m_Right);
-
-		//std::cout << "m_Forward " << m_Forward.x << " " << m_Forward.y << " " << m_Forward.z<<"\n";
-		//std::cout << "m_Right " << m_Right.x << " " << m_Right.y << " " << m_Right.z << "\n";
-		//std::cout << "m_Forward " << m_Up.x << " " << m_Up.y << " " << m_Up.z << "\n";
+		m_Right = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), m_Forward));
+		m_Up = glm::cross(m_Forward, m_Right);
 	}
 
 	void OCamera::UpdateProjection(void)
@@ -46,10 +42,6 @@ namespace Engine
 	void OCamera::UpdateView(void)
 	{
 		UpdateWorldCamera();
-
-		glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-		glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
 		m_ViewMat = glm::lookAt(GetLocation(), GetLocation() + m_Forward, m_Up);
 	}
 
