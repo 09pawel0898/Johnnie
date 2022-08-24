@@ -46,7 +46,7 @@ namespace Engine
 
 	void OFloatingCamera::OnTick(double DeltaTime)
 	{
-		const float cameraSpeed = m_Speed * DeltaTime; // adjust accordingly
+		const float cameraSpeed = m_Speed * (float)DeltaTime; // adjust accordingly
 		
 		bool bIsMoving = false;
 

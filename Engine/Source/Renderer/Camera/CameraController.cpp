@@ -36,10 +36,8 @@ namespace Engine
 			{
 				glfwSetInputMode((GLFWwindow*)(Core::Application::Get()->GetWindow()->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 				Input::SetMousePosition(glm::vec2(640, 360));
-				m_PrevFrameMousePos = glm::vec2(640, 360);
-				m_bCursorCaputred = true;
 				m_ControlledCamera->SetCameraPossessed(true);
-				std::cout << "PRESS";
+				m_bCursorCaputred = true;
 				m_bSkipNextTickFrame = true;
 				return true;
 			}
