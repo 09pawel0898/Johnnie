@@ -27,6 +27,8 @@ namespace Engine
 		float m_NearClip;
 		float m_FarClip;
 
+		bool m_bIsCameraPossessed = false;
+
 	public:
 		OCamera() = delete;
 		OCamera(OCamera const&) = delete;
@@ -42,6 +44,9 @@ namespace Engine
 		glm::vec3 const& GetForwardVec(void) const;
 		glm::vec3 const& GetUpVec(void) const;
 		glm::vec3 const& GetRightVec(void) const;
+
+		bool IsCameraPossessed(void) const;
+		void SetCameraPossessed(bool Possessed);
 
 		virtual void OnTick(double DeltaTime) override;
 		virtual void OnEvent(Event& Event) override {}
@@ -89,6 +94,16 @@ namespace Engine
 	FORCEINLINE glm::vec3 const& OCamera::GetRightVec(void) const
 	{
 		return m_Right;
+	}
+
+	FORCEINLINE bool OCamera::IsCameraPossessed(void) const
+	{
+		return m_bIsCameraPossessed;
+	}
+
+	FORCEINLINE void OCamera::SetCameraPossessed(bool Possessed)
+	{
+		m_bIsCameraPossessed = Possessed;
 	}
 
 }

@@ -2,7 +2,6 @@
 #include "FloatingCamera.hpp"
 
 #include "Core/Input/Input.hpp"
-#include "Core/Application/Application.hpp"
 
 //#include "glm/gtx/compatibility.hpp"
 
@@ -13,104 +12,84 @@ namespace Engine
 {
 	OFloatingCamera::OFloatingCamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation)
 		: OCamera(FieldOfView, AspectRatio, NearClip, FarClip, SpawnLocation)
+	{}
+
+	void OFloatingCamera::OnMouseYawInput(float Rate)
 	{
+		constexpr float yawSensitivity = 0.025f;
+
+		Rate *= yawSensitivity;
+		glm::vec3 const& currentRotation = GetRotation();
+
+		SetRotation(glm::vec3(0.f, currentRotation.y, currentRotation.z + Rate));
+	}
+
+	void OFloatingCamera::OnMousePitchInput(float Rate)
+	{
+		constexpr float pitchSensitivity = 0.025f;
+
+		Rate *= pitchSensitivity;
+		glm::vec3 currentRotation = GetRotation();
+
+		float newPitch = currentRotation.y + Rate;
+
+		if (newPitch > 89.0f)
+		{
+			newPitch = 89.0f;
+		}
+		if (newPitch < -89.0f)
+		{
+			newPitch = -89.0f;
+		}
+		SetRotation(glm::vec3(0.f, newPitch, currentRotation.z));
 	}
 
 	void OFloatingCamera::OnTick(double DeltaTime)
 	{
-		static glm::vec2 prevFrameMousePos = glm::vec2(640, 360);
-
 		const float cameraSpeed = m_Speed * DeltaTime; // adjust accordingly
 		
-		static float cammeraAccelerationMod = 0.1f;
+		bool bIsMoving = false;
 
-		auto IncreaseAccelerationMod = [this]() 
+		auto IncreaseAccelerationMod = [this,&bIsMoving, DeltaTime]()
 		{
-			cammeraAccelerationMod = cammeraAccelerationMod * (100 + m_Acceleration)/100;
-			if (cammeraAccelerationMod > 1.0f)
+			//m_CammeraAccelerationMod = m_CammeraAccelerationMod * (1000 + m_Acceleration)/1000;
+			m_CammeraAccelerationMod = std::lerp(m_CammeraAccelerationMod, 0.7f, (float)(1 - pow(0.8 - m_CammeraAccelerationMod, DeltaTime)));// m_CammeraAccelerationMod* (1000 + m_Acceleration) / 1000;
+			if (m_CammeraAccelerationMod > 0.7f)
 			{
-				cammeraAccelerationMod = 1.0f;
+				m_CammeraAccelerationMod = 0.7f;
 			}
+			bIsMoving = true;
 		};
 		
-		if (Input::IsKeyPressed(KeyCode::W))
+		if(IsCameraPossessed())
 		{
-			GetLocation() += cameraSpeed * m_Forward * cammeraAccelerationMod;
-			IncreaseAccelerationMod();
-		}
-		else if (Input::IsKeyPressed(KeyCode::S))
-		{
-			GetLocation() -= cameraSpeed * m_Forward * cammeraAccelerationMod;
-			IncreaseAccelerationMod();
-		}
-		else if (Input::IsKeyPressed(KeyCode::A))
-		{
-			GetLocation() -= glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * cammeraAccelerationMod;
-			IncreaseAccelerationMod();
-		}
-		else if (Input::IsKeyPressed(KeyCode::D))
-		{
-			GetLocation() += glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * cammeraAccelerationMod;
-			IncreaseAccelerationMod();
-		}
-		else
-		{
-			cammeraAccelerationMod = std::lerp(cammeraAccelerationMod, 0.1f, (float)(1 - pow(0.8, DeltaTime)));
-		}
-
-		static bool test = true;
-		if (test)
-		{
-			glfwSetInputMode((GLFWwindow*)(Core::Application::Get()->GetWindow()->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-			Input::SetMousePosition(glm::vec2(640, 360));	
-			test = false;
-		}
-
-		static bool cursorHidden = false;
-		if (Input::IsKeyPressed(KeyCode::B))
-		{
-			if (!cursorHidden)
+			if (Input::IsKeyPressed(KeyCode::W))
 			{
-				glfwSetInputMode((GLFWwindow*)(Core::Application::Get()->GetWindow()->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-				Input::SetMousePosition(glm::vec2(640,360));
-				cursorHidden = true;
+				GetLocation() += cameraSpeed * m_Forward * m_CammeraAccelerationMod;
+				IncreaseAccelerationMod();
 			}
-		}
-		else
-		{
-			if (cursorHidden)
+			if (Input::IsKeyPressed(KeyCode::S))
 			{
-				glfwSetInputMode((GLFWwindow*)(Core::Application::Get()->GetWindow()->GetNativeWindow()), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-				cursorHidden = false;
+				GetLocation() -= cameraSpeed * m_Forward * m_CammeraAccelerationMod;
+				IncreaseAccelerationMod();
+			}
+			if (Input::IsKeyPressed(KeyCode::A))
+			{
+				GetLocation() -= glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod;
+				IncreaseAccelerationMod();
+			}
+			if (Input::IsKeyPressed(KeyCode::D))
+			{
+				GetLocation() += glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod;
+				IncreaseAccelerationMod();
 			}
 		}
 
-		glm::vec2 mousePos = Input::GetMousePosition();
-
-		if(cursorHidden || !test)
+		if (!bIsMoving)
 		{
-			float xOffset = mousePos.x - prevFrameMousePos.x;
-			float yOffset = prevFrameMousePos.y - mousePos.y;
-			prevFrameMousePos = mousePos;
-
-			const float sensitivity = 0.1f;
-
-			xOffset *= sensitivity;
-			yOffset *= sensitivity;
-
-			glm::vec3 currentRotation = GetRotation();
-
-			float newPitch = currentRotation.y + yOffset;
-			float newYaw = currentRotation.z + xOffset;
-
-			if (newPitch > 89.0f)
-				newPitch = 89.0f;
-			if (newPitch < -89.0f)
-				newPitch = -89.0f;
-
-			SetRotation(glm::vec3(0.f, newPitch, newYaw));
+			m_CammeraAccelerationMod = std::lerp(m_CammeraAccelerationMod, 0.1f, (float)(1 - pow(0.1, DeltaTime)));
 		}
+
 		OCamera::OnTick(DeltaTime);
 	}
 

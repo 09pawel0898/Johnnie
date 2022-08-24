@@ -19,7 +19,7 @@ private:
 	{
 		glm::vec3 Location;
 		glm::vec3 Rotation;
-		glm::vec3 CurrentAccelerationMod;
+		float CurrentAccelerationMod;
 	};
 	
 	struct CameraMutableData

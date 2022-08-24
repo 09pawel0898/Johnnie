@@ -55,9 +55,9 @@ namespace Engine
 
 	void ImGuiLayer::OnEvent(Events::Event& Event)
 	{
-		ImGuiIO& io = ImGui::GetIO();
-		Event.m_Handled |= io.WantCaptureKeyboard & Event.HasCategory(Events::EventCategory_Keyboard);
-		Event.m_Handled |= io.WantCaptureMouse & Event.HasCategory(Events::EventCategory_Mouse);
+		//ImGuiIO& io = ImGui::GetIO();
+		//Event.m_Handled |= io.WantCaptureKeyboard & Event.HasCategory(Events::EventCategory_Keyboard);
+		//Event.m_Handled |= io.WantCaptureMouse & Event.HasCategory(Events::EventCategory_Mouse);
 	}
 
 	void ImGuiLayer::OnNativeRenderGui(void)

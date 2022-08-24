@@ -18,7 +18,9 @@ void CameraDataWidget::OnRenderGui(void)
         ImGui::Text("Location    : %f %f %f", m_CameraData.Location.x, m_CameraData.Location.y, m_CameraData.Location.z);
         ImGui::Text("              Roll     Pitch    Yaw");
         ImGui::Text("Rotation    : %f %f %f", m_CameraData.Rotation.x, m_CameraData.Rotation.y, m_CameraData.Rotation.z);
-        
+
+        ImGui::Separator();
+        ImGui::Text("AccelerationMod    : %f", m_CameraData.CurrentAccelerationMod);
 
         ImGui::Separator();
     }
@@ -31,5 +33,6 @@ void CameraDataWidget::OnTick(double DeltaTime)
     {
         m_CameraData.Location = floatingCamera->GetLocation();
         m_CameraData.Rotation = floatingCamera->GetRotation();
+        m_CameraData.CurrentAccelerationMod = floatingCamera->GetAccelerationMod();
     }
 }

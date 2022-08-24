@@ -11,7 +11,18 @@ namespace Engine
 
 	private:
 		float m_Speed = 2.5f;
-		float m_Acceleration = 1;
+		float m_Acceleration = 10;
+
+		float m_CammeraAccelerationMod = 0.1f;
+
+	public:
+		float GetAccelerationMod(void) const
+		{
+			return m_CammeraAccelerationMod;
+		}
+		
+		void OnMouseYawInput(float Rate);
+		void OnMousePitchInput(float Rate);
 
 	public:
 		virtual void OnTick(double DeltaTime) override;
