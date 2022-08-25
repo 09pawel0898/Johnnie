@@ -8,3 +8,6 @@
 	path = Dependencies/spdlog
 	url = https://github.com/gabime/spdlog
 	ignore = dirty
+[submodule "Dependencies/assimp"]
+	path = Dependencies/assimp
+	url = https://github.com/assimp/assimp
