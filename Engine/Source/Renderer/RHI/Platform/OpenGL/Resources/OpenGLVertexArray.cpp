@@ -42,7 +42,7 @@ namespace Engine::RHI
 		{
 			glEnableVertexAttribArray(currentAttribIndex);
 			glVertexAttribPointer(currentAttribIndex, Size, RHIElementTypeToOpenGL(Element->VBOElementType),
-				Element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)Layout->GetStride(), (void const*)Element->Offset);
+				Element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)Layout->GetStride(), (const void*)Element->Offset);
 			currentAttribIndex++;
 		};
 

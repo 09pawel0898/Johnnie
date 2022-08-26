@@ -5,11 +5,15 @@
 using namespace Engine;
 
 #ifndef NDEBUG
+#   define UNIMPLEMENTED __debugbreak();
+
 #   define VERBOSITY "Assert failed"
 
 #   define Check(Expr) \
 	    if(!(Expr)) __debugbreak()
 #else
+#   define UNIMPLEMENTED (void)0;
+
 #   define VERBOSITY "Abort called"
 
 #   define Check(Expr) \

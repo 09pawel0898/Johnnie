@@ -14,7 +14,16 @@ namespace Engine::RHI
 		 *	be valid during GL_ELEMENT_ARRAY_BUFFER binding operation */
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-		glBufferData(GL_ARRAY_BUFFER, Count * sizeof(uint32_t), Indices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(uint32_t), Indices, GL_STATIC_DRAW);
+	}
+
+	OpenGLIndexBuffer::OpenGLIndexBuffer(std::vector<uint32_t> const& Indices)
+		: RHIIndexBuffer((uint32_t)Indices.size())
+	{
+		glGenBuffers(1, &m_ID);
+
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glBufferData(GL_ARRAY_BUFFER, m_Count * sizeof(uint32_t), Indices.data(), GL_STATIC_DRAW);
 	}
 
 	OpenGLIndexBuffer::~OpenGLIndexBuffer()
@@ -34,16 +43,24 @@ namespace Engine::RHI
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t Size)
 	{
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-		glBufferData(GL_ARRAY_BUFFER, Size, nullptr, GL_DYNAMIC_DRAW);
+		UNIMPLEMENTED
+		//glGenBuffers(1, &m_ID);
+		//glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		//glBufferData(GL_ARRAY_BUFFER, Size, nullptr, GL_DYNAMIC_DRAW);
 	}
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(void const* Vertices, uint32_t Size)
+	OpenGLVertexBuffer::OpenGLVertexBuffer(const void* Vertices, uint32_t Size)
 	{
 		glGenBuffers(1, &m_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, Size, Vertices, GL_STATIC_DRAW);
+	}
+
+	OpenGLVertexBuffer::OpenGLVertexBuffer(std::vector<RHIVertex> const& Vertices)
+	{
+		glGenBuffers(1, &m_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(RHIVertex), Vertices.data(), GL_STATIC_DRAW);
 	}
 
 	OpenGLVertexBuffer::~OpenGLVertexBuffer()
@@ -62,10 +79,13 @@ namespace Engine::RHI
 	}
 
 	void OpenGLVertexBuffer::SetData(const void* Data, uint32_t Size)
-	{}
-
-	void const* OpenGLVertexBuffer::GetData(void) const
 	{
+		UNIMPLEMENTED
+	}
+
+	const void* OpenGLVertexBuffer::GetData(void) const
+	{
+		UNIMPLEMENTED
 		return nullptr;
 	}
 

@@ -22,4 +22,15 @@ namespace Engine::RHI
 		};
 		return RHIElementSizes.at(ElementType);
 	}
+
+	std::string GetUniformNameByTextureType(RHITextureType TextureType)
+	{
+		static std::unordered_map<RHITextureType, std::string> RHITextureUniformNames =
+		{
+			{RHITextureType::BasicTexture2D,	"texture"},
+			{RHITextureType::Diffuse,			"texture_diffuse"},
+			{RHITextureType::Specular,			"texture_specular"}
+		};
+		return RHITextureUniformNames[TextureType];
+	}
 }

@@ -11,10 +11,9 @@
 
 namespace Engine::RHI
 {
-	OpenGLTexture2D::OpenGLTexture2D(std::string_view FilePath)
+	OpenGLTexture2D::OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType)
+		:	RHITexture2D(FilePath,TextureType)
 	{
-		m_FilePath = FilePath;
-
 		if (!LoadTextureFromFile())
 		{
 			LOG(RHI, Error, "Failed to load OpenGLTexture2D from file {0}.", m_FilePath.data());

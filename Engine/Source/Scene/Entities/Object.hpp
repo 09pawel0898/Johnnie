@@ -3,6 +3,7 @@
 #include "Core/CoreMinimal.hpp"
 
 #include <glm/glm.hpp>
+#include<glm/gtc/matrix_transform.hpp>
 
 namespace Engine
 {
@@ -23,6 +24,8 @@ namespace Engine
 
 		glm::vec3 const& GetScale(void) const;
 		void SetScale(glm::vec3 const& Scale);
+
+		glm::mat4 GetModelMat(void) const;
 	};
 
 	FORCEINLINE glm::vec3 const& Object::GetLocation(void) const
@@ -58,5 +61,15 @@ namespace Engine
 	FORCEINLINE void Object::SetScale(glm::vec3 const& Scale)
 	{
 		m_Scale = Scale;
+	}
+
+	FORCEINLINE glm::mat4 Object::GetModelMat(void) const
+	{
+		glm::mat4 modelMat = glm::mat4(1.0f);
+		modelMat = glm::translate(modelMat, m_Location);
+		modelMat = glm::rotate(modelMat, m_Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMat = glm::rotate(modelMat, m_Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMat = glm::rotate(modelMat, m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+		return modelMat;
 	}
 }

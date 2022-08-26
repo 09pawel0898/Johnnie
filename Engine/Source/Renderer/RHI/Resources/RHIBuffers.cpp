@@ -39,6 +39,15 @@ namespace Engine::RHI
 		return nullptr;
 	}
 
+	std::unique_ptr<RHIIndexBuffer> RHIIndexBuffer::Create(std::vector<uint32_t> const& Indices)
+	{
+		switch (Renderer::Get()->GetApiType())
+		{
+			case RenderingAPI::OpenGL: return std::make_unique<OpenGLIndexBuffer>(Indices); break;
+		}
+		return nullptr;
+	}
+
 	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(uint32_t Size)
 	{
 		switch (Renderer::Get()->GetApiType())
@@ -48,11 +57,20 @@ namespace Engine::RHI
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(void const* Vertices, uint32_t Size)
+	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(const void* Vertices, uint32_t Size)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
 			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexBuffer>(Vertices, Size); break;
+		}
+		return nullptr;
+	}
+
+	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(std::vector<RHIVertex> const& Vertices)
+	{
+		switch (Renderer::Get()->GetApiType())
+		{
+			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexBuffer>(Vertices); break;
 		}
 		return nullptr;
 	}

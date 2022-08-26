@@ -6,6 +6,7 @@ target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 	spdlog
 	stb_image
 	stduuid
+	assimp
 )
 
 

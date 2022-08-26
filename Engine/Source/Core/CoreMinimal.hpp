@@ -50,7 +50,7 @@ FORCEINLINE constexpr To* Cast(From* Ptr)
 template<typename To, typename From>
 FORCEINLINE constexpr To* Cast(From const* Ptr)
 {
-    return dynamic_cast<To const*>(Ptr);
+    return dynamic_cast<const To*>(Ptr);
 }
 
 #include <concepts>
@@ -71,7 +71,7 @@ FORCEINLINE constexpr To* Cast(SmartPtr auto& Ptr)
 template<typename To>
 FORCEINLINE constexpr const To* Cast(SmartPtr auto const& Ptr)
 {
-    return dynamic_cast<To const*>(Ptr.get());
+    return dynamic_cast<const To*>(Ptr.get());
 }
 
 #include "System/Memory.hpp"

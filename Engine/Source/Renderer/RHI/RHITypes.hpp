@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
+#include <glm/glm.hpp>
 
 namespace Engine::RHI
 {
@@ -10,4 +11,21 @@ namespace Engine::RHI
 	};
 
 	size_t GetRHIElementTypeSize(RHIElementType ElementType);
+
+	struct RHIVertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		//glm::vec3 Color;
+		glm::vec2 TexUV;
+	};
+
+	enum class RHITextureType : uint8_t
+	{
+		BasicTexture2D,
+		Diffuse,
+		Specular
+	};
+
+	std::string GetUniformNameByTextureType(RHITextureType TextureType);
 }

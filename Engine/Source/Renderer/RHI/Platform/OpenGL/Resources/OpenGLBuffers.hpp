@@ -14,6 +14,7 @@ namespace Engine::RHI
 
 	public:
 		OpenGLIndexBuffer(uint32_t* Indices, uint32_t Count);
+		OpenGLIndexBuffer(std::vector<uint32_t> const& Indices);
 		virtual ~OpenGLIndexBuffer();
 
 	public:
@@ -28,7 +29,9 @@ namespace Engine::RHI
 		
 	public:
 		OpenGLVertexBuffer(uint32_t Size);
-		OpenGLVertexBuffer(void const* Vertices, uint32_t Size);
+		OpenGLVertexBuffer(const void* Vertices, uint32_t Size);
+		OpenGLVertexBuffer(std::vector<RHIVertex> const& Vertices);
+
 		~OpenGLVertexBuffer();
 
 	public:
@@ -36,7 +39,7 @@ namespace Engine::RHI
 		virtual void Unbind(void) const override;
 
 		virtual void SetData(const void* Data, uint32_t Size) override;
-		virtual void const* GetData(void) const override;
+		virtual const void* GetData(void) const override;
 
 		virtual std::unique_ptr<RHIVertexBufferLayout> const& GetLayout() const override;
 		virtual void SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout) override;

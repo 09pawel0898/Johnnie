@@ -7,11 +7,11 @@
 
 namespace Engine::RHI
 {
-	std::unique_ptr<RHITexture2D> RHITexture2D::Create(std::string_view FilePath)
+	std::unique_ptr<RHITexture2D> RHITexture2D::Create(std::string_view FilePath, RHITextureType TextureType)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLTexture2D>(FilePath); break;
+			case RenderingAPI::OpenGL: return std::make_unique<OpenGLTexture2D>(FilePath, TextureType); break;
 		}
 		return nullptr;
 	}

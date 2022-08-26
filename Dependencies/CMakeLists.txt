@@ -69,3 +69,10 @@ set_target_properties(
     PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/stduuid
 )
 
+# ASSIMP
+add_subdirectory(assimp)
+set_target_properties(
+    assimp
+    PROPERTIES FOLDER ${DEPENDENCIES_DIR_NAME}/assimp
+)
+

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "RHIResource.hpp"
-
 #include "../RHITypes.hpp"
 
 namespace Engine::RHI
@@ -60,7 +59,7 @@ namespace Engine::RHI
 
 	class RHIIndexBuffer : public RHIResource
 	{
-	private:
+	protected:
 		uint32_t m_Count;
 
 	public:
@@ -72,6 +71,8 @@ namespace Engine::RHI
 
 		[[nodiscard]]
 		static  std::unique_ptr<RHIIndexBuffer> Create(uint32_t* Indices, uint32_t Count);
+		[[nodiscard]]
+		static  std::unique_ptr<RHIIndexBuffer> Create(std::vector<uint32_t> const& Indices);
 
 	public:
 		virtual void Bind() const = 0;
@@ -95,12 +96,14 @@ namespace Engine::RHI
 		static std::unique_ptr<RHIVertexBuffer> Create(uint32_t Size);
 		[[nodiscard]]
 		static std::unique_ptr<RHIVertexBuffer> Create(const void* Vertices, uint32_t Size);
+		[[nodiscard]]
+		static std::unique_ptr<RHIVertexBuffer> Create(std::vector<RHIVertex> const& Vertices);
 
 	public:
 		virtual void Bind(void) const = 0;
 		virtual void Unbind(void) const = 0;
 
-		virtual void SetData(void const* Data, uint32_t Size) = 0;
+		virtual void SetData(const void* Data, uint32_t Size) = 0;
 		virtual void const* GetData(void) const = 0;
 
 		virtual std::unique_ptr<RHIVertexBufferLayout> const& GetLayout() const = 0;

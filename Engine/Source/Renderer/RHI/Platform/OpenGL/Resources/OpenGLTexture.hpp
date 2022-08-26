@@ -10,7 +10,7 @@ namespace Engine::RHI
 		uint32_t m_ID = 0;
 
 	public:
-		explicit OpenGLTexture2D(std::string_view FilePath);
+		explicit OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType);
 		~OpenGLTexture2D();
 
 		virtual void Bind(uint8_t TextureSlotID) override;
