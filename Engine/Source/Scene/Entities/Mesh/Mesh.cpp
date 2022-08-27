@@ -9,11 +9,11 @@
 
 namespace Engine
 {
-	OMesh::OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
+	OMesh::OMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
+		:	m_Vertices(std::move(Vertices)),
+			m_Indices(std::move(Indices)),
+			m_Textures(std::move(Textures))
 	{
-		m_Vertices	= Vertices;
-		m_Indices	= Indices;
-		m_Textures	= std::move(Textures);
 		SetupMesh();
 	}
 
@@ -60,7 +60,4 @@ namespace Engine
 		m_VAO->SetIndexBuffer(std::move(ibo));
 		m_VAO->AddVertexBuffer(std::move(vbo));
 	}
-
-	void OMesh::OnTick(double DeltaTime)
-	{}
 }

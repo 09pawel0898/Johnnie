@@ -51,6 +51,8 @@ namespace Engine::RHI
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(const void* Vertices, uint32_t Size)
 	{
+		m_VerticesCount = Size;
+
 		glGenBuffers(1, &m_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, Size, Vertices, GL_STATIC_DRAW);
@@ -58,6 +60,8 @@ namespace Engine::RHI
 
 	OpenGLVertexBuffer::OpenGLVertexBuffer(std::vector<RHIVertex> const& Vertices)
 	{
+		m_VerticesCount = (uint32_t)Vertices.size();
+
 		glGenBuffers(1, &m_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, Vertices.size() * sizeof(RHIVertex), Vertices.data(), GL_STATIC_DRAW);

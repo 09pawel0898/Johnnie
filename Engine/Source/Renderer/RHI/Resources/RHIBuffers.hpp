@@ -88,6 +88,7 @@ namespace Engine::RHI
 	{
 	protected:
 		std::unique_ptr<RHIVertexBufferLayout> m_VertexBufferLayout;
+		uint32_t m_VerticesCount = 0;
 
 	public:
 		virtual ~RHIVertexBuffer() = default;
@@ -108,5 +109,12 @@ namespace Engine::RHI
 
 		virtual std::unique_ptr<RHIVertexBufferLayout> const& GetLayout() const = 0;
 		virtual void SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout) = 0;
+
+		uint32_t GetVerticesCount(void) const;
 	};
+
+	FORCEINLINE uint32_t RHIVertexBuffer::GetVerticesCount(void) const
+	{
+		return m_VerticesCount;
+	}
 }

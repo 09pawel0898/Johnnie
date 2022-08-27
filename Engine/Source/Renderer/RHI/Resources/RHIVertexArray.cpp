@@ -4,6 +4,7 @@
 
 #include "Renderer/Renderer.hpp"
 #include "../Platform/OpenGL/Resources/OpenGLVertexArray.hpp"
+#include "RHIBuffers.hpp"
 
 namespace Engine::RHI
 {
@@ -14,5 +15,15 @@ namespace Engine::RHI
 			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexArray>(); break;
 		}
 		return nullptr;
+	}
+
+	uint32_t RHIVertexArray::GetVertexCount(void)
+	{
+		uint32_t numVertices = 0;
+		for (auto const& buffer : m_VertexBuffers)
+		{
+			numVertices += buffer->GetVerticesCount();
+		}
+		return numVertices;
 	}
 }

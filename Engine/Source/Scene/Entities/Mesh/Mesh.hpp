@@ -22,7 +22,7 @@ namespace Engine
 	}
 	using namespace RHI;
 
-	class OMesh : public Object, public Tickable
+	class OMesh : public Object
 	{
 	private:
 		std::vector<RHIVertex>		m_Vertices;
@@ -34,11 +34,9 @@ namespace Engine
 		void SetupMesh(void);
 
 	public:
-		OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
+		OMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
 	
 	public:
 		void Draw(std::shared_ptr<RHIShader>& Shader);
-
-		void OnTick(double DeltaTime) override;
 	};
 }

@@ -31,6 +31,8 @@ namespace Engine::RHI
 		std::vector<std::shared_ptr<RHIVertexBuffer>> const& GetVertexBuffers(void) const;
 
 		std::shared_ptr<RHIIndexBuffer> const& GetIndexBuffer(void) const;
+
+		uint32_t GetVertexCount(void);
 	};
 
 	FORCEINLINE std::vector<std::shared_ptr<RHIVertexBuffer>> const& RHIVertexArray::GetVertexBuffers(void) const

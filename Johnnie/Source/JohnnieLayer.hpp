@@ -14,7 +14,7 @@ class SystemStatisticsWidget;
 namespace Engine
 {
 	class OFloatingCamera;
-	class OMesh;
+	class OStaticMesh;
 }
 
 class JohnnieLayer final : public Engine::Layer
@@ -33,7 +33,7 @@ private:
 	std::shared_ptr<OFloatingCamera> m_Camera;
 
 	/** Entities */
-	std::shared_ptr<OMesh> m_TestMesh;
+	std::shared_ptr<OStaticMesh> m_TestMesh;
 
 private:
 	/** Layer Interface Impl*/

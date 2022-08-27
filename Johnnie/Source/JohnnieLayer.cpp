@@ -6,7 +6,7 @@
 #include <Engine/Renderer.hpp>
 #include <Engine/CoreObject.hpp>
 #include <Engine/Camera.hpp>
-#include <Scene/Entities/Mesh/Mesh.hpp>
+#include <Scene/Entities/Mesh/StaticMesh.hpp>
 
 #include "Gui/SystemStatisticsWidget.hpp"
 #include "Gui/CameraDataWidget.hpp"
@@ -52,7 +52,7 @@ JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
         RHITexture2D::Create("Assets/Textures/texture.jpg", RHITextureType::Diffuse)
     };
 
-    m_TestMesh = NewObject<OMesh>(vertices,indices, std::move(mesh_textures));
+    m_TestMesh = NewObject<OStaticMesh>("Assets/Models/backpack.obj");
 }
 
 void JohnnieLayer::OnAwake(void)
