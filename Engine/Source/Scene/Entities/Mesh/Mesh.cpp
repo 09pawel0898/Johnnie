@@ -9,7 +9,7 @@
 
 namespace Engine
 {
-	OMesh::OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture>>&& Textures)
+	OMesh::OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
 	{
 		m_Vertices	= Vertices;
 		m_Indices	= Indices;
@@ -17,46 +17,38 @@ namespace Engine
 		SetupMesh();
 	}
 
-	void OMesh::Draw(std::shared_ptr<RHIShader> const& Shader)
+	void OMesh::Draw(std::shared_ptr<RHIShader>& Shader)
 	{  
-
 		uint8_t diffuseNr = 1, specularNr = 1;
+		Shader->Bind();
 
 		for (uint8_t idx = 0; idx < m_Textures.size(); idx++)
 		{
 			m_Textures[idx]->Bind(idx);
 
-			std::string shaderNum;
-
-
+			std::string texNum;
+			
+			std::string texName = GetUniformNameByTextureType(m_Textures[idx]->GetType());
+			if (texName == "texture_diffuse")
+			{
+				texName = std::to_string(diffuseNr++);
+			}
+			else if (texName == "texture_specular")
+			{
+				texName = std::to_string(specularNr++);
+			}
+			Shader->SetInt((texName + texNum).c_str(), idx);
 		}
-
-		//for (unsigned int i = 0; i < textures.size(); i++)
-		//{
-		//	glActiveTexture(GL_TEXTURE0 + i); // activate proper texture unit before binding
-		//	// retrieve texture number (the N in diffuse_textureN)
-		//	string number;
-		//	string name = textures[i].type;
-		//	if (name == "texture_diffuse")
-		//		number = std::to_string(diffuseNr++);
-		//	else if (name == "texture_specular")
-		//		number = std::to_string(specularNr++);
-		//
-		//	shader.setInt(("material." + name + number).c_str(), i);
-		//	glBindTexture(GL_TEXTURE_2D, textures[i].id);
-		//}
-		//glActiveTexture(GL_TEXTURE0);
-
 		Renderer::Get()->Draw(Shader, m_VAO, GetModelMat());
 	}
 	
-	void OMesh::SetupMesh()
+	void OMesh::SetupMesh(void)
 	{
 		m_VAO = RHIVertexArray::Create();
 
 		RHIVertexBufferElement aPosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
 		RHIVertexBufferElement aNormal = RHIVertexBufferElement(RHIElementType::Float3, "aNormal");
-		RHIVertexBufferElement aTexUV = RHIVertexBufferElement(RHIElementType::Float3, "aTexUV");
+		RHIVertexBufferElement aTexUV = RHIVertexBufferElement(RHIElementType::Float2, "aTexUV");
 
 		auto vbo = RHIVertexBuffer::Create(m_Vertices);
 
@@ -68,4 +60,7 @@ namespace Engine
 		m_VAO->SetIndexBuffer(std::move(ibo));
 		m_VAO->AddVertexBuffer(std::move(vbo));
 	}
+
+	void OMesh::OnTick(double DeltaTime)
+	{}
 }

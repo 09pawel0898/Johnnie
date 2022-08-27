@@ -10,9 +10,9 @@ namespace Engine
 	class Object
 	{
 	private:
-		glm::vec3 m_Location;
-		glm::vec3 m_Rotation;
-		glm::vec3 m_Scale;
+		glm::vec3 m_Location	= { 0,0,0 };
+		glm::vec3 m_Rotation	= { 0,0,0 };
+		glm::vec3 m_Scale		= { 0,0,0 };
 
 	public:
 		glm::vec3 const& GetLocation(void) const;

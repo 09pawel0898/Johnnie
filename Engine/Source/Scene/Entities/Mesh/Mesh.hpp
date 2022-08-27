@@ -2,6 +2,7 @@
 
 #include "Core/CoreMinimal.hpp"
 #include "../Object.hpp"
+#include "../Tickable.hpp"
 #include "Renderer/RHI/RHITypes.hpp"
 
 
@@ -16,25 +17,28 @@ namespace Engine
 	namespace RHI
 	{
 		class RHIVertexArray;
-		class RHITexture;
+		class RHITexture2D;
 		class RHIShader;
 	}
 	using namespace RHI;
 
-	class OMesh : Object
+	class OMesh : public Object, public Tickable
 	{
 	private:
 		std::vector<RHIVertex>		m_Vertices;
 		std::vector<uint32_t>		m_Indices;
 
-		OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture>>&& Textures);
-
 	private:
 		std::shared_ptr<RHIVertexArray>				m_VAO;
-		std::vector<std::shared_ptr<RHITexture>>	m_Textures;
-		void SetupMesh();
+		std::vector<std::shared_ptr<RHITexture2D>>	m_Textures;
+		void SetupMesh(void);
+
+	public:
+		OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
 	
 	public:
-		void Draw(std::shared_ptr<RHIShader> const& Shader);
+		void Draw(std::shared_ptr<RHIShader>& Shader);
+
+		void OnTick(double DeltaTime) override;
 	};
 }
