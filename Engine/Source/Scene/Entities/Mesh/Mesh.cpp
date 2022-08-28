@@ -17,7 +17,7 @@ namespace Engine
 		SetupMesh();
 	}
 
-	void OMesh::Draw(std::shared_ptr<RHIShader>& Shader)
+	void OMesh::Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat)
 	{  
 		uint8_t diffuseNr = 1, specularNr = 1;
 		Shader->Bind();
@@ -39,7 +39,7 @@ namespace Engine
 			}
 			Shader->SetInt((texName + texNum).c_str(), idx);
 		}
-		Renderer::Get()->Draw(Shader, m_VAO, GetModelMat());
+		Renderer::Get()->Draw(Shader, m_VAO, ModelMat);
 	}
 	
 	void OMesh::SetupMesh(void)

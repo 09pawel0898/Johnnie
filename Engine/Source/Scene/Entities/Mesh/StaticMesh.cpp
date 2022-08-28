@@ -135,9 +135,11 @@ namespace Engine
 
     void OStaticMesh::Draw(std::shared_ptr<RHIShader>& Shader)
     {
+        const glm::mat4 modelMat = GetModelMat();
+
         for (auto& mesh : m_SubMeshes)
         {
-            mesh.Draw(Shader);
+            mesh.Draw(Shader, modelMat);
         }
     }
 

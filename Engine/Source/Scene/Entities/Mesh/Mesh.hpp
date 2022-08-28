@@ -1,10 +1,7 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
-#include "../Object.hpp"
-#include "../Tickable.hpp"
 #include "Renderer/RHI/RHITypes.hpp"
-
 
 namespace Engine
 {
@@ -22,7 +19,7 @@ namespace Engine
 	}
 	using namespace RHI;
 
-	class OMesh : public Object
+	class OMesh
 	{
 	private:
 		std::vector<RHIVertex>		m_Vertices;
@@ -37,6 +34,6 @@ namespace Engine
 		OMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
 	
 	public:
-		void Draw(std::shared_ptr<RHIShader>& Shader);
+		void Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat);
 	};
 }

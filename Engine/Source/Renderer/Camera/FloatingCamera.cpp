@@ -46,14 +46,13 @@ namespace Engine
 
 	void OFloatingCamera::OnTick(double DeltaTime)
 	{
-		const float cameraSpeed = m_Speed * (float)DeltaTime; // adjust accordingly
+		const float cameraSpeed = m_Speed * (float)DeltaTime;
 		
 		bool bIsMoving = false;
 
 		auto IncreaseAccelerationMod = [this,&bIsMoving, DeltaTime]()
 		{
-			//m_CammeraAccelerationMod = m_CammeraAccelerationMod * (1000 + m_Acceleration)/1000;
-			m_CammeraAccelerationMod = std::lerp(m_CammeraAccelerationMod, 0.7f, (float)(1 - pow(0.8 - m_CammeraAccelerationMod, DeltaTime)));// m_CammeraAccelerationMod* (1000 + m_Acceleration) / 1000;
+			m_CammeraAccelerationMod = std::lerp(m_CammeraAccelerationMod, 0.7f, (float)(1 - pow(0.2, DeltaTime)));
 			if (m_CammeraAccelerationMod > 0.7f)
 			{
 				m_CammeraAccelerationMod = 0.7f;

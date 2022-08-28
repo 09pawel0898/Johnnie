@@ -35,6 +35,11 @@ namespace Engine
 		{
 			return m_ControlledCamera;
 		}
+		
+		std::shared_ptr<OCamera>& GetCamera(void)
+		{
+			return m_ControlledCamera;
+		}
 	};
 
 	FORCEINLINE void CameraController::SetViewTarget(std::shared_ptr<OCamera> Camera)

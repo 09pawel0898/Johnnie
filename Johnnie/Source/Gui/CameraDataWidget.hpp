@@ -24,9 +24,11 @@ private:
 	
 	struct CameraMutableData
 	{
-		glm::vec3 Speed;
-		glm::vec3 Acceleration;
+		float Speed;
 	};
 
 	CameraReadOnlyData m_CameraData;
+
+	bool m_bDefaultValuesInitialized = false;
+	CameraMutableData m_CameraMutableData;
 };
