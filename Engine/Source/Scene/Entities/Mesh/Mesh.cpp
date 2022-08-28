@@ -9,6 +9,14 @@
 
 namespace Engine
 {
+	OMesh::OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)
+	{
+		m_Vertices = Vertices;
+		m_Indices = Indices;
+
+		SetupMesh();
+	}
+
 	OMesh::OMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
 		:	m_Vertices(std::move(Vertices)),
 			m_Indices(std::move(Indices)),

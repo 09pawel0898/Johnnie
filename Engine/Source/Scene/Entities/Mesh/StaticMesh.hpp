@@ -35,7 +35,8 @@ namespace Engine
         std::vector<std::shared_ptr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
 
     public:
-        OStaticMesh(std::string_view FilePath);
+        explicit OStaticMesh(std::string_view FilePath);
+        explicit OStaticMesh(std::vector<OMesh>&& SubMeshes);
 
 	public:
         void Draw(std::shared_ptr<RHIShader>& Shader);

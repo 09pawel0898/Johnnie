@@ -19,6 +19,11 @@ namespace Engine
         LoadModel(FilePath);
     }
 
+    OStaticMesh::OStaticMesh(std::vector<OMesh>&& SubMeshes)
+    {
+        m_SubMeshes = std::move(SubMeshes);
+    }
+
     void OStaticMesh::LoadModel(std::string_view FilePath)
     {
         Assimp::Importer assimpImporter;
@@ -112,7 +117,6 @@ namespace Engine
 
     std::vector<std::shared_ptr<RHITexture2D>> OStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
     {
-        static int count = 0;
         std::vector<std::shared_ptr<RHITexture2D>> textures;
 
         for (uint8_t i = 0; i < Material->GetTextureCount(RHITextureTypeToAssimpTextureType(Type)); i++)

@@ -31,6 +31,7 @@ namespace Engine
 		void SetupMesh(void);
 
 	public:
+		OMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices);
 		OMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
 	
 	public:

@@ -33,7 +33,7 @@ private:
 	std::shared_ptr<OFloatingCamera> m_Camera;
 
 	/** Entities */
-	std::shared_ptr<OStaticMesh> m_TestMesh;
+	std::shared_ptr<OStaticMesh> m_StaticMesh;
 
 private:
 	/** Layer Interface Impl*/
@@ -48,4 +48,6 @@ private:
 
 private:
 	void InitGui(void);
+
+	void SpawnEntitiesToRender(void);
 };
