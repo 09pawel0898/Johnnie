@@ -55,4 +55,14 @@ namespace Engine
 
 		RHICommand::DrawIndexed(VertexArray);
 	}
+
+	RHIShaderManager& Renderer::GetShaderManager(void) const
+	{
+		return RHICommand::GetRHI()->GetShaderManager();
+	}
+
+	RHITexture2DManager& Renderer::GetTexture2DManager(void) const
+	{
+		return RHICommand::GetRHI()->GetTexture2DManager();
+	}
 }

@@ -2,6 +2,7 @@
 
 #include "Core/CoreMinimal.hpp"
 #include "Resources/RHIVertexArray.hpp"
+#include "Resources/RHIResourceManager.hpp"
 
 #include <glm/glm.hpp>
 
@@ -43,6 +44,16 @@ namespace Engine::RHI
 		virtual void Init(void) = 0;
 		virtual void Shutdown(void) = 0;
 
+	private:
+		/** RHI Resources */
+
+		RHITexture2DManager m_Texture2DManager;
+		RHIShaderManager	m_ShaderManager;
+	
+	public:
+		RHITexture2DManager&	GetTexture2DManager(void);
+		RHIShaderManager&		GetShaderManager(void);
+
 		/** RHI Methods */
 
 		virtual void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height) = 0;
@@ -52,4 +63,14 @@ namespace Engine::RHI
 		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
 		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
 	};
+
+	FORCEINLINE RHITexture2DManager& DynamicRHI::GetTexture2DManager(void)
+	{
+		return m_Texture2DManager;
+	}
+
+	FORCEINLINE RHIShaderManager& DynamicRHI::GetShaderManager(void)
+	{
+		return m_ShaderManager;
+	}
 }

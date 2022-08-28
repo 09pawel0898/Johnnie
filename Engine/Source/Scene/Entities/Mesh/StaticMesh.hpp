@@ -3,6 +3,7 @@
 #include "Mesh.hpp"
 
 #include "Renderer/RHI/RHITypes.hpp"
+#include "Renderer/RHI/Resources/RHIResourceManager.hpp"
 
 struct aiNode;
 struct aiMesh;

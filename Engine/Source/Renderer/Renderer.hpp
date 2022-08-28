@@ -31,5 +31,11 @@ namespace Engine
 		void Clear(void);
 
 		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
+	
+	public:
+		/** Resource Management */
+
+		RHIShaderManager& GetShaderManager(void) const;
+		RHITexture2DManager& GetTexture2DManager(void) const;
 	};
 }

@@ -3,12 +3,14 @@
 #include "StaticMesh.hpp"
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
 #include "AssimpHelpers.hpp"
+
 
 namespace Engine
 {
@@ -110,6 +112,7 @@ namespace Engine
 
     std::vector<std::shared_ptr<RHITexture2D>> OStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
     {
+        static int count = 0;
         std::vector<std::shared_ptr<RHITexture2D>> textures;
 
         for (uint8_t i = 0; i < Material->GetTextureCount(RHITextureTypeToAssimpTextureType(Type)); i++)
@@ -117,11 +120,15 @@ namespace Engine
             aiString texFileName;
             Material->GetTexture(RHITextureTypeToAssimpTextureType(Type), i, &texFileName);
 
-            std::string texturePath= m_Directory + "/";
+            std::string texturePath = m_Directory + "/";
             texturePath.append(texFileName.C_Str());
             
-            std::shared_ptr<RHITexture2D> texture = RHITexture2D::Create(texturePath, Type);
-            textures.push_back(texture);
+            auto& textureManager = Renderer::Get()->GetTexture2DManager();
+
+            if (textureManager.LoadResource(texturePath, Type))
+            {
+                textures.push_back(textureManager.GetResource(texturePath));
+            }
         }
         return textures;
     }

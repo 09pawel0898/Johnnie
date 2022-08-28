@@ -52,7 +52,7 @@ JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
         RHITexture2D::Create("Assets/Textures/texture.jpg", RHITextureType::Diffuse)
     };
 
-    m_TestMesh = NewObject<OStaticMesh>("Assets/Models/backpack.obj");
+    m_TestMesh = NewObject<OStaticMesh>("Assets/Models/eggpawn_rigtest.obj");
 }
 
 void JohnnieLayer::OnAwake(void)
