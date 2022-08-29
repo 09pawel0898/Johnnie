@@ -35,7 +35,7 @@ namespace Engine
 
 	void OCamera::UpdateProjection(void)
 	{
-		m_AspectRatio = 1280 / 720;
+		m_AspectRatio = 1280.0f / 720.0f;
 		m_ProjectionMat = glm::perspective(glm::radians(m_FielfOfView), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 

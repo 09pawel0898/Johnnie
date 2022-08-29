@@ -14,12 +14,13 @@
 
 namespace Engine
 {
-    OStaticMesh::OStaticMesh(std::string_view FilePath)
+    OStaticMesh::OStaticMesh(std::string_view FilePath, glm::vec3 const& WorldLocation)
+        :   Object(WorldLocation)
     {
         LoadModel(FilePath);
     }
 
-    OStaticMesh::OStaticMesh(std::vector<OMesh>&& SubMeshes)
+    OStaticMesh::OStaticMesh(std::vector<OMesh>&& SubMeshes, glm::vec3 const& WorldLocation)
     {
         m_SubMeshes = std::move(SubMeshes);
     }

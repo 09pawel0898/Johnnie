@@ -61,8 +61,8 @@ void JohnnieLayer::InitGui(void)
 
 void JohnnieLayer::SpawnEntitiesToRender(void)
 {
-	//m_StaticMesh = NewObject<OStaticMesh>("Assets/Models/talerz.obj");
-	m_StaticMesh = BasicMeshGenerator::CreateBox(glm::vec3(1.0f, 1.0f, 1.0f));
+	m_StaticMesh = NewObject<OStaticMesh>("Assets/Models/talerz.obj");
+	//m_StaticMesh = BasicMeshGenerator::CreateBox(glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void JohnnieLayer::OnRenderGui(void)
