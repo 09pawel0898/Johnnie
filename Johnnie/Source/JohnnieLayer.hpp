@@ -48,6 +48,4 @@ private:
 
 private:
 	void InitGui(void);
-
-	void SpawnEntitiesToRender(void);
 };

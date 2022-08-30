@@ -23,7 +23,8 @@ void JohnnieLayer::OnAwake(void)
 	InitGui();
 
     CameraController::Get()->SetViewTarget(m_Camera);
-	SpawnEntitiesToRender();
+
+	m_StaticMesh = NewObject<OStaticMesh>("Assets/Models/talerz.obj");
 }
 
 void JohnnieLayer::OnDetach(void)
@@ -57,12 +58,6 @@ void JohnnieLayer::InitGui(void)
 	{
 		std::cout << "Open";
 	});
-}
-
-void JohnnieLayer::SpawnEntitiesToRender(void)
-{
-	m_StaticMesh = NewObject<OStaticMesh>("Assets/Models/talerz.obj");
-	//m_StaticMesh = BasicMeshGenerator::CreateBox(glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 void JohnnieLayer::OnRenderGui(void)

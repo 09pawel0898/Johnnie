@@ -12,7 +12,9 @@ namespace Engine
 {
 	OFloatingCamera::OFloatingCamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation)
 		: OCamera(FieldOfView, AspectRatio, NearClip, FarClip, SpawnLocation)
-	{}
+	{
+		SetRotation(glm::vec3(0.f, -15.f, 90.f));
+	}
 
 	void OFloatingCamera::OnMouseYawInput(float Rate)
 	{
