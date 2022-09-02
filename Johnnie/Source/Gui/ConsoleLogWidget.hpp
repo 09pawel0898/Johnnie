@@ -9,10 +9,10 @@
 enum class ConsoleLogAction : uint8_t
 {};
 
-class ConsoleLogWidget final : ImGuiWidgetBase<ConsoleLogAction>
+class WConsoleLogWidget final : public ImGuiWidgetBase<ConsoleLogAction>
 {
 public:
-    ConsoleLogWidget(void);
+    WConsoleLogWidget();
 
 	virtual void OnRenderGui(void) override;
 

@@ -6,10 +6,10 @@
 enum class CameraDataAction : uint8_t
 {};
 
-class CameraDataWidget final : public ImGuiWidgetBase<CameraDataAction>
+class WCameraDataWidget final : public ImGuiWidgetBase<CameraDataAction>
 {
 public:
-	CameraDataWidget();
+	WCameraDataWidget();
 
 	virtual void OnRenderGui(void) override;
 	virtual void OnTick(double DeltaTime) override;

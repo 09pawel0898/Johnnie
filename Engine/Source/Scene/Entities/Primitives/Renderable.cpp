@@ -1,6 +1,6 @@
 #include "EnginePCH.hpp"
 
-#include "Scene.hpp"
+#include "Renderable.hpp"
 
 namespace Engine
 {

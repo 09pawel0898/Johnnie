@@ -15,7 +15,7 @@
 JohnnieLayer::JohnnieLayer(std::string_view Name) noexcept
 	:	Layer(Name)
 {
-    m_Camera = NewObject<OFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);
+	m_Camera = NewObject<OFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);
 }
 
 void JohnnieLayer::OnAwake(void)
@@ -45,15 +45,15 @@ void JohnnieLayer::OnEvent(Events::Event& Event)
 
 void JohnnieLayer::InitGui(void)
 {
-    /** Register tickable widgets manually */
-    m_SystemStatisticsWidget = std::make_shared<SystemStatisticsWidget>();
-    TickableManager::Get()->RegisterTickable(m_SystemStatisticsWidget);
+    /** Add widgets */
+    m_SystemStatisticsWidget	= NewWidget<WSystemStatisticsWidget ,SystemStatisticsAction>();
+	m_MainMenuBarWidget			= NewWidget<WMainMenuBarWidget, MainMenuBarAction>();
+	m_ConsoleLogWidget			= NewWidget<WConsoleLogWidget, ConsoleLogAction>();
+	m_CameraDataWidget			= NewWidget<WCameraDataWidget, CameraDataAction>();
 
-    m_CameraDataWidget = std::make_shared<CameraDataWidget>();
-    TickableManager::Get()->RegisterTickable(m_CameraDataWidget);
-
-    /** Init widgets delegates */
-	m_MainMenuBarWidget.BindActionDelegate(MainMenuBarAction::Open,
+    /** Init widgets actions */
+	
+	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::Open,
 	[]()
 	{
 		std::cout << "Open";
@@ -62,10 +62,10 @@ void JohnnieLayer::InitGui(void)
 
 void JohnnieLayer::OnRenderGui(void)
 {
-	m_MainMenuBarWidget.OnRenderGui();
-	m_ConsoleLogWidget.OnRenderGui();
+	//m_MainMenuBarWidget.OnRenderGui();
+	//m_ConsoleLogWidget.OnRenderGui();
 	m_SystemStatisticsWidget->OnRenderGui();
-    m_CameraDataWidget->OnRenderGui();
+   //m_CameraDataWidget->OnRenderGui();
 
 	//static bool bShowDemoWindow = false;
 	//ImGui::ShowDemoWindow(&bShowDemoWindow);

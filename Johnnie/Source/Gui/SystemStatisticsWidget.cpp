@@ -10,19 +10,19 @@
 
 #include <inttypes.h>
 
-SystemStatisticsWidget::SystemStatisticsWidget()
+WSystemStatisticsWidget::WSystemStatisticsWidget()
 {
 	InitStaticStats();
 
 	SetTickInterval(0.1f);
 }
 
-void SystemStatisticsWidget::InitStaticStats(void)
+void WSystemStatisticsWidget::InitStaticStats(void)
 {
 	GraphicsCardInfo = System::GetGraphicsCardBrandingInfo();
 }
 
-void SystemStatisticsWidget::OnRenderGui(void)
+void WSystemStatisticsWidget::OnRenderGui(void)
 {
 	ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 	
@@ -112,7 +112,7 @@ void SystemStatisticsWidget::OnRenderGui(void)
 	ImGui::End();
 }
 
-void SystemStatisticsWidget::OnTick(double DeltaTime)
+void WSystemStatisticsWidget::OnTick(double DeltaTime)
 {
 	UpdateApplicationStats();
 	UpdateMemoryAllocationStats();
@@ -120,7 +120,7 @@ void SystemStatisticsWidget::OnTick(double DeltaTime)
 	UpdateVideoMemoryStats();
 }
 
-void SystemStatisticsWidget::UpdateApplicationStats(void)
+void WSystemStatisticsWidget::UpdateApplicationStats(void)
 {
 	using namespace Engine::Core;
 
@@ -130,12 +130,12 @@ void SystemStatisticsWidget::UpdateApplicationStats(void)
 	ApplicationStats.Fps		= app->GetFPS();
 }
 
-void SystemStatisticsWidget::UpdateMemoryAllocationStats(void)
+void WSystemStatisticsWidget::UpdateMemoryAllocationStats(void)
 {
 	MemoryStats = System::GetMemoryStatistics();
 }
 
-void SystemStatisticsWidget::UpdateMemoryStats(void)
+void WSystemStatisticsWidget::UpdateMemoryStats(void)
 {
 	if (auto memoryInfo = System::GetMemoryInfo())
 	{
@@ -143,7 +143,7 @@ void SystemStatisticsWidget::UpdateMemoryStats(void)
 	}
 }
 
-void SystemStatisticsWidget::UpdateVideoMemoryStats(void)
+void WSystemStatisticsWidget::UpdateVideoMemoryStats(void)
 {
 	static bool bSupported = true;
 

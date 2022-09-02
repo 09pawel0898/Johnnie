@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Core/Debug/Asserts.hpp"
-#include "../Scene/Entities/Tickable.hpp"
+#include "../Scene/Entities/Primitives/Tickable.hpp"
 
 namespace Engine
 {

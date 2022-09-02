@@ -31,6 +31,8 @@ namespace Engine::RHI
 
 	using RHITexture2DManager	= RHIResourceManager<RHITexture2D, FilePath>;
 	using RHIShaderManager		= RHIResourceManager<RHIShader, ShaderName>;
+
+
 }
 
 #include "RHIResourceManager.inl"

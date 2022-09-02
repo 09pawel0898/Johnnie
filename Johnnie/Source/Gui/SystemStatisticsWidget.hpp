@@ -9,7 +9,7 @@
 enum class SystemStatisticsAction : uint8_t
 {};
 
-class SystemStatisticsWidget final : public ImGuiWidgetBase<SystemStatisticsAction>
+class WSystemStatisticsWidget final : public ImGuiWidgetBase<SystemStatisticsAction>
 {
 private:
 	struct ApplicationStats
@@ -25,7 +25,7 @@ private:
 	SystemVideoMemoryInfo	VideoMemoryInfo;
 
 public:
-	SystemStatisticsWidget();
+	WSystemStatisticsWidget();
 
 	void InitStaticStats(void);
 

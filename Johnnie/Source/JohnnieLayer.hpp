@@ -6,10 +6,10 @@
 #include "Gui/MainMenuBarWidget.hpp"
 #include "Gui/ConsoleLogWidget.hpp"
 
-class MainMenuBarWidget;
-class ConsoleLogWidget;
-class CameraDataWidget;
-class SystemStatisticsWidget;
+class WMainMenuBarWidget;
+class WConsoleLogWidget;
+class WCameraDataWidget;
+class WSystemStatisticsWidget;
 
 namespace Engine
 {
@@ -24,10 +24,10 @@ public:
 
 private:
 	/** UI Widgets */
-	MainMenuBarWidget	m_MainMenuBarWidget;
-	ConsoleLogWidget	m_ConsoleLogWidget;
-	std::shared_ptr<SystemStatisticsWidget>	m_SystemStatisticsWidget;	// SharedPtr to be properly registered and managed as a Tickable object.
-	std::shared_ptr<CameraDataWidget>		m_CameraDataWidget;	
+	std::shared_ptr<WMainMenuBarWidget>			m_MainMenuBarWidget;
+	std::shared_ptr<WConsoleLogWidget>			m_ConsoleLogWidget;
+	std::shared_ptr<WSystemStatisticsWidget>	m_SystemStatisticsWidget;
+	std::shared_ptr<WCameraDataWidget>			m_CameraDataWidget;	
 
 	/** Floating Camera */
 	std::shared_ptr<OFloatingCamera> m_Camera;

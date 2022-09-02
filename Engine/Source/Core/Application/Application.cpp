@@ -5,7 +5,6 @@
 #include "Events/WindowEvent.hpp"
 #include "System/System.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Scene/Entities/Tickable.hpp"
 #include "Utilities/TimingUtility.hpp"
 
 namespace Engine::Core
@@ -82,8 +81,6 @@ namespace Engine::Core
                         layer->OnTick(m_DeltaTime);
                     }
                     
-                    TickableManager::Get()->UdateTickableEntities(m_DeltaTime);
-
                     for (auto& layer : *m_LayerManager)
                     {
                         layer->OnRender();
@@ -105,8 +102,6 @@ namespace Engine::Core
                 tLastUpdate = Utility::Time::now();
                 m_FPS = (1.0 / m_DeltaTime);
             }
-
-            
         }
         Shutdown();
     }

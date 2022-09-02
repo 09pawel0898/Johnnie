@@ -2,12 +2,12 @@
 
 #include <Engine/Gui.hpp>
 
-MainMenuBarWidget::MainMenuBarWidget()
+WMainMenuBarWidget::WMainMenuBarWidget()
 {
 	SetTickEnabled(false);
 }
 
-void MainMenuBarWidget::OnRenderGui(void)
+void WMainMenuBarWidget::OnRenderGui(void)
 {
 	if (ImGui::BeginMainMenuBar())
 	{

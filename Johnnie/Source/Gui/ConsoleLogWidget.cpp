@@ -3,7 +3,7 @@
 #include "Log/OutputLogSink.hpp"
 #include <regex>
 
-void ConsoleLogWidget::OnRenderGui(void)
+void WConsoleLogWidget::OnRenderGui(void)
 {
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
     
@@ -71,7 +71,7 @@ void ConsoleLogWidget::OnRenderGui(void)
     ImGui::End();
 }
 
-ConsoleLogWidget::ConsoleLogWidget(void)
+WConsoleLogWidget::WConsoleLogWidget(void)
 {
     AutoScroll = true;
     SetTickEnabled(false);
@@ -79,10 +79,10 @@ ConsoleLogWidget::ConsoleLogWidget(void)
     InitLoggerSink();
 }
 
-void ConsoleLogWidget::InitLoggerSink(void)
+void WConsoleLogWidget::InitLoggerSink(void)
 {
     std::shared_ptr<OutputLogSink_mt> outputLogSink = std::make_shared<OutputLogSink_mt>();
-    outputLogSink->BindCustomLoggerFunction(std::bind(&ConsoleLogWidget::AddLog,this,std::placeholders::_1));
+    outputLogSink->BindCustomLoggerFunction(std::bind(&WConsoleLogWidget::AddLog,this,std::placeholders::_1));
     
     DEFINE_OUTPUT_LOG_SINK(std::move(outputLogSink));
 }
@@ -121,7 +121,7 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
     return Log::Verbosity::Trace;
 }
 
-void ConsoleLogWidget::AddLog(std::string const& LogMsg)
+void WConsoleLogWidget::AddLog(std::string const& LogMsg)
 {
     static std::unordered_map<Log::Verbosity, ImVec4> colors =
     {

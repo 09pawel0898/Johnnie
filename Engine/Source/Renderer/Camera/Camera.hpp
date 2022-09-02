@@ -2,8 +2,8 @@
 
 #include "Core/CoreMinimal.hpp"
 
-#include "Scene/Entities/Object.hpp"
-#include "Scene/Entities/Tickable.hpp"
+#include "Scene/Entities/Primitives/Object.hpp"
+#include "Scene/Entities/Primitives/Tickable.hpp"
 #include "Events/IEventListener.hpp"
 
 namespace Engine

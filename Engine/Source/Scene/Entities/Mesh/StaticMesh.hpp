@@ -5,8 +5,8 @@
 #include "Renderer/RHI/RHITypes.hpp"
 #include "Renderer/RHI/Resources/RHIResourceManager.hpp"
 
-#include "Scene/Entities/Object.hpp"
-#include "Scene/Entities/Tickable.hpp"
+#include "Scene/Entities/Primitives/Object.hpp"
+#include "Scene/Entities/Primitives/Tickable.hpp"
 
 struct aiNode;
 struct aiMesh;

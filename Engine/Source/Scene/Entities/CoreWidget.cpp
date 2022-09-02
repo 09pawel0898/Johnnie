@@ -1,6 +1,6 @@
 #include "EnginePCH.hpp"
 
-#include "Scene.hpp"
+#include "CoreWidget.hpp"
 
 namespace Engine
 {

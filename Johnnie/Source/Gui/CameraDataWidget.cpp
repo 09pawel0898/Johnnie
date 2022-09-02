@@ -3,12 +3,12 @@
 #include <Engine/Gui.hpp>
 #include <Engine/Camera.hpp>
 
-CameraDataWidget::CameraDataWidget()
+WCameraDataWidget::WCameraDataWidget()
 {
 	SetTickInterval(0.05f);
 }
 
-void CameraDataWidget::OnRenderGui(void)
+void WCameraDataWidget::OnRenderGui(void)
 {
     ImGui::Begin("Camera");
     {
@@ -37,8 +37,7 @@ void CameraDataWidget::OnRenderGui(void)
     ImGui::End();
 }
 
-#include <iostream>
-void CameraDataWidget::OnTick(double DeltaTime)
+void WCameraDataWidget::OnTick(double DeltaTime)
 {
     if (auto floatingCamera = Cast<OFloatingCamera>(CameraController::Get()->GetCamera()))
     {

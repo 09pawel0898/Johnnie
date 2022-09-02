@@ -2,6 +2,7 @@
 #include "EngineBaseLayer.hpp"
 
 #include "Renderer/Camera/CameraController.hpp"
+#include "Scene/Entities/Primitives/Tickable.hpp"
 
 namespace Engine
 {
@@ -20,7 +21,11 @@ namespace Engine
 
 	void EngineBaseLayer::OnTick(double DeltaTime)
 	{
+		/** Tick camera controller */
 		CameraController::Get()->OnTick(DeltaTime);
+
+		/** Tick tickable entities  */
+		TickableManager::Get()->UdateTickableEntities(DeltaTime);
 	}
 
 	void EngineBaseLayer::OnEvent(Events::Event& Event)

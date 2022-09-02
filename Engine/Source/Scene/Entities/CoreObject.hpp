@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
-#include "Object.hpp"
-#include "Tickable.hpp"
+#include "Primitives/Object.hpp"
+#include "Primitives/Tickable.hpp"
 
 namespace Engine
 {
