@@ -1,8 +1,6 @@
 #include "EnginePCH.hpp"
 
-#include "Tickable.hpp"
+#include "CoreActor.hpp"
 
 namespace Engine
-{
-	
-}
+{}

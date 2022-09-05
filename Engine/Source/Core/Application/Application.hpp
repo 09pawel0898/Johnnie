@@ -50,9 +50,10 @@ namespace Engine::Core
 
 		/** Layers */
 	private:
-		std::unique_ptr<LayerManager> m_LayerManager;
-		std::shared_ptr<ImGuiLayer> m_ImGuiLayer;
+		std::unique_ptr<LayerManager>	m_LayerManager;
 		void InitLayerManager(void);
+		
+		std::shared_ptr<ImGuiLayer>		m_ImGuiLayer;
 		void InitImGuiLayer(void);
 
 		std::shared_ptr<EngineBaseLayer> m_EngineBaseLayer;

@@ -29,7 +29,7 @@ namespace Engine
 		void EndFrame(void);
 
 	public:
-		ImGuiProperties& GetImGuiProperties(void)				{ return m_ImGuiProperties;	}
+		ImGuiProperties& GetImGuiProperties(void)			{ return m_ImGuiProperties;	}
 		ImGuiProperties const& GetImGuiProperties() const	{ return m_ImGuiProperties; }
 	};
 }

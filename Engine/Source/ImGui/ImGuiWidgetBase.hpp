@@ -1,17 +1,20 @@
 #pragma once
 
 #include "Core/Debug/Asserts.hpp"
-#include "../Scene/Entities/Primitives/Tickable.hpp"
+#include "../Scene/Entities/Primitives/Object.hpp"
+#include "../Scene/Entities/Primitives/IDrawableWidget.hpp"
 
 namespace Engine
 {
 	template <typename Action>
-	class ImGuiWidgetBase : public Tickable
+	class ImGuiWidgetBase : public Object, public IDrawableWidget
 	{
 	public:
 		using SimpleActionDelegate = std::function<void()>;
 
 	private:
+		bool m_bIsVisible = true;
+
 		struct ActionClassHash
 		{
 			template <typename T>
@@ -41,5 +44,15 @@ namespace Engine
 
 		virtual void OnRenderGui(void) = 0;
 		virtual void OnTick(double DeltaTime) {};
+
+		virtual bool IsVisible(void) const override
+		{
+			return m_bIsVisible;
+		}
+
+		void SetVisibility(bool Visibility)
+		{
+			m_bIsVisible = Visibility;
+		}
 	};
 }

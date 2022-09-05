@@ -1,7 +1,6 @@
 #pragma once
 
-#include "../Source/Renderer/Camera/Camera.hpp"
-#include "../Source/Renderer/Camera/FloatingCamera.hpp"
-#include "../Source/Renderer/Camera/CameraController.hpp"
+#include "../Source/Scene/Entities/Camera/FloatingCamera.hpp"
+#include "../Source/Scene/Entities/Camera/CameraController.hpp"
 
 using namespace Engine;

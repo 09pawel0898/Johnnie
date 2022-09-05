@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	class EngineBaseLayer final : public Engine::Layer
+	class EngineBaseLayer final : public Layer
 	{
 	public:
 		explicit EngineBaseLayer(std::string_view Name) noexcept;

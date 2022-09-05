@@ -1,8 +1,8 @@
 #include "EnginePCH.hpp"
 #include "EngineBaseLayer.hpp"
 
-#include "Renderer/Camera/CameraController.hpp"
-#include "Scene/Entities/Primitives/Tickable.hpp"
+#include "Scene/Entities/Camera/CameraController.hpp"
+#include "Scene/SceneManager.hpp"
 
 namespace Engine
 {
@@ -21,11 +21,13 @@ namespace Engine
 
 	void EngineBaseLayer::OnTick(double DeltaTime)
 	{
-		/** Tick camera controller */
-		CameraController::Get()->OnTick(DeltaTime);
+		auto& activeScene = SceneManager::Get()->GetActiveScene();
 
-		/** Tick tickable entities  */
-		TickableManager::Get()->UdateTickableEntities(DeltaTime);
+		if (activeScene != nullptr)
+		{
+			activeScene->Tick(DeltaTime);
+		}
+		CameraController::Get()->OnTick(DeltaTime);
 	}
 
 	void EngineBaseLayer::OnEvent(Events::Event& Event)
@@ -35,9 +37,21 @@ namespace Engine
 
 	void EngineBaseLayer::OnRender(void) const
 	{
+		auto& activeScene = SceneManager::Get()->GetActiveScene();
+
+		if (activeScene != nullptr)
+		{
+			activeScene->Render();
+		}
 	}
 
 	void EngineBaseLayer::OnRenderGui(void)
 	{
+		auto& activeScene = SceneManager::Get()->GetActiveScene();
+
+		if (activeScene != nullptr)
+		{
+			activeScene->RenderImGui();
+		}
 	}
 }

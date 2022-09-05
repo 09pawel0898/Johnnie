@@ -1,8 +1,7 @@
 #include "EnginePCH.hpp"
 
 #include "Renderer.hpp"
-#include "Camera/Camera.hpp"
-#include "Camera/CameraController.hpp"
+#include "Scene/Entities/Camera/CameraController.hpp"
 
 #include "RHI/Resources/RHIShader.hpp"
 #include "RHI/RHICommand.hpp"

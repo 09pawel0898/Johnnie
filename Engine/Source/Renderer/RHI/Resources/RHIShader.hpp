@@ -2,7 +2,10 @@
 
 #include <glm/glm.hpp>
 
+#include "Core/CoreMinimal.hpp"
 #include "RHIResource.hpp"
+
+#include <variant>
 
 namespace Engine::RHI
 {

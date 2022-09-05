@@ -1,8 +1,6 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
-
-#include "Utilities/Singleton.hpp"
 #include "Utilities/TimingUtility.hpp"
 
 namespace Engine
@@ -12,17 +10,16 @@ namespace Engine
 	private:
 		float	m_TickInterval = 0.f;
 		bool	m_bTickEnabled = true;
-		bool	m_bRegistered = false;
+		bool	m_bTickableRegistered = false;
 
 		Utility::TimePoint m_LastUpdate;
 
 		friend class TickableManager;
 
-	protected:
+	public:
 		Tickable() = default;
 		virtual ~Tickable() = default;
 
-	public:
 		virtual void OnTick(double DeltaTime) = 0;
 
 		void SetTickInterval(float TickInterval = 0.f);
@@ -39,24 +36,4 @@ namespace Engine
 	{
 		m_bTickEnabled = TickEnabled;
 	}
-
-	class TickableManager final : public Singleton<TickableManager>
-	{
-	private:
-		using TickableUUID = std::string;
-
-		std::vector<
-			std::pair<TickableUUID,std::weak_ptr<Tickable>>
-			> m_RegisteredTickables;
-
-	public:
-		TickableManager() = default;
-
-		bool RegisterTickable(std::shared_ptr<Tickable> const& TickableEntity);
-
-		void UdateTickableEntities(double DeltaTime);
-
-	private:
-		void UnRegisterTickable(TickableUUID const& ExpiredTickableEntityUUID);
-	};
 }

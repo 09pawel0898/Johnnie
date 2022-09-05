@@ -6,7 +6,7 @@
 
 namespace Engine
 {
-	class OCamera;
+	class ACamera;
 
 	namespace RHI
 	{
