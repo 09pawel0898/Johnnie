@@ -31,6 +31,11 @@ namespace Engine::RHI
 		glBindTexture(GL_TEXTURE_2D, m_ID);
 	}
 
+	void OpenGLTexture2D::Unbind(void)
+	{
+		UNIMPLEMENTED;
+	}
+
 	bool OpenGLTexture2D::operator==(RHITexture const& rhs) const
 	{
 		OpenGLTexture2D* glTexture = dynamic_cast<OpenGLTexture2D*>(const_cast<RHITexture*>(&rhs));

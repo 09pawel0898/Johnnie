@@ -30,22 +30,30 @@ namespace Engine
 		uint8_t diffuseNr = 1, specularNr = 1;
 		Shader->Bind();
 
-		for (uint8_t idx = 0; idx < m_Textures.size(); idx++)
+		if (m_Textures.size() == 0)
 		{
-			m_Textures[idx]->Bind(idx);
+			Shader->SetInt("uUseTextures", 0);
+		}
+		else
+		{
+			Shader->SetInt("uUseTextures", 1);
+			for (uint8_t idx = 0; idx < m_Textures.size(); idx++)
+			{
+				m_Textures[idx]->Bind(idx);
 
-			std::string texNum;
-			
-			std::string texName = GetUniformNameByTextureType(m_Textures[idx]->GetType());
-			if (texName == "texture_diffuse")
-			{
-				texName = std::to_string(diffuseNr++);
+				std::string texNum;
+
+				std::string texName = GetUniformNameByTextureType(m_Textures[idx]->GetType());
+				if (texName == "texture_diffuse")
+				{
+					texName = std::to_string(diffuseNr++);
+				}
+				else if (texName == "texture_specular")
+				{
+					texName = std::to_string(specularNr++);
+				}
+				Shader->SetInt((texName + texNum).c_str(), idx);
 			}
-			else if (texName == "texture_specular")
-			{
-				texName = std::to_string(specularNr++);
-			}
-			Shader->SetInt((texName + texNum).c_str(), idx);
 		}
 		Renderer::Get()->Draw(Shader, m_VAO, ModelMat);
 	}

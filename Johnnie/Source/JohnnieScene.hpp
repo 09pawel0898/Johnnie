@@ -23,6 +23,8 @@ public:
 	JohnnieScene() = default;
 
 private:
+	int x = 2;
+
 	/** UI Widgets */
 	std::shared_ptr<WJohnnieMainMenuBarWidget>			m_MainMenuBarWidget;
 	std::shared_ptr<WJohnnieConsoleLogWidget>			m_ConsoleLogWidget;
@@ -33,7 +35,8 @@ private:
 	std::shared_ptr<AFloatingCamera>					m_Camera;
 
 	/** Entities */
-	std::shared_ptr<AStaticMesh>						m_RoundPlatform;
+	std::shared_ptr<AStaticMesh>						m_RoundPlatform = nullptr;
+	std::shared_ptr<AStaticMesh>						m_Box = nullptr;
 
 private:
 	/** Layer Interface Impl*/

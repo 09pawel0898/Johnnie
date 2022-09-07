@@ -26,16 +26,16 @@ namespace Engine
 			{glm::vec3(-w, +h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 0.0f)},
 			
 			/** Top Face */
-			{glm::vec3(w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
+			{glm::vec3(w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
 			{glm::vec3(w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
-			{glm::vec3(w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
+			{glm::vec3(+w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
+			{glm::vec3(+w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
 			
 			/** Bottom Face */
-			{glm::vec3(w, h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
-			{glm::vec3(w, h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(w, h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(w, h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
+			{glm::vec3(-w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
+			{glm::vec3(w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
+			{glm::vec3(w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
+			{glm::vec3(-w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
 			
 			/** Left Face */
 			{glm::vec3(-w, -h, +d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
@@ -56,7 +56,7 @@ namespace Engine
 			0, 1, 2,
 			0, 2, 3,
 
-			/** Back Face */
+			/* Back Face */
 			4, 5, 6,
 			4, 6, 7,
 
@@ -67,11 +67,11 @@ namespace Engine
 			/** Bottom Face */
 			12, 13, 14,
 			12, 14, 15,
-
+			
 			/** Left Face */
 			16, 17, 18,
 			16, 18, 19,
-
+			
 			/** Right Face */
 			20, 21, 22,
 			20, 22, 23,

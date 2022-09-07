@@ -13,11 +13,16 @@ void JohnnieScene::OnAwake(void)
 	m_Camera = NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);
     CameraController::Get()->SetViewTarget(m_Camera);
 
+	m_Box = BasicMeshGenerator::CreateBox(glm::vec3(0.15f, 0.15f, 0.15f));
+	m_Box->SetLocation(glm::vec3(0.f, 1.f, 0.f));
+
 	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
 }
 
 void JohnnieScene::OnDetach(void)
-{}
+{
+	std::cout << "a";
+}
 
 void JohnnieScene::OnTick(double DeltaTime)
 {}

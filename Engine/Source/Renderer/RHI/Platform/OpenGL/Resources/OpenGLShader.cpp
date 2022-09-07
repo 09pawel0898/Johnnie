@@ -40,9 +40,13 @@ namespace Engine::RHI
             if (line.find("#shader") != std::string::npos)
             {
                 if (line.find("vertex") != std::string::npos)
+                {
                     type = RHIShaderType::VERTEX;
+                }
                 else if (line.find("fragment") != std::string::npos)
+                {
                     type = RHIShaderType::FRAGMENT;
+                }
             }
             else
             {

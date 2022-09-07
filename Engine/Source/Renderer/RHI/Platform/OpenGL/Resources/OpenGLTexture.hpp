@@ -14,6 +14,7 @@ namespace Engine::RHI
 		~OpenGLTexture2D();
 
 		virtual void Bind(uint8_t TextureSlotID) override;
+		virtual void Unbind(void) override;
 		virtual bool operator==(RHITexture const& rhs) const override;
 	
 	private:

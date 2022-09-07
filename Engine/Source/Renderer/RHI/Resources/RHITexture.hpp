@@ -34,6 +34,7 @@ namespace Engine::RHI
 
 	public:
 		virtual void Bind(uint8_t TextureSlotID) = 0;
+		virtual void Unbind(void) = 0;
 		virtual bool operator==(RHITexture const& rhs) const = 0;
 	};
 

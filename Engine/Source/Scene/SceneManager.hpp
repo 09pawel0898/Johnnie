@@ -12,12 +12,6 @@ namespace Engine
 		
 	public:
 		SceneManager() = default;
-
-		SceneManager(SceneManager const&) = delete;
-		SceneManager& operator=(SceneManager const&) = delete;
-
-		SceneManager(SceneManager&&) = delete;
-		SceneManager& operator=(SceneManager&&) = delete;
 	
 	public:
 		void SetScene(std::unique_ptr<Scene>&& Scene);

@@ -35,8 +35,8 @@ namespace Engine
         std::vector<std::shared_ptr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
 
     public:
-        explicit AStaticMesh(std::string_view FilePath, glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
-        explicit AStaticMesh(std::vector<Mesh>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
+        AStaticMesh(std::string_view FilePath, glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
+        AStaticMesh(std::vector<Mesh>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
 
 	public:
         virtual void Draw(void) const override;

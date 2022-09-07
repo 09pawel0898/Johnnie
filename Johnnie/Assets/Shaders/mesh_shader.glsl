@@ -23,6 +23,7 @@ out vec4 FragColor;
 
 in vec2 TexCoord;
 
+uniform bool uUseTextures;
 uniform sampler2D texture_diffuse1;
 uniform sampler2D texture_diffuse2;
 uniform sampler2D texture_diffuse3;
@@ -31,5 +32,12 @@ uniform sampler2D texture_specular2;
 
 void main()
 {
-	FragColor = texture(texture_diffuse1, TexCoord);
+	if(uUseTextures)
+	{
+		FragColor = texture(texture_diffuse1, TexCoord);
+	}
+	else
+	{
+		FragColor = vec4(1.0,1.0,1.0,1.0);
+	}
 }

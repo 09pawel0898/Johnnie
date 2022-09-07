@@ -19,7 +19,6 @@ namespace Engine
 
 	public:
 		Actor() = default;
-		
 		explicit Actor(glm::vec3 const& WorldLocation);
 
 		glm::vec3 const& GetLocation(void) const;

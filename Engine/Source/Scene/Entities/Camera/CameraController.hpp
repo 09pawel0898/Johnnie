@@ -44,7 +44,10 @@ namespace Engine
 
 	FORCEINLINE void CameraController::SetViewTarget(std::shared_ptr<ACamera> Camera)
 	{
-		m_ControlledCamera = std::move(Camera);
-		m_ControlledCamera->SetTickEnabled(true);
+		if(Camera)
+		{
+			m_ControlledCamera = std::move(Camera);
+			m_ControlledCamera->SetTickEnabled(true);
+		}
 	}
 }
