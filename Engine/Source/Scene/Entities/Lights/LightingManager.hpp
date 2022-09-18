@@ -44,5 +44,7 @@ namespace Engine
 	public:
 		void RegisterLight(std::shared_ptr<APointLight> const& Light);
 		bool IsLightRegistered(OUUID const& LightUUID);
+
+		void CalculateLighting(void);
 	};
 }

@@ -2,6 +2,7 @@
 
 #include "LightingManager.hpp"
 #include "PointLight.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace Engine
 {
@@ -48,5 +49,12 @@ namespace Engine
     bool LightingManager::IsLightRegistered(OUUID const& LightUUID)
     {
         return false;
+    }
+    
+    void LightingManager::CalculateLighting(void)
+    {
+        auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_StaticMesh");
+
+
     }
 }

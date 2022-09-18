@@ -20,5 +20,7 @@ namespace Engine
 		virtual void OnRender(void) const override;
 		virtual void OnRenderGui(void) override;
 
+	private:
+		void PrepareShaders(void);
 	};
 }

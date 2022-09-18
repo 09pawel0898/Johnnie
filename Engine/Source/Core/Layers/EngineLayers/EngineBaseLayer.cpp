@@ -3,6 +3,7 @@
 
 #include "Scene/Entities/Camera/CameraController.hpp"
 #include "Scene/SceneManager.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace Engine
 {
@@ -13,6 +14,7 @@ namespace Engine
 
 	void EngineBaseLayer::OnAwake(void)
 	{
+		PrepareShaders();
 	}
 
 	void EngineBaseLayer::OnDetach(void)
@@ -53,5 +55,13 @@ namespace Engine
 		{
 			activeScene->RenderImGui();
 		}
+	}
+
+	void EngineBaseLayer::PrepareShaders(void)
+	{
+		RHI::RHIShaderManager& shaderManager = Renderer::Get()->GetShaderManager();
+
+		shaderManager.LoadResource("Shader_StaticMesh", "Assets/Shaders/mesh_shader.glsl");
+		shaderManager.LoadResource("Shader_LightMesh",	"Assets/Shaders/point_light.glsl");
 	}
 }

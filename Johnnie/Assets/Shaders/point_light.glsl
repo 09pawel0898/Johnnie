@@ -20,6 +20,5 @@ uniform vec3 uLightColor;
 
 void main()
 {
-	vec3 a = vec3(1.0,1.0,1.0);
 	FragColor = vec4(uLightColor,1.0);
 }

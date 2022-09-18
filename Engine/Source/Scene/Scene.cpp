@@ -13,6 +13,8 @@ namespace Engine
 
 	void Scene::Render(void)
 	{
+		m_LightingManager.CalculateLighting();
+
 		m_DrawableManager.DrawActors();
 	}
 

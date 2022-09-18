@@ -39,14 +39,12 @@ namespace Engine::RHI
 	{
 		if (m_Resources.find(ShaderName) != m_Resources.end())
 		{
-			//LOG(RHI, Warning, "Attempting to add resource that is already loaded.");
+			LOG(RHI, Warning, "Attempting to load shader that is already loaded.");
 			return false;
 		}
-		std::string_view shaderName = ShaderName.substr(ShaderName.find_last_of('/') + 1, ShaderName.length() - 1);
+		std::shared_ptr<RHIShader> newResource = RHIShader::Create(ShaderName, std::forward<Args>(_Args)...);
 
-		std::shared_ptr<RHIShader> newResource = RHIShader::Create(shaderName, std::forward<Args>(_Args)...);
-
-		return InsertResource(shaderName, std::move(newResource));
+		return InsertResource(ShaderName, std::move(newResource));
 	}
 
 	template <typename ResourceType, typename ResourceID>

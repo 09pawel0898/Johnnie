@@ -22,7 +22,26 @@ void JohnnieScene::OnDetach(void)
 {}
 
 void JohnnieScene::OnTick(double DeltaTime)
-{}
+{
+	static bool decreasing = true;
+	
+	if (decreasing)
+	{
+		auto color =  m_PointLight->GetColor();
+		color.y -= 0.01f;
+		m_PointLight->SetColor(color);
+		if (color.y < 0.02f)
+			decreasing = false;
+	}
+	else
+	{
+		auto color = m_PointLight->GetColor();
+		color.y += 0.01f;
+		m_PointLight->SetColor(color);
+		if (color.y > 0.98f)
+			decreasing = true;
+	}
+}
 
 void JohnnieScene::InitGui(void)
 {

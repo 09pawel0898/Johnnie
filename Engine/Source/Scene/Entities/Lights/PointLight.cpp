@@ -2,6 +2,7 @@
 
 #include "PointLight.hpp"
 #include "Scene/SceneManager.hpp"
+#include "Renderer/Renderer.hpp"
 #include "../Meshes/BasicMeshGenerator.hpp"
 
 namespace Engine
@@ -15,7 +16,8 @@ namespace Engine
     void APointLight::Draw(void) const
     {
         /** TO DO : Make use of shader manager */
-        static std::shared_ptr<RHIShader> pointLightBoxMeshShader = RHI::RHIShader::Create("PointLightShader", "Assets/Shaders/point_light.glsl");
+        auto& shaderManager = Renderer::Get()->GetShaderManager();
+        auto& lightMeshShader = shaderManager.GetResource("Shader_LightMesh");
 
         if(IsVisible())
         {
@@ -23,10 +25,10 @@ namespace Engine
 
             if(m_bIsMeshVisible)
             {
-                pointLightBoxMeshShader->Bind();
-                pointLightBoxMeshShader->SetFloat3("uLightColor", m_LightColor);
+                lightMeshShader->Bind();
+                lightMeshShader->SetFloat3("uLightColor", m_LightColor);
 
-                m_BoxMesh.Draw(pointLightBoxMeshShader, modelMat);
+                m_BoxMesh.Draw(lightMeshShader, modelMat);
             }
         }
     }
