@@ -10,6 +10,12 @@
 
 namespace Engine
 {
+	enum class DrawableType : uint8_t
+	{
+		Actor,
+		Widget
+	};
+
 	class DrawableManager final
 	{
 	private:
@@ -38,6 +44,9 @@ namespace Engine
 
 		void DrawActors(void);
 		void DrawWidgets(void);
+
+	private:
+		void UnRegisterDrawables(DrawableType Type, std::vector<OUUID> const& PendingIDsToUnregister);
 	};
 
 	template <typename ActionType>

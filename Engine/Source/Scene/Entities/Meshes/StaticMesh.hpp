@@ -27,6 +27,10 @@ namespace Engine
         std::vector<Mesh>   m_SubMeshes;
         std::string         m_Directory;
 
+    private:
+        /** Surface */
+        
+
         void LoadModel(std::string_view FilePath);
 
         void ProcessNode(aiNode* Node, const aiScene* Scene);

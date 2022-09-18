@@ -6,6 +6,8 @@
 #include "Scene/Entities/Meshes/StaticMesh.hpp"
 #include "Scene/Entities/Meshes/BasicMeshGenerator.hpp"
 
+#include "Scene/Entities/Lights/PointLight.hpp"
+
 #include "Scene/SceneManager.hpp"
 
 using namespace Engine;

@@ -46,11 +46,8 @@ namespace Engine
 	void Renderer::Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
 	{
 		auto const& camera = CameraController::Get()->GetCamera();
-
 		Shader->Bind();
-		Shader->SetMat4("model", ModelMat);
-		Shader->SetMat4("view", camera->GetViewMat());
-		Shader->SetMat4("proj", camera->GetProjectionMat());
+		Shader->SetMat4("uMVP", camera->GetViewProjectionMat() * ModelMat);
 
 		RHICommand::DrawIndexed(VertexArray);
 	}

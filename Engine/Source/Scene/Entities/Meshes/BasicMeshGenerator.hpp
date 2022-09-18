@@ -12,6 +12,9 @@ namespace Engine
 	public:
 		[[nodiscard]]
 		static std::shared_ptr<AStaticMesh> CreateBox(glm::vec3 Size);
+		
+		[[nodiscard]]
+		static Mesh CreateBoxMesh(glm::vec3 Size);
 
 		[[nodiscard]]
 		static std::shared_ptr<AStaticMesh> CreatePlane(float Width, float Depth);

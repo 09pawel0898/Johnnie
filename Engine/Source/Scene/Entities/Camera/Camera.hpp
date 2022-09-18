@@ -39,7 +39,7 @@ namespace Engine
 
 		glm::mat4 const& GetProjectionMat(void) const;
 		glm::mat4 const& GetViewMat(void) const;
-		glm::mat4 const& GetViewProjectionMat(void) const;
+		glm::mat4 GetViewProjectionMat(void) const;
 
 		glm::vec3 const& GetForwardVec(void) const;
 		glm::vec3 const& GetUpVec(void) const;
@@ -76,7 +76,7 @@ namespace Engine
 		return m_ViewMat;
 	}
 
-	FORCEINLINE glm::mat4 const& ACamera::GetViewProjectionMat(void) const
+	FORCEINLINE glm::mat4 ACamera::GetViewProjectionMat(void) const
 	{
 		return m_ProjectionMat * m_ViewMat;
 	}
@@ -105,5 +105,4 @@ namespace Engine
 	{
 		m_bIsCameraPossessed = Possessed;
 	}
-
 }

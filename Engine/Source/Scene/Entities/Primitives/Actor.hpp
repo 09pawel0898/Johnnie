@@ -18,8 +18,7 @@ namespace Engine
 		glm::vec3 m_Scale		= { 1.f,1.f,1.f };
 
 	public:
-		Actor() = default;
-		explicit Actor(glm::vec3 const& WorldLocation);
+		explicit Actor(glm::vec3 const& WorldLocation = { 0.f,0.f,0.f });
 
 		glm::vec3 const& GetLocation(void) const;
 		glm::vec3& GetLocation(void);
@@ -42,7 +41,7 @@ namespace Engine
 		virtual void Draw(void) const override {};
 
 	public:
-		void SetVisibility(bool Visible);
+		virtual void SetVisibility(bool Visible);
 		bool IsVisible(void) const override;
 	};
 
