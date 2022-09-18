@@ -34,12 +34,15 @@ namespace Engine
 		LightingManager(LightingManager&&) = delete;
 		LightingManager& operator=(LightingManager&&) = delete;
 
-	public:
+	private:
 		void RegisterPointLight(std::shared_ptr<APointLight> const& PointLight);
 		void UnregisterPointLight(OUUID const& LightID);
+
+	public:
 		std::optional<PointLightData> GetPointLightData(void) const;
 
 	public:
+		void RegisterLight(std::shared_ptr<APointLight> const& Light);
 		bool IsLightRegistered(OUUID const& LightUUID);
 	};
 }

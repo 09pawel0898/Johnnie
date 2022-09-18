@@ -139,6 +139,7 @@ namespace Engine
 
     void AStaticMesh::Draw(void) const
     {
+        /** TO DO : Make use of shader manager */
         static std::shared_ptr<RHIShader> staticMeshShader = RHI::RHIShader::Create("MeshShader", "Assets/Shaders/mesh_shader.glsl");
 
         const glm::mat4 modelMat = GetModelMat();

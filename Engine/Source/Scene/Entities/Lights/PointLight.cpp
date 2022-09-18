@@ -1,6 +1,7 @@
 #include "EnginePCH.hpp"
 
 #include "PointLight.hpp"
+#include "Scene/SceneManager.hpp"
 #include "../Meshes/BasicMeshGenerator.hpp"
 
 namespace Engine
@@ -13,6 +14,7 @@ namespace Engine
 
     void APointLight::Draw(void) const
     {
+        /** TO DO : Make use of shader manager */
         static std::shared_ptr<RHIShader> pointLightBoxMeshShader = RHI::RHIShader::Create("PointLightShader", "Assets/Shaders/point_light.glsl");
 
         if(IsVisible())
@@ -31,6 +33,14 @@ namespace Engine
 
     void APointLight::OnTick(double DeltaTime)
     {}
+
+    void APointLight::OnConstruct(void)
+    {
+        auto& activeScene = SceneManager::Get()->GetActiveScene();
+        CheckMsg(activeScene != nullptr, "No active scene.");
+
+        activeScene->GetLightingManager().RegisterLight(shared_from_this());
+    }
 
     void APointLight::SetVisibility(bool Visible)
     {

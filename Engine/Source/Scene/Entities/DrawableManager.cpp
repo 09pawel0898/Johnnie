@@ -52,7 +52,7 @@ namespace Engine
         Draw_Internal(m_DrawableObjects, pendingDrawablesToUnregister);
         if (pendingDrawablesToUnregister.size() != 0)
         {
-            UnRegisterDrawables(DrawableType::Widget, pendingDrawablesToUnregister);
+            UnRegisterDrawables(DrawableType::Actor, pendingDrawablesToUnregister);
         }
     }
 

@@ -2,6 +2,7 @@
 
 #include "Entities/TickableManager.hpp"
 #include "Entities/DrawableManager.hpp"
+#include "Entities/Lights/LightingManager.hpp"
 
 namespace Engine
 {
@@ -10,6 +11,7 @@ namespace Engine
 	private:
 		TickableManager m_TickableManager;
 		DrawableManager m_DrawableManager;
+		LightingManager m_LightingManager;
 
 	public:
 		Scene() = default;
@@ -42,6 +44,11 @@ namespace Engine
 		DrawableManager& GetDrawableManager(void)
 		{
 			return m_DrawableManager;
+		}
+
+		LightingManager& GetLightingManager(void)
+		{
+			return m_LightingManager;
 		}
 	};
 }

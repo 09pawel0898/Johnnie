@@ -10,7 +10,7 @@
 
 namespace Engine
 {
-	class Actor : public Object, public IDrawable
+	class Actor : public Object, public IDrawable//, std::enable_shared_from_this<Actor>
 	{
 	private:
 		glm::vec3 m_Location	= { 0.f,0.f,0.f };
@@ -39,10 +39,17 @@ namespace Engine
 	public:
 		virtual void OnTick(double DeltaTime) override {};
 		virtual void Draw(void) const override {};
+		virtual void OnConstruct(void) {};
 
 	public:
 		virtual void SetVisibility(bool Visible);
 		bool IsVisible(void) const override;
+
+	protected:
+		//std::shared_ptr<Actor> SharedFromThis(void)
+		//{
+		//	return shared_from_this();
+		//}
 	};
 
 	FORCEINLINE glm::vec3 const& Actor::GetLocation(void) const

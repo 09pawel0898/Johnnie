@@ -3,6 +3,7 @@
 #include "Core/CoreMinimal.hpp"
 
 #include "Primitives/Actor.hpp"
+#include "Lights/PointLight.hpp"
 #include "Scene/SceneManager.hpp"
 
 namespace Engine
@@ -12,7 +13,7 @@ namespace Engine
 	FORCEINLINE std::shared_ptr<ActorType> NewActor(Args&&... args)
 	{
 		auto& activeScene = SceneManager::Get()->GetActiveScene();
-		Check(activeScene);
+		CheckMsg(activeScene != nullptr,"No active scene.");
 
 		/** Create object */
 		std::shared_ptr<ActorType> newActor = 
@@ -20,7 +21,8 @@ namespace Engine
 
 		activeScene->GetTickableManager().RegisterTickable(newActor);		
 		activeScene->GetDrawableManager().RegisterActor(newActor);
-		
+		newActor->OnConstruct();
+
 		return newActor;
 	}
 }

@@ -8,7 +8,7 @@
 
 namespace Engine
 {
-	class APointLight : public Actor
+	class APointLight : public Actor, public std::enable_shared_from_this<APointLight>
 	{
 	private:
 		glm::vec3	m_LightColor;
@@ -23,6 +23,7 @@ namespace Engine
 
 		virtual void Draw(void) const override;
 		void OnTick(double DeltaTime) override;
+		virtual void OnConstruct(void) override;
 
 		/** Sets visibility and and registers/unregisters point light in lighting manager at the same time. */
 		virtual void SetVisibility(bool Visible) override;

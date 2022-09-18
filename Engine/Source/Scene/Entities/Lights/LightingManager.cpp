@@ -40,6 +40,11 @@ namespace Engine
             std::make_pair(PointLight->GetUUID(), std::weak_ptr<APointLight>(PointLight)));
     }
 
+    void LightingManager::RegisterLight(std::shared_ptr<APointLight> const& Light)
+    {
+        RegisterPointLight(Light);
+    }
+
     bool LightingManager::IsLightRegistered(OUUID const& LightUUID)
     {
         return false;
