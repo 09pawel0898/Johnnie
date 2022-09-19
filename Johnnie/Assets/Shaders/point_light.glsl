@@ -3,11 +3,13 @@
 #version 460 core
 layout (location = 0) in vec3 aPosition;
 
-uniform mat4 uMVP;
+uniform mat4 uViewMat;
+uniform mat4 uProjMat;
+uniform mat4 uModelMat;
 
 void main()
 {
-	gl_Position = uMVP * vec4(aPosition,1.0);
+	gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
 }
 
 #shader fragment

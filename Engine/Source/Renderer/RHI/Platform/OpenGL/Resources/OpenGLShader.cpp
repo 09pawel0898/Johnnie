@@ -212,6 +212,12 @@ namespace Engine::RHI
         glUniformMatrix4fv(location, 1, GL_FALSE, &Value[0][0]);
     }
 
+    void OpenGLShader::SetMat3(std::string_view Name, glm::mat3 const& Value)
+    {
+        GLint location = glGetUniformLocation(m_ID, Name.data());
+        glUniformMatrix3fv(location, 1, GL_FALSE, &Value[0][0]);
+    }
+
     void OpenGLShader::SetInt(std::string_view Name, int32_t Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());

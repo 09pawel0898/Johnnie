@@ -53,8 +53,15 @@ namespace Engine
     
     void LightingManager::CalculateLighting(void)
     {
-        auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_StaticMesh");
+        auto pointLightData = GetPointLightData();
+        if (pointLightData.has_value())
+        {
+            PointLightData& lightData = pointLightData.value();
+            auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_StaticMesh");
 
-
+            staticMeshShader->Bind();
+            staticMeshShader->SetFloat3("uLightPosition", lightData.WorldLocation);
+            staticMeshShader->SetFloat3("uLightColor", lightData.Color);
+        }
     }
 }

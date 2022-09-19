@@ -54,6 +54,7 @@ namespace Engine::RHI
 		virtual void SetFloat2(std::string_view Name, const glm::vec2& Value) = 0;
 		virtual void SetFloat3(std::string_view Name, const glm::vec3& Value) = 0;
 		virtual void SetFloat4(std::string_view Name, const glm::vec4& Value) = 0;
+		virtual void SetMat3(std::string_view Name, const glm::mat3& Value) = 0;
 		virtual void SetMat4(std::string_view Name, const glm::mat4& Value) = 0;
 		virtual void SetInt(std::string_view Name, int32_t Value) = 0;
 		virtual void SetIntArray(std::string_view Name, int32_t* Values, uint32_t Count) = 0;

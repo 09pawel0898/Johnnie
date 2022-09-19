@@ -15,7 +15,6 @@ namespace Engine
 
     void APointLight::Draw(void) const
     {
-        /** TO DO : Make use of shader manager */
         auto& shaderManager = Renderer::Get()->GetShaderManager();
         auto& lightMeshShader = shaderManager.GetResource("Shader_LightMesh");
 

@@ -33,6 +33,7 @@ namespace Engine
 		if (m_Textures.size() == 0)
 		{
 			Shader->SetInt("uUseTextures", 0);
+			Shader->SetFloat3("uBaseColor", glm::vec3(0.123f, 0.307f, 0.184f));
 		}
 		else
 		{

@@ -21,5 +21,8 @@ namespace Engine
 
 		[[nodiscard]]
 		static std::shared_ptr<AStaticMesh> CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount);
+
+		[[nodiscard]]
+		static Mesh CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount);
 	};
 }

@@ -32,7 +32,7 @@ namespace Engine
 
 	void Renderer::InitializeViewport(glm::i32vec4 ViewportBounds)
 	{
-		static glm::vec4 defaultClearColor = glm::vec4(0.45f, 0.55f, 0.60f, 1.00f);
+		static glm::vec4 defaultClearColor = glm::vec4(0.101f, 0.105f, 0.109f, 1.00f);
 
 		RHICommand::SetClearColor(defaultClearColor);
 		RHICommand::SetViewport(ViewportBounds.x, ViewportBounds.y, ViewportBounds.z, ViewportBounds.w);
@@ -47,8 +47,12 @@ namespace Engine
 	{
 		auto const& camera = CameraController::Get()->GetCamera();
 		Shader->Bind();
-		Shader->SetMat4("uMVP", camera->GetViewProjectionMat() * ModelMat);
-
+		Shader->SetFloat3("uCameraPosition", camera->GetLocation());
+		Shader->SetMat4("uViewMat", camera->GetViewMat());
+		Shader->SetMat4("uProjMat", camera->GetProjectionMat());
+		Shader->SetMat4("uModelMat", ModelMat);
+		Shader->SetMat3("uNormalMat", glm::mat3(glm::transpose(glm::inverse(ModelMat))));
+		
 		RHICommand::DrawIndexed(VertexArray);
 	}
 

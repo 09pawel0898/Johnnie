@@ -37,8 +37,6 @@ namespace Engine
 	private:
 		void RegisterPointLight(std::shared_ptr<APointLight> const& PointLight);
 		void UnregisterPointLight(OUUID const& LightID);
-
-	public:
 		std::optional<PointLightData> GetPointLightData(void) const;
 
 	public:

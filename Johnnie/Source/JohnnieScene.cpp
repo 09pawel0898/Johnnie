@@ -2,6 +2,7 @@
 
 #include <Engine/Scene.hpp>
 #include <Engine/Camera.hpp>
+#include <Engine/Utilities.hpp>
 
 #include "Gui/JohnnieSystemStatisticsWidget.hpp"
 #include "Gui/JohnnieCameraDataWidget.hpp"
@@ -14,8 +15,9 @@ void JohnnieScene::OnAwake(void)
 
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
-	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 1.f, 0.f));
-	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
+	//m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+	m_Sphere		= BasicMeshGenerator::CreatSphere(1, 100, 100);
 }
 
 void JohnnieScene::OnDetach(void)
@@ -23,24 +25,32 @@ void JohnnieScene::OnDetach(void)
 
 void JohnnieScene::OnTick(double DeltaTime)
 {
-	static bool decreasing = true;
+	//glm::vec3 currentLocation = m_PointLight->GetLocation();
+	//glm::vec3 newLocation = currentLocation;
+	//static bool goLeft = true;
+	//
+	//if (goLeft)
+	//{
+	//	if(currentLocation.x < -2.0f)
+	//		goLeft = false;
+	//	newLocation.x -= 0.05f;
+	//}
+	//else
+	//{
+	//	if(currentLocation.x > 2.0f)
+	//		goLeft = true;
+	//	newLocation.x += 0.05f;
+	//}
 	
-	if (decreasing)
-	{
-		auto color =  m_PointLight->GetColor();
-		color.y -= 0.01f;
-		m_PointLight->SetColor(color);
-		if (color.y < 0.02f)
-			decreasing = false;
-	}
-	else
-	{
-		auto color = m_PointLight->GetColor();
-		color.y += 0.01f;
-		m_PointLight->SetColor(color);
-		if (color.y > 0.98f)
-			decreasing = true;
-	}
+	static double step = 0.0;
+	step += DeltaTime;
+
+	float lightX = (float)(3.0f * sin(step));
+	float lightY = 2.f;
+	float lightZ = (float)(1.5f * cos(step));
+	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
+
+	m_PointLight->SetLocation(lightPos);
 }
 
 void JohnnieScene::InitGui(void)

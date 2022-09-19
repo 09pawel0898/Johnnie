@@ -35,6 +35,7 @@ private:
 
 	/** Entities */
 	std::shared_ptr<AStaticMesh>						m_RoundPlatform = nullptr;
+	std::shared_ptr<AStaticMesh>						m_Sphere		= nullptr;
 	std::shared_ptr<APointLight>						m_PointLight	= nullptr;
 
 private:

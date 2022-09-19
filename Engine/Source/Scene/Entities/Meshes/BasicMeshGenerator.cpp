@@ -96,6 +96,84 @@ namespace Engine
 
 	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
-		return std::unique_ptr<AStaticMesh>();
+		std::vector<Mesh> meshes =
+		{
+			CreateSphereMesh(Radius, SliceCount, StackCount)
+		};
+		return NewActor<AStaticMesh>(std::move(meshes));
+	}
+
+	Mesh BasicMeshGenerator::CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount)
+	{
+		std::vector<RHIVertex> sphereVertices;
+		std::vector<uint32_t> sphereIndices;
+
+		RHIVertex topVertex = { { 0.0f, +Radius, 0.0f }, { 0.0f, +1.0f, 0.0f } };
+		sphereVertices.push_back(topVertex);
+
+
+		double phiStep = std::numbers::pi / StackCount;
+		double thetaStep = 2.0f * std::numbers::pi / SliceCount;
+
+		for (uint32_t i = 1; i <= StackCount - 1; ++i)
+		{
+			double phi = i * phiStep;
+			for (uint32_t j = 0; j <= SliceCount; ++j)
+			{
+				double theta = j * thetaStep;
+
+				RHIVertex v;
+
+				// spherical to cartesian
+				v.Position.x = (float)(Radius * sin(phi) * cos(theta));
+				v.Position.y = (float)(Radius * cos(phi));
+				v.Position.z = (float)(Radius * sin(phi) * sin(theta));
+
+				v.Normal = glm::normalize(v.Position);
+
+				v.TexUV.x = (float)(theta / std::numbers::pi);
+				v.TexUV.y = (float)(phi / std::numbers::pi);
+
+				sphereVertices.push_back(v);
+			}
+		}
+		RHIVertex bottomVertex = { { 0.0f, -Radius, 0.0f,  }, { 0.0f, -1.0f, 0.0f } };
+
+		sphereVertices.push_back(bottomVertex);
+
+		for (uint32_t i = 1; i <= SliceCount; ++i)
+		{
+			sphereIndices.push_back(0);
+			sphereIndices.push_back(i + 1);
+			sphereIndices.push_back(i);
+		}
+
+		uint32_t baseIndex = 1;
+		uint32_t ringVertexCount = SliceCount + 1;
+		for (uint32_t i = 0; i < StackCount - 2; ++i)
+		{
+			for (uint32_t j = 0; j < SliceCount; ++j)
+			{
+				sphereIndices.push_back(baseIndex + i * ringVertexCount + j);
+				sphereIndices.push_back(baseIndex + i * ringVertexCount + j + 1);
+				sphereIndices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
+
+				sphereIndices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
+				sphereIndices.push_back(baseIndex + i * ringVertexCount + j + 1);
+				sphereIndices.push_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
+			}
+		}
+
+		uint32_t southPoleIndex = (uint32_t)sphereVertices.size() - 1;
+		baseIndex = southPoleIndex - ringVertexCount;
+
+		for (uint32_t i = 0; i < SliceCount; ++i)
+		{
+			sphereIndices.push_back(southPoleIndex);
+			sphereIndices.push_back(baseIndex + i);
+			sphereIndices.push_back(baseIndex + i + 1);
+		}
+
+		return Mesh(sphereVertices, sphereIndices);
 	}
 }
