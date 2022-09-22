@@ -23,7 +23,7 @@ namespace Engine
         m_bScheduleModelLoadOnConstruct = true;
     }
 
-    AStaticMesh::AStaticMesh(std::vector<Mesh>&& SubMeshes, glm::vec3 const& WorldLocation)
+    AStaticMesh::AStaticMesh(std::vector<std::shared_ptr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation)
     {
         m_SubMeshes = std::move(SubMeshes);
@@ -53,8 +53,8 @@ namespace Engine
         {
             aiMesh* mesh = Scene->mMeshes[Node->mMeshes[i]];
 
-            Mesh subMesh = ProcessMesh(mesh, Scene);
-            subMesh.SetOwner(shared_from_this());
+            std::shared_ptr<Mesh> subMesh = ProcessMesh(mesh, Scene);
+            subMesh->SetOwner(shared_from_this());
 
             m_SubMeshes.emplace_back(std::move(subMesh));
         }
@@ -65,7 +65,7 @@ namespace Engine
         }
     }
     
-    Mesh AStaticMesh::ProcessMesh(aiMesh* _Mesh, const aiScene* Scene)
+    std::shared_ptr<Mesh> AStaticMesh::ProcessMesh(aiMesh* _Mesh, const aiScene* Scene)
     {
         std::vector<RHIVertex> vertices;
         std::vector<uint32_t> indices;
@@ -105,15 +105,15 @@ namespace Engine
             }
         }
         
-        Mesh subMesh = Mesh(std::move(vertices),
-                            std::move(indices));
+        std::shared_ptr<Mesh> subMesh = std::make_shared<Mesh>( std::move(vertices),
+                                                                std::move(indices));
 
         /** Process materials */
         if (_Mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = Scene->mMaterials[_Mesh->mMaterialIndex];
             ProcessMaterial(material,_Mesh->mMaterialIndex);
-            subMesh.SetMaterialIndex(_Mesh->mMaterialIndex);
+            subMesh->SetMaterialIndex(_Mesh->mMaterialIndex);
         }
 
         return subMesh;
@@ -198,7 +198,7 @@ namespace Engine
 
         for (auto& mesh : m_SubMeshes)
         {
-            mesh.Draw(staticMeshShader, modelMat);
+            mesh->Draw(staticMeshShader, modelMat);
         }
     }
 
@@ -215,16 +215,15 @@ namespace Engine
 
     std::shared_ptr<AStaticMesh> AStaticMesh::Clone(void)
     {
-        std::vector<Mesh> meshes = m_SubMeshes;
+        std::vector<std::shared_ptr<Mesh>> meshes = m_SubMeshes;
 
         std::shared_ptr<AStaticMesh> clone = NewActor<AStaticMesh>(std::move(meshes),GetLocation());
 
         clone->m_Materials = m_Materials;
+        clone->m_NumMaterials = m_NumMaterials;
 
-        clone->m_bScheduleModelLoadOnConstruct = false;
         clone->m_Directory = m_Directory;
         clone->m_ModelFilePath = m_ModelFilePath;
-        clone->m_NumMaterials = m_NumMaterials;
    
         return clone;
     }

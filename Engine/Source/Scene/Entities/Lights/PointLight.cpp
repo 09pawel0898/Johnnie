@@ -27,7 +27,7 @@ namespace Engine
                 lightMeshShader->Bind();
                 lightMeshShader->SetFloat3("uLightColor", m_LightColor);
 
-                m_SphereMesh.Draw(lightMeshShader, modelMat);
+                m_SphereMesh->Draw(lightMeshShader, modelMat);
             }
         }
     }

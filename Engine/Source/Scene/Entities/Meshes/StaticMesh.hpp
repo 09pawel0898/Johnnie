@@ -25,11 +25,11 @@ namespace Engine
 	class AStaticMesh : public Actor, public SharedFromThis<AStaticMesh>
 	{
     private:
-        std::vector<Mesh>   m_SubMeshes;
-        std::string         m_Directory;
+        std::vector<std::shared_ptr<Mesh>> m_SubMeshes;
+        std::string m_Directory;
 
-        std::string         m_ModelFilePath;
-        bool                m_bScheduleModelLoadOnConstruct{ false };
+        std::string m_ModelFilePath;
+        bool        m_bScheduleModelLoadOnConstruct{ false };
 
     private:
         /** Model Loading */
@@ -37,14 +37,14 @@ namespace Engine
         void LoadModel(std::string_view FilePath);
 
         void ProcessNode(aiNode* Node, const aiScene* Scene);
-        Mesh ProcessMesh(aiMesh* _Mesh, const aiScene* Scene);
+        std::shared_ptr<Mesh> ProcessMesh(aiMesh* _Mesh, const aiScene* Scene);
         void ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx);
 
         std::vector<std::shared_ptr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
 
     public:
         AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
-        AStaticMesh(std::vector<Mesh>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
+        AStaticMesh(std::vector<std::shared_ptr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
 
 	public:
         virtual void Draw(void) const override;

@@ -7,14 +7,14 @@ namespace Engine
 {
 	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreateBox(glm::vec3 Size)
 	{
-		std::vector<Mesh> meshes =
+		static std::vector<std::shared_ptr<Mesh>> meshes =
 		{ 
 			CreateBoxMesh(Size)
 		};
 		return NewActor<AStaticMesh>(std::move(meshes));
 	}
 
-	Mesh BasicMeshGenerator::CreateBoxMesh(glm::vec3 Size)
+	std::unique_ptr<Mesh> BasicMeshGenerator::CreateBoxMesh(glm::vec3 Size)
 	{
 		float w = 0.5f * Size.x;
 		float h = 0.5f * Size.y;
@@ -86,7 +86,7 @@ namespace Engine
 			20, 22, 23,
 		};
 
-		return Mesh(boxVertices, boxIndices);
+		return std::make_unique<Mesh>(boxVertices, boxIndices);
 	}
 
 	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreatePlane(float Width, float Depth)
@@ -96,14 +96,14 @@ namespace Engine
 
 	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
-		std::vector<Mesh> meshes =
+		std::vector<std::shared_ptr<Mesh>> meshes =
 		{
 			CreateSphereMesh(Radius, SliceCount, StackCount)
 		};
 		return NewActor<AStaticMesh>(std::move(meshes));
 	}
 
-	Mesh BasicMeshGenerator::CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount)
+	std::unique_ptr<Mesh> BasicMeshGenerator::CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
 		std::vector<RHIVertex> sphereVertices;
 		std::vector<uint32_t> sphereIndices;
@@ -174,6 +174,6 @@ namespace Engine
 			sphereIndices.push_back(baseIndex + i + 1);
 		}
 
-		return Mesh(sphereVertices, sphereIndices);
+		return std::make_unique<Mesh>(sphereVertices, sphereIndices);
 	}
 }

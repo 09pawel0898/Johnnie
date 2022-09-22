@@ -11,9 +11,9 @@ namespace Engine
 	class APointLight : public Actor, public SharedFromThis<APointLight>
 	{
 	private:
-		glm::vec3	m_LightColor;
-		Mesh		m_SphereMesh;
-		bool		m_bIsMeshVisible{ true };
+		glm::vec3				m_LightColor;
+		std::shared_ptr<Mesh>	m_SphereMesh;
+		bool m_bIsMeshVisible{ true };
 
 	public:	
 		APointLight(glm::vec3 const& WorldLocation = {0.f, 0.f, 0.f}, glm::vec3 const& LightColor = { 1.f, 1.f, 1.f });

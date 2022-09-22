@@ -14,7 +14,7 @@ namespace Engine
 		static std::shared_ptr<AStaticMesh> CreateBox(glm::vec3 Size);
 		
 		[[nodiscard]]
-		static Mesh CreateBoxMesh(glm::vec3 Size);
+		static std::unique_ptr<Mesh> CreateBoxMesh(glm::vec3 Size);
 
 		[[nodiscard]]
 		static std::shared_ptr<AStaticMesh> CreatePlane(float Width, float Depth);
@@ -23,6 +23,6 @@ namespace Engine
 		static std::shared_ptr<AStaticMesh> CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount);
 
 		[[nodiscard]]
-		static Mesh CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount);
+		static std::unique_ptr<Mesh> CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount);
 	};
 }
