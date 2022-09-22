@@ -8,7 +8,7 @@
 
 namespace Engine
 {
-	class APointLight : public Actor, public std::enable_shared_from_this<APointLight>
+	class APointLight : public Actor, public SharedFromThis<APointLight>
 	{
 	private:
 		glm::vec3	m_LightColor;

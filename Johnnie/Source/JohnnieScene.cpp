@@ -18,8 +18,21 @@ void JohnnieScene::OnAwake(void)
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
 	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
 
-	LOG(Core,Trace,"Num materials {0}",m_RoundPlatform->GetNumMaterials());
+	int16_t X = 10, Y = 8;
+	m_Clones.reserve(X*Y);
+	for (int16_t i = 0; i < X; i++)
+	{
+		for (int16_t j = 0; j < Y; j++)
+		{
+			m_Clones.emplace_back(m_RoundPlatform->Clone());
+			m_Clones[(int32_t)(i * Y + j)]->SetLocation(glm::vec3(i * 5.0f, 0.f, j * 3.0f));
+		}
+	}
 
+
+
+	//m_RoundPlatform->SetMaterialForSlot(2,DefaultMaterials::BasicWhite);
+	
 	//std::shared_ptr<Material> platformMaterial = std::make_shared<Material>();
 	//platformMaterial->SetBaseColor()
 	// 

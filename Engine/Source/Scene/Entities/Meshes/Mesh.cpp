@@ -7,6 +7,8 @@
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
 
+#include "StaticMesh.hpp"
+
 namespace Engine
 {
 	
@@ -16,22 +18,28 @@ namespace Engine
 		m_Indices = Indices;
 
 		SetupMesh();
-		SetupMaterial({});
 	}
 
-	Mesh::Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
+	Mesh::Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices)
 		:	m_Vertices(std::move(Vertices)),
 			m_Indices(std::move(Indices))
 	{
 		SetupMesh();
-		SetupMaterial(std::move(Textures));
 	}
 
 	void Mesh::Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const
 	{  
-		if (m_Material != nullptr)
+		if (auto staticMeshOwner = m_Owner.lock())
 		{
-			m_Material->Bind(Shader);
+			auto material = staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
+			if (material.has_value())
+			{
+				std::shared_ptr<Material> assignedMaterial = material->get();
+				if (assignedMaterial != nullptr)
+				{
+					assignedMaterial->Bind(Shader);
+				}
+			}
 		}
 		else
 		{
@@ -59,23 +67,5 @@ namespace Engine
 		m_VAO->AddVertexBuffer(std::move(vbo));
 	}
 
-	void Mesh::SetupMaterial(std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
-	{
-		if (Textures.size() > 0)
-		{
-			m_Material = std::make_shared<Material>();
-
-			for (auto& texture : Textures)
-			{
-				if (texture->GetType() == RHITextureType::Diffuse)
-				{
-					m_Material->SetDiffuseTexture(texture);
-				}
-				else if (texture->GetType() == RHITextureType::Specular)
-				{
-					
-				}
-			}
-		}
-	}
+	
 }

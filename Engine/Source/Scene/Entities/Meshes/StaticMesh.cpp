@@ -5,6 +5,7 @@
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Materials/Material.hpp"
+#include "Scene/Entities/CoreActor.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,10 +16,11 @@
 
 namespace Engine
 {
-    AStaticMesh::AStaticMesh(std::string_view FilePath, glm::vec3 const& WorldLocation)
-        :   Actor(WorldLocation)
+    AStaticMesh::AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation)
+        :   Actor(WorldLocation),
+            m_ModelFilePath(FilePath)
     {
-        LoadModel(FilePath);
+        m_bScheduleModelLoadOnConstruct = true;
     }
 
     AStaticMesh::AStaticMesh(std::vector<Mesh>&& SubMeshes, glm::vec3 const& WorldLocation)
@@ -40,7 +42,8 @@ namespace Engine
             return;
         }
         m_Directory = FilePath.substr(0, FilePath.find_last_of('/'));
-    
+        
+        InitializeMaterialSlots(scene);
         ProcessNode(scene->mRootNode, scene);
     }
     
@@ -49,7 +52,11 @@ namespace Engine
         for (uint8_t i = 0; i < Node->mNumMeshes; i++)
         {
             aiMesh* mesh = Scene->mMeshes[Node->mMeshes[i]];
-            m_SubMeshes.emplace_back(ProcessMesh(mesh, Scene));
+
+            Mesh subMesh = ProcessMesh(mesh, Scene);
+            subMesh.SetOwner(shared_from_this());
+
+            m_SubMeshes.emplace_back(std::move(subMesh));
         }
     
         for (uint8_t i = 0; i < Node->mNumChildren; i++)
@@ -97,27 +104,69 @@ namespace Engine
                 indices.push_back(face.mIndices[j]);
             }
         }
+        
+        Mesh subMesh = Mesh(std::move(vertices),
+                            std::move(indices));
 
         /** Process materials */
         if (_Mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = Scene->mMaterials[_Mesh->mMaterialIndex];
-            
-            std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(material, RHITextureType::Diffuse);
-            std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(material, RHITextureType::Specular);
-    
-            textures.insert(textures.end(), 
-                            std::make_move_iterator(diffuseMaps.begin()), 
-                            std::make_move_iterator(diffuseMaps.end()));
-    
-            textures.insert(textures.end(), 
-                            std::make_move_iterator(specularMaps.begin()), 
-                            std::make_move_iterator(specularMaps.end()));
+            ProcessMaterial(material,_Mesh->mMaterialIndex);
+            subMesh.SetMaterialIndex(_Mesh->mMaterialIndex);
         }
-    
-        return Mesh(std::move(vertices),
-                    std::move(indices), 
-                    std::move(textures));
+
+        return subMesh;
+    }
+
+    void AStaticMesh::InitializeMaterialSlots(const aiScene* Scene)
+    {
+        m_Materials.clear();
+        m_Materials.reserve(Scene->mNumMaterials);
+
+        for (uint8_t idx = 0; idx < Scene->mNumMaterials; idx++)
+        {
+            m_Materials.emplace_back(nullptr);
+        }
+
+        m_NumMaterials = Scene->mNumMaterials;
+    }
+
+    void AStaticMesh::ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx)
+    {
+        /* If this material hasn't been processed yet */
+        if (m_Materials[MaterialIdx] == nullptr)
+        {
+            std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
+            std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
+            
+            std::vector<std::shared_ptr<RHITexture2D>> materialTextures;
+
+            materialTextures.insert(materialTextures.end(),
+                                    std::make_move_iterator(diffuseMaps.begin()),
+                                    std::make_move_iterator(diffuseMaps.end()));
+
+            materialTextures.insert(materialTextures.end(),
+                                    std::make_move_iterator(specularMaps.begin()),
+                                    std::make_move_iterator(specularMaps.end()));
+
+            if (materialTextures.size() > 0)
+            {
+                m_Materials[MaterialIdx] = std::make_shared<Material>();
+
+                for (auto& texture : materialTextures)
+                {
+                    if (texture->GetType() == RHITextureType::Diffuse)
+                    {
+                        m_Materials[MaterialIdx]->SetDiffuseTexture(texture);
+                    }
+                    else if (texture->GetType() == RHITextureType::Specular)
+                    {
+
+                    }
+                }
+            }
+        }
     }
     
     std::vector<std::shared_ptr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
@@ -128,7 +177,7 @@ namespace Engine
         {
             aiString texFileName;
             Material->GetTexture(RHITextureTypeToAssimpTextureType(Type), i, &texFileName);
-    
+            
             std::string texturePath = m_Directory + "/";
             texturePath.append(texFileName.C_Str());
             
@@ -156,20 +205,58 @@ namespace Engine
     void AStaticMesh::OnTick(double DeltaTime)
     {}
 
-    size_t AStaticMesh::GetNumMaterials(void) const
+    void AStaticMesh::OnConstruct(void)
     {
-        return m_SubMeshes.size();
+        if(m_bScheduleModelLoadOnConstruct)
+        {
+            LoadModel(m_ModelFilePath);
+        }
     }
 
-    std::optional<std::reference_wrapper<std::shared_ptr<Material>>> AStaticMesh::GetMaterialByIndex(uint8_t Index)
+    std::shared_ptr<AStaticMesh> AStaticMesh::Clone(void)
     {
-        if (Index > m_SubMeshes.size() - 1)
+        std::vector<Mesh> meshes = m_SubMeshes;
+
+        std::shared_ptr<AStaticMesh> clone = NewActor<AStaticMesh>(std::move(meshes),GetLocation());
+
+        clone->m_Materials = m_Materials;
+
+        clone->m_bScheduleModelLoadOnConstruct = false;
+        clone->m_Directory = m_Directory;
+        clone->m_ModelFilePath = m_ModelFilePath;
+        clone->m_NumMaterials = m_NumMaterials;
+   
+        return clone;
+    }
+
+    size_t AStaticMesh::GetNumMaterials(void) const
+    {
+        return m_Materials.size();
+    }
+
+    std::optional<std::reference_wrapper<std::shared_ptr<Material>>> AStaticMesh::GetMaterialInSlot(uint8_t SlotIndex)
+    {
+        if (SlotIndex > m_Materials.size() - 1)
         {
+            LOG(Materials, Warning, "Bad index. Tried to get material from slot of index {0}. Available slots for this static mesh : [0-{1}]",
+                SlotIndex, m_Materials.size()-1);
             return std::nullopt;
         }
         else
         {
-            return std::ref(m_SubMeshes[Index].GetMaterial());
+            return std::ref(m_Materials[SlotIndex]);
         }
+    }
+
+    void AStaticMesh::SetMaterialForSlot(uint8_t SlotIndex, std::shared_ptr<Material> Material)
+    {
+        if (SlotIndex > m_Materials.size() - 1)
+        {
+            LOG(Materials, Warning, "Bad index. Tried to set new material in slot of index {0}. Available slots for this static mesh : [0-{1}]",
+                SlotIndex, m_Materials.size()-1);
+            return;
+        }
+
+        m_Materials[SlotIndex] = Material;
     }
 }

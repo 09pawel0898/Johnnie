@@ -44,5 +44,6 @@ namespace Engine
 		DEFINE_LOG_CATEGORY(Profile);
 		DEFINE_LOG_CATEGORY(RHI);
 		DEFINE_LOG_CATEGORY(Assimp);
+		DEFINE_LOG_CATEGORY(Materials);
 	}
 }

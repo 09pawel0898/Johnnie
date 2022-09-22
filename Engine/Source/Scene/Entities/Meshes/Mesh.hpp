@@ -20,30 +20,46 @@ namespace Engine
 	}
 	using namespace RHI;
 
+	class AStaticMesh;
+
 	class Mesh
 	{
 	private:
 		std::vector<RHIVertex>		m_Vertices;
 		std::vector<uint32_t>		m_Indices;
-
-	private:
+		
 		std::shared_ptr<RHIVertexArray>	m_VAO;
 
-		std::shared_ptr<Material> m_Material{ nullptr };
+	private:
+		uint8_t						m_MaterialIndex = Index::None;
+		std::weak_ptr<AStaticMesh>	m_Owner;
 
 		void SetupMesh(void);
-		void SetupMaterial(std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
-
 	public:
 		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices);
-		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
+		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices);
 	
 	public:
 		void Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const;
+		
+		void SetOwner(std::shared_ptr<AStaticMesh> const& Owner);
 
-		std::shared_ptr<Material>& GetMaterial(void)
-		{
-			return m_Material;
-		}
+		uint8_t GetMaterialIndex(void) const;
+		void SetMaterialIndex(uint8_t Index);
 	};
+
+	FORCEINLINE void Mesh::SetOwner(std::shared_ptr<AStaticMesh> const& Owner)
+	{
+		m_Owner = Owner;
+	}
+
+	FORCEINLINE uint8_t Mesh::GetMaterialIndex(void) const
+	{
+		return m_MaterialIndex;
+	}
+
+	FORCEINLINE void Mesh::SetMaterialIndex(uint8_t Index)
+	{
+		m_MaterialIndex = Index;
+	}
 }
