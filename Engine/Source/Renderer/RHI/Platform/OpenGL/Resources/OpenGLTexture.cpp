@@ -2,6 +2,7 @@
 
 #include "OpenGLTexture.hpp"
 #include "Log/Log.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include <glad/glad.h>
 
@@ -27,8 +28,14 @@ namespace Engine::RHI
 
 	void OpenGLTexture2D::Bind(uint8_t TextureSlotID)
 	{
-		glActiveTexture(GL_TEXTURE0 + TextureSlotID);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
+		auto& RHI = Renderer::Get()->GetRHI();
+
+		if (GetUUID() != RHI->GetBoundTextureUUID(TextureSlotID))
+		{
+			RHI->SetBoundTextureUUID(GetUUID(),TextureSlotID);
+			glActiveTexture(GL_TEXTURE0 + TextureSlotID);
+			glBindTexture(GL_TEXTURE_2D, m_ID);
+		}
 	}
 
 	void OpenGLTexture2D::Unbind(void)

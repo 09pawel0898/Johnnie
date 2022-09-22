@@ -20,6 +20,7 @@ namespace Engine
         class RHITexture2D;
         class RHIShader;
     }
+    class Material;
 
 	class AStaticMesh : public Actor
 	{
@@ -28,9 +29,8 @@ namespace Engine
         std::string         m_Directory;
 
     private:
-        /** Surface */
+        /** Model Loading */
         
-
         void LoadModel(std::string_view FilePath);
 
         void ProcessNode(aiNode* Node, const aiScene* Scene);
@@ -45,5 +45,10 @@ namespace Engine
 	public:
         virtual void Draw(void) const override;
 		void OnTick(double DeltaTime) override;
+
+    public:
+        /** Materials */
+        size_t GetNumMaterials(void) const;
+        std::optional<std::reference_wrapper<std::shared_ptr<Material>>> GetMaterialByIndex(uint8_t Index);
 	};
 }

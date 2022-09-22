@@ -9,52 +9,33 @@
 
 namespace Engine
 {
+	
 	Mesh::Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)
 	{
 		m_Vertices = Vertices;
 		m_Indices = Indices;
 
 		SetupMesh();
+		SetupMaterial({});
 	}
 
 	Mesh::Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
 		:	m_Vertices(std::move(Vertices)),
-			m_Indices(std::move(Indices)),
-			m_Textures(std::move(Textures))
+			m_Indices(std::move(Indices))
 	{
 		SetupMesh();
+		SetupMaterial(std::move(Textures));
 	}
 
 	void Mesh::Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const
 	{  
-		uint8_t diffuseNr = 1, specularNr = 1;
-		Shader->Bind();
-
-		if (m_Textures.size() == 0)
+		if (m_Material != nullptr)
 		{
-			Shader->SetInt("uUseTextures", 0);
-			Shader->SetFloat3("uBaseColor", glm::vec3(0.123f, 0.307f, 0.184f));
+			m_Material->Bind(Shader);
 		}
 		else
 		{
-			Shader->SetInt("uUseTextures", 1);
-			for (uint8_t idx = 0; idx < m_Textures.size(); idx++)
-			{
-				m_Textures[idx]->Bind(idx);
-
-				std::string texNum;
-
-				std::string texName = GetUniformNameByTextureType(m_Textures[idx]->GetType());
-				if (texName == "texture_diffuse")
-				{
-					texName = std::to_string(diffuseNr++);
-				}
-				else if (texName == "texture_specular")
-				{
-					texName = std::to_string(specularNr++);
-				}
-				Shader->SetInt((texName + texNum).c_str(), idx);
-			}
+			DefaultMaterials::BasicWhite->Bind(Shader);
 		}
 		Renderer::Get()->Draw(Shader, m_VAO, ModelMat);
 	}
@@ -76,5 +57,25 @@ namespace Engine
 
 		m_VAO->SetIndexBuffer(std::move(ibo));
 		m_VAO->AddVertexBuffer(std::move(vbo));
+	}
+
+	void Mesh::SetupMaterial(std::vector<std::shared_ptr<RHITexture2D>>&& Textures)
+	{
+		if (Textures.size() > 0)
+		{
+			m_Material = std::make_shared<Material>();
+
+			for (auto& texture : Textures)
+			{
+				if (texture->GetType() == RHITextureType::Diffuse)
+				{
+					m_Material->SetDiffuseTexture(texture);
+				}
+				else if (texture->GetType() == RHITextureType::Specular)
+				{
+					
+				}
+			}
+		}
 	}
 }

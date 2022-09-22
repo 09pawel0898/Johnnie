@@ -8,6 +8,15 @@ namespace Engine
 {
     void LightingManager::UnregisterPointLight(OUUID const& LightID)
     {
+        auto registeredLight = std::find_if(m_PointLights.cbegin(), m_PointLights.cend(),
+            [&LightID](std::pair<OUUID, std::weak_ptr<APointLight>> const& Element) -> bool
+            {
+                return LightID == Element.first;
+            });
+        if (registeredLight != m_PointLights.end())
+        {
+            m_PointLights.erase(registeredLight);
+        }
     }
 
     std::optional<PointLightData> LightingManager::GetPointLightData(void) const

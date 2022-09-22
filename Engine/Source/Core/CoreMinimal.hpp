@@ -29,6 +29,11 @@ template<class T> T& ClassMacro_Impl(const T* t);
 /** Should define console log sing by default */
 #define PROFILE_RESULT_LOG 1
 
+struct ID
+{
+    static inline const std::string None = "None";
+};
+
 template<typename Base, typename T>
 FORCEINLINE constexpr bool InstanceOf(T const* Ptr)
 {

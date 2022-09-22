@@ -9,7 +9,9 @@ namespace Engine::RHI
 {
 	DynamicRHI::DynamicRHI(RenderingAPI RenderingAPI)
 		:	m_RHIType(RenderingAPI)
-	{}
+	{
+		m_BoundTexturesUUID.fill(ID::None);
+	}
 
 	std::unique_ptr<DynamicRHI> DynamicRHI::Create(RenderingAPI RenderingAPI)
 	{
@@ -32,5 +34,35 @@ namespace Engine::RHI
 				break;
 		}
 		return nullptr;
+	}
+
+	AUUID DynamicRHI::GetBoundShaderUUID(void) const
+	{
+		return m_BoundShaderUUID;
+	}
+
+	AUUID DynamicRHI::GetBoundMaterialUUID(void) const
+	{
+		return m_BoundMaterialUUID;
+	}
+
+	void DynamicRHI::SetBoundTextureUUID(AUUID const& UUID, uint8_t TextureSlot)
+	{
+		m_BoundTexturesUUID[TextureSlot] = UUID;
+	}
+
+	AUUID DynamicRHI::GetBoundTextureUUID(uint8_t TextureSlot) const
+	{
+		return m_BoundTexturesUUID[TextureSlot];
+	}
+
+	void DynamicRHI::SetBoundShaderUUID(AUUID const& UUID)
+	{
+		m_BoundShaderUUID = UUID;
+	}
+
+	void DynamicRHI::SetBoundMaterialUUID(AUUID const& UUID)
+	{
+		m_BoundMaterialUUID = UUID;
 	}
 }

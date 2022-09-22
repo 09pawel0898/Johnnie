@@ -49,10 +49,12 @@ namespace Engine::RHI
 
 		RHITexture2DManager m_Texture2DManager;
 		RHIShaderManager	m_ShaderManager;
-	
+		MaterialManager		m_MaterialManager;
+
 	public:
 		RHITexture2DManager&	GetTexture2DManager(void);
 		RHIShaderManager&		GetShaderManager(void);
+		MaterialManager&		GetMaterialManager(void);
 
 		/** RHI Methods */
 
@@ -62,6 +64,24 @@ namespace Engine::RHI
 
 		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
 		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
+	
+	public:
+		/** Shaders / Materials binding management */
+		static constexpr int8_t s_MaxTexturesPerShader = 8;
+
+		AUUID m_BoundShaderUUID		= ID::None;
+		AUUID m_BoundMaterialUUID	= ID::None;
+
+		std::array<AUUID, s_MaxTexturesPerShader> m_BoundTexturesUUID;
+
+		void SetBoundShaderUUID(AUUID const& UUID);
+		AUUID GetBoundShaderUUID(void) const;
+
+		void SetBoundMaterialUUID(AUUID const& UUID);
+		AUUID GetBoundMaterialUUID(void) const;
+
+		void SetBoundTextureUUID(AUUID const& UUID, uint8_t TextureSlot);
+		AUUID GetBoundTextureUUID(uint8_t TextureSlot) const;
 	};
 
 	FORCEINLINE RHITexture2DManager& DynamicRHI::GetTexture2DManager(void)
@@ -72,5 +92,10 @@ namespace Engine::RHI
 	FORCEINLINE RHIShaderManager& DynamicRHI::GetShaderManager(void)
 	{
 		return m_ShaderManager;
+	}
+	
+	FORCEINLINE MaterialManager& DynamicRHI::GetMaterialManager(void)
+	{
+		return m_MaterialManager;
 	}
 }

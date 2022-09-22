@@ -35,7 +35,8 @@ namespace Engine
 	public:
 		/** Resource Management */
 
-		RHIShaderManager& GetShaderManager(void) const;
-		RHITexture2DManager& GetTexture2DManager(void) const;
+		RHIShaderManager&		GetShaderManager(void) const;
+		RHITexture2DManager&	GetTexture2DManager(void) const;
+		MaterialManager&		GetMaterialManager(void) const;
 	};
 }

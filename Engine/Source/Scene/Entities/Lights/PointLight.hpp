@@ -12,7 +12,7 @@ namespace Engine
 	{
 	private:
 		glm::vec3	m_LightColor;
-		Mesh		m_BoxMesh;
+		Mesh		m_SphereMesh;
 		bool		m_bIsMeshVisible{ true };
 
 	public:	
@@ -31,6 +31,10 @@ namespace Engine
 		/** Color */
 		void SetColor(glm::vec3 LightColor);
 		glm::vec3 GetColor(void) const;
+
+	private:
+		void RegisterLight(void);
+		void UnRegisterLight(void);
 	};
 
 	FORCEINLINE void APointLight::SetBoxMeshVisibility(bool Visible)
@@ -47,5 +51,4 @@ namespace Engine
 	{
 		return m_LightColor;
 	}
-
 }

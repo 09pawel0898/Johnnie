@@ -4,6 +4,7 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Renderer/Materials/Material.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -91,15 +92,17 @@ namespace Engine
         for (uint32_t i = 0; i < _Mesh->mNumFaces; i++)
         {
             aiFace const& face = _Mesh->mFaces[i];
-            for (unsigned int j = 0; j < face.mNumIndices; j++)
+            for (uint32_t j = 0; j < face.mNumIndices; j++)
+            {
                 indices.push_back(face.mIndices[j]);
+            }
         }
-    
+
         /** Process materials */
         if (_Mesh->mMaterialIndex >= 0)
         {
             aiMaterial* material = Scene->mMaterials[_Mesh->mMaterialIndex];
-    
+            
             std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(material, RHITextureType::Diffuse);
             std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(material, RHITextureType::Specular);
     
@@ -151,6 +154,22 @@ namespace Engine
     }
 
     void AStaticMesh::OnTick(double DeltaTime)
+    {}
+
+    size_t AStaticMesh::GetNumMaterials(void) const
     {
+        return m_SubMeshes.size();
+    }
+
+    std::optional<std::reference_wrapper<std::shared_ptr<Material>>> AStaticMesh::GetMaterialByIndex(uint8_t Index)
+    {
+        if (Index > m_SubMeshes.size() - 1)
+        {
+            return std::nullopt;
+        }
+        else
+        {
+            return std::ref(m_SubMeshes[Index].GetMaterial());
+        }
     }
 }

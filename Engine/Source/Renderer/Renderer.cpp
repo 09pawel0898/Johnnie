@@ -65,4 +65,9 @@ namespace Engine
 	{
 		return RHICommand::GetRHI()->GetTexture2DManager();
 	}
+
+	MaterialManager& Renderer::GetMaterialManager(void) const
+	{
+		return RHICommand::GetRHI()->GetMaterialManager();
+	}
 }

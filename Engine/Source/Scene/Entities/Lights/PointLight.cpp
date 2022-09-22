@@ -10,7 +10,7 @@ namespace Engine
 	APointLight::APointLight(glm::vec3 const&  WorldLocation, glm::vec3 const& LightColor)
 		:	Actor(WorldLocation),
 			m_LightColor(LightColor),
-			m_BoxMesh(BasicMeshGenerator::CreateBoxMesh(glm::vec3(0.1f,0.1f,0.1f)))
+			m_SphereMesh(BasicMeshGenerator::CreateSphereMesh(0.1f,100,100))
 	{}
 
     void APointLight::Draw(void) const
@@ -27,7 +27,7 @@ namespace Engine
                 lightMeshShader->Bind();
                 lightMeshShader->SetFloat3("uLightColor", m_LightColor);
 
-                m_BoxMesh.Draw(lightMeshShader, modelMat);
+                m_SphereMesh.Draw(lightMeshShader, modelMat);
             }
         }
     }
@@ -37,10 +37,7 @@ namespace Engine
 
     void APointLight::OnConstruct(void)
     {
-        auto& activeScene = SceneManager::Get()->GetActiveScene();
-        CheckMsg(activeScene != nullptr, "No active scene.");
-
-        activeScene->GetLightingManager().RegisterLight(shared_from_this());
+        RegisterLight();
     }
 
     void APointLight::SetVisibility(bool Visible)
@@ -49,12 +46,33 @@ namespace Engine
         
         if (Visible)
         {
-            
+            RegisterLight();
         }
         else
         {
-
+            UnRegisterLight();
         }
     }
-    
+
+    void APointLight::RegisterLight(void)
+    {
+        auto& activeScene = SceneManager::Get()->GetActiveScene();
+        CheckMsg(activeScene != nullptr, "No active scene.");
+
+        if (!activeScene->GetLightingManager().IsLightRegistered(GetUUID()))
+        {
+            activeScene->GetLightingManager().RegisterPointLight(shared_from_this());
+        }
+    }
+
+    void APointLight::UnRegisterLight(void)
+    {
+        auto& activeScene = SceneManager::Get()->GetActiveScene();
+        CheckMsg(activeScene != nullptr, "No active scene.");
+
+        if (activeScene->GetLightingManager().IsLightRegistered(GetUUID()))
+        {
+            activeScene->GetLightingManager().UnregisterPointLight(GetUUID());
+        }
+    }
 }

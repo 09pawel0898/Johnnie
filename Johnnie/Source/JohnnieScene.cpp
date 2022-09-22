@@ -16,32 +16,21 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	//m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
-	m_Sphere		= BasicMeshGenerator::CreatSphere(1, 100, 100);
+	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
+
+	LOG(Core,Trace,"Num materials {0}",m_RoundPlatform->GetNumMaterials());
+
+	//std::shared_ptr<Material> platformMaterial = std::make_shared<Material>();
+	//platformMaterial->SetBaseColor()
+	// 
+	//m_Sphere		= BasicMeshGenerator::CreatSphere(1, 100, 100);
 }
 
 void JohnnieScene::OnDetach(void)
 {}
 
 void JohnnieScene::OnTick(double DeltaTime)
-{
-	//glm::vec3 currentLocation = m_PointLight->GetLocation();
-	//glm::vec3 newLocation = currentLocation;
-	//static bool goLeft = true;
-	//
-	//if (goLeft)
-	//{
-	//	if(currentLocation.x < -2.0f)
-	//		goLeft = false;
-	//	newLocation.x -= 0.05f;
-	//}
-	//else
-	//{
-	//	if(currentLocation.x > 2.0f)
-	//		goLeft = true;
-	//	newLocation.x += 0.05f;
-	//}
-	
+{	
 	static double step = 0.0;
 	step += DeltaTime;
 

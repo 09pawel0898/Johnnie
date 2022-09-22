@@ -2,6 +2,7 @@
 
 #include "Core/CoreMinimal.hpp"
 #include "Renderer/RHI/RHITypes.hpp"
+#include "Renderer/Materials/Material.hpp"
 
 namespace Engine
 {
@@ -26,9 +27,12 @@ namespace Engine
 		std::vector<uint32_t>		m_Indices;
 
 	private:
-		std::shared_ptr<RHIVertexArray>				m_VAO;
-		std::vector<std::shared_ptr<RHITexture2D>>	m_Textures;
+		std::shared_ptr<RHIVertexArray>	m_VAO;
+
+		std::shared_ptr<Material> m_Material{ nullptr };
+
 		void SetupMesh(void);
+		void SetupMaterial(std::vector<std::shared_ptr<RHITexture2D>>&& Textures);
 
 	public:
 		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices);
@@ -36,5 +40,10 @@ namespace Engine
 	
 	public:
 		void Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const;
+
+		std::shared_ptr<Material>& GetMaterial(void)
+		{
+			return m_Material;
+		}
 	};
 }

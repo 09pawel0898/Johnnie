@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Renderer/Materials/Material.hpp"
+
 #include "Scene/Entities/CoreActor.hpp"
 #include "Scene/Entities/CoreWidget.hpp"
 		 

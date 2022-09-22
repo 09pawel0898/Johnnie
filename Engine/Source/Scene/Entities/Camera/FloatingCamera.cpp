@@ -2,10 +2,6 @@
 #include "FloatingCamera.hpp"
 
 #include "Core/Input/Input.hpp"
-
-//#include "glm/gtx/compatibility.hpp"
-
-//temp
 #include "GLFW/glfw3.h"
 
 namespace Engine
@@ -18,7 +14,7 @@ namespace Engine
 
 	void AFloatingCamera::OnMouseYawInput(float Rate)
 	{
-		constexpr float yawSensitivity = 0.025f;
+		static constexpr float yawSensitivity = 0.025f;
 
 		Rate *= yawSensitivity;
 		glm::vec3 const& currentRotation = GetRotation();
@@ -28,7 +24,7 @@ namespace Engine
 
 	void AFloatingCamera::OnMousePitchInput(float Rate)
 	{
-		constexpr float pitchSensitivity = 0.025f;
+		static constexpr float pitchSensitivity = 0.025f;
 
 		Rate *= pitchSensitivity;
 		glm::vec3 currentRotation = GetRotation();

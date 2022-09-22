@@ -7,6 +7,7 @@
 #include "Core/Debug/Asserts.hpp"
 #include "Utilities/VariantUtility.hpp"
 #include "Utilities/FileUtility.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace fs = std::filesystem;
 
@@ -147,12 +148,24 @@ namespace Engine::RHI
 
     void OpenGLShader::Bind(void) const
     {
-        glUseProgram(m_ID);
+        auto& RHI = Renderer::Get()->GetRHI();
+
+        if (GetUUID() != RHI->GetBoundShaderUUID())
+        {
+            RHI->SetBoundShaderUUID(GetUUID());
+            glUseProgram(m_ID);
+        }
     }
 
     void OpenGLShader::Unbind(void) const
     {
-        glUseProgram(0);
+        auto& RHI = Renderer::Get()->GetRHI();
+
+        if (GetUUID() == RHI->GetBoundShaderUUID())
+        {
+            RHI->SetBoundShaderUUID(ID::None);
+            glUseProgram(0);
+        }
     }
 
 	std::string_view OpenGLShader::GetSourceFileName(int32_t Type) const

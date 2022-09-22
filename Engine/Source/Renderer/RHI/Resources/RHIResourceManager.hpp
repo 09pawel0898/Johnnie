@@ -4,6 +4,7 @@
 
 #include "RHITexture.hpp"
 #include "RHIShader.hpp"
+#include "../../Materials/Material.hpp"
 
 namespace Engine::RHI
 {
@@ -26,13 +27,13 @@ namespace Engine::RHI
 		bool InsertResource(ResourceID ResourceID, Resource&& _Resource);
 	};
 
-	using FilePath = std::string;
-	using ShaderName = std::string;
+	using FilePath		= std::string;
+	using ShaderName	= std::string;
+	using MaterialName = std::string;
 
 	using RHITexture2DManager	= RHIResourceManager<RHITexture2D, FilePath>;
 	using RHIShaderManager		= RHIResourceManager<RHIShader, ShaderName>;
-
-
+	using MaterialManager		= RHIResourceManager<Material, MaterialName>;
 }
 
 #include "RHIResourceManager.inl"
