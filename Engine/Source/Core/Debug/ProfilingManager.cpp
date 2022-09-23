@@ -26,6 +26,7 @@ namespace Engine
 
 	ProfileResult const& ProfilingManager::GetResult(std::string_view Name)
 	{
+		auto x = m_ProfileResults[Name].Duration.count();
 		return m_ProfileResults[Name];
 	}
 }

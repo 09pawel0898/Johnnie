@@ -10,7 +10,7 @@ public:
 	JohnnieApplication()
 		:	Core::Application(Core::WindowProperties("Johnnie", 1280, 720))
 	{
-		SetFPSLimit(120);
+		SetFPSLimit(60);
 		SceneManager::Get()->SetScene(std::make_unique<JohnnieScene>());
 	}
 

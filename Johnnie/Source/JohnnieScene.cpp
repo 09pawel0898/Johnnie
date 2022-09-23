@@ -16,18 +16,18 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
+	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
 
-	int16_t X = 10, Y = 8;
-	m_Clones.reserve(X*Y);
-	for (int16_t i = 0; i < X; i++)
-	{
-		for (int16_t j = 0; j < Y; j++)
-		{
-			m_Clones.emplace_back(m_RoundPlatform->Clone());
-			m_Clones[(int32_t)(i * Y + j)]->SetLocation(glm::vec3(i * 5.0f, 0.f, j * 3.0f));
-		}
-	}
+	//int16_t X = 10, Y = 8;
+	//m_Clones.reserve(X*Y);
+	//for (int16_t i = 0; i < X; i++)
+	//{
+	//	for (int16_t j = 0; j < Y; j++)
+	//	{
+	//		m_Clones.emplace_back(m_RoundPlatform->Clone());
+	//		m_Clones[(int32_t)(i * Y + j)]->SetLocation(glm::vec3(i * 5.0f, 0.f, j * 3.0f));
+	//	}
+	//}
 
 
 

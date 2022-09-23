@@ -6,6 +6,7 @@
 #include "System/System.hpp"
 #include "Renderer/Renderer.hpp"
 #include "Utilities/TimingUtility.hpp"
+#include "Core/Debug/ProfileMacros.hpp"
 
 namespace Engine::Core
 {
@@ -59,8 +60,9 @@ namespace Engine::Core
     
     void Application::Run(void)
     { 
+        const double maxPeriod = 1.0 / m_FPSLIMIT;
+
         Utility::TimePoint tFrameStart, tLastUpdate = Utility::Time::now();
-        double tMinTimePerFrame = (1000.0 / m_FPSLIMIT);
 
         Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
 
@@ -68,42 +70,44 @@ namespace Engine::Core
         {
             tFrameStart = Utility::Time::now();
 
-            float timeSinceLastUpdate = (float)(std::chrono::duration<double, std::milli>
-                (tFrameStart - tLastUpdate).count());
+            m_DeltaTime = (double)(std::chrono::duration<double, std::milli>
+                (tFrameStart - tLastUpdate).count() / 1000);
 
-            m_DeltaTime = timeSinceLastUpdate / 1000.0f;
-
-            if (timeSinceLastUpdate >= tMinTimePerFrame)
+            if (m_DeltaTime >= maxPeriod)
             {
-                {
-                    for (auto& layer : *m_LayerManager)
-                    {
-                        layer->OnTick(m_DeltaTime);
-                    }
-                    
-                    for (auto& layer : *m_LayerManager)
-                    {
-                        layer->OnRender();
-                    }
-                }
-                
-                {
-                    m_ImGuiLayer->BeginFrame();
-                    for (auto& layer : *m_LayerManager)
-                    {
-                        layer->OnRenderGui();
-                    }
-                    m_ImGuiLayer->EndFrame();
-                }
-                m_Window->OnTick();
-
-                Renderer::Get()->Clear();
-
-                tLastUpdate = Utility::Time::now();
                 m_FPS = (1.0 / m_DeltaTime);
+                tLastUpdate = tFrameStart;
+
+                UpdateFrame();
             }
         }
         Shutdown();
+    }
+
+    void Application::UpdateFrame(void)
+    {
+        {
+            for (auto& layer : *m_LayerManager)
+            {
+                layer->OnTick(m_DeltaTime);
+            }
+
+            for (auto& layer : *m_LayerManager)
+            {
+                layer->OnRender();
+            }
+        }
+
+        {
+            m_ImGuiLayer->BeginFrame();
+            for (auto& layer : *m_LayerManager)
+            {
+                layer->OnRenderGui();
+            }
+            m_ImGuiLayer->EndFrame();
+        }
+        m_Window->OnTick();
+        Renderer::Get()->Clear();
     }
 
     void Application::InitApplication(const WindowProperties& WindowProperties)

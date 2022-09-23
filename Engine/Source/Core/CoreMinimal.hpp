@@ -26,8 +26,8 @@ template<class T> T& ClassMacro_Impl(const T* t);
     protected:\
     using Super = ClassName
 
-/** Should define console log sing by default */
-#define PROFILE_RESULT_LOG 1
+/** Should define console log sink by default */
+#define PROFILE_RESULT_LOG 0
 
 namespace Engine
 {

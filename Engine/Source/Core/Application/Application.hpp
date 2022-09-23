@@ -66,6 +66,7 @@ namespace Engine::Core
 		/** Initialization/Runtime */
 	private:
 		void Run(void);
+		void UpdateFrame(void);
 		void InitApplication(const WindowProperties& WindowProperties);
 		void Shutdown(void);
 	public:
@@ -76,7 +77,7 @@ namespace Engine::Core
 		bool		m_bRunning = true;
 		double		m_DeltaTime = 0.0;
 		double		m_FPS = 0.0;
-		unsigned	m_FPSLIMIT = 9999;
+		double 		m_FPSLIMIT = 9999.0;
 
 	public:
 		void SetFPSLimit(unsigned FpsLimit) { m_FPSLIMIT = FpsLimit; }

@@ -32,6 +32,7 @@ void WJohnnieSystemStatisticsWidget::OnRenderGui(void)
 			ImGui::Separator();
 			ImGui::Text("Delta Time    : %.4f ms",	ApplicationStats.DeltaTime * 1000.0f);
 			ImGui::Text("FPS		   : %.2f",		ApplicationStats.Fps);
+			ImGui::Text("MainLoop	   : %.4f",		GET_PROFILE_RESULT("MainLoop"));
 			ImGui::Separator(); 
 			ImGui::Dummy(ImVec2(0.0f, 20.0f));
 		}
