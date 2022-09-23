@@ -4,7 +4,7 @@
 #include <Engine/Camera.hpp>
 #include <Engine/Utilities.hpp>
 
-#include "Gui/JohnnieSystemStatisticsWidget.hpp"
+#include "Gui/JohnnieStatisticsWidget.hpp"
 #include "Gui/JohnnieCameraDataWidget.hpp"
 
 void JohnnieScene::OnAwake(void)
@@ -16,13 +16,13 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
 	
-	auto materialSlot = m_RoundPlatform->GetMaterialInSlot(1);
-	if (materialSlot.has_value())
-	{
-		materialSlot.value().get()->SetMaterialEmissive(true);
-	}
+	//auto materialSlot = m_RoundPlatform->GetMaterialInSlot(1);
+	//if (materialSlot.has_value())
+	//{
+	//	materialSlot.value().get()->SetMaterialEmissive(true);
+	//}
 
 	//int16_t X = 10, Y = 8;
 	//m_Clones.reserve(X*Y);
@@ -64,10 +64,10 @@ void JohnnieScene::OnTick(double DeltaTime)
 void JohnnieScene::InitGui(void)
 {
     /** Add widgets */
-    m_SystemStatisticsWidget	= NewWidget<WJohnnieSystemStatisticsWidget ,SystemStatisticsAction>();
-	m_MainMenuBarWidget			= NewWidget<WJohnnieMainMenuBarWidget, MainMenuBarAction>();
-	m_ConsoleLogWidget			= NewWidget<WJohnnieConsoleLogWidget, ConsoleLogAction>();
-	m_CameraDataWidget			= NewWidget<WJohnnieCameraDataWidget, CameraDataAction>();
+    m_StatisticsWidget	= NewWidget<WJohnnieStatisticsWidget , StatisticsAction>();
+	m_MainMenuBarWidget	= NewWidget<WJohnnieMainMenuBarWidget, MainMenuBarAction>();
+	m_LoggerWidget		= NewWidget<WJohnnieLoggerWidget, LoggerAction>();
+	m_CameraDataWidget	= NewWidget<WJohnnieCameraDataWidget, CameraDataAction>();
 
     /** Init widgets actions */
 	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::Open,

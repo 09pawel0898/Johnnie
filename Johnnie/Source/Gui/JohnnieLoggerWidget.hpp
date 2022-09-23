@@ -6,13 +6,13 @@
 #include "ImGui/ImGuiWidgetBase.hpp"
 #include <list>
 
-enum class ConsoleLogAction : uint8_t
+enum class LoggerAction : uint8_t
 {};
 
-class WJohnnieConsoleLogWidget final : public ImGuiWidgetBase<ConsoleLogAction>
+class WJohnnieLoggerWidget final : public ImGuiWidgetBase<LoggerAction>
 {
 public:
-    WJohnnieConsoleLogWidget();
+    WJohnnieLoggerWidget();
 
 	virtual void OnRenderGui(void) override;
 

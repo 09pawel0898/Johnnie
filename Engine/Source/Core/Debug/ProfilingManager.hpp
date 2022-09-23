@@ -5,7 +5,7 @@ namespace Engine
 	struct ProfileResult
 	{
 		std::string_view			Name;
-		std::chrono::milliseconds	Duration;
+		std::chrono::microseconds	Duration;
 		std::thread::id				ThreadID;
 	};
 
@@ -28,7 +28,8 @@ namespace Engine
 		std::unordered_map<std::string_view, ProfileResult> m_ProfileResults;
 
 		void BeginScopeProfile(std::string_view Name);
-		void UpdateScopeProfile(std::string_view Name, std::chrono::milliseconds Duration);
+
+		void UpdateScopeProfile(std::string_view Name, std::chrono::microseconds Duration);
 
 		ProfileResult const& GetResult(std::string_view Name);
 	};

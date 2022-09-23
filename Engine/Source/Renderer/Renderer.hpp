@@ -3,6 +3,8 @@
 #include "RHI/DynamicRHI.hpp"
 
 #include "Utilities/Singleton.hpp"
+#include "RendererStatistics.hpp"
+#include "Core/Application/Application.hpp"
 
 namespace Engine
 {
@@ -13,6 +15,7 @@ namespace Engine
 		class RHIShader;
 	}
 	using namespace RHI;
+	using namespace Core;
 
 	class Renderer final : public MSingleton<Renderer>
 	{
@@ -38,5 +41,16 @@ namespace Engine
 		RHIShaderManager&		GetShaderManager(void) const;
 		RHITexture2DManager&	GetTexture2DManager(void) const;
 		MaterialManager&		GetMaterialManager(void) const;
+
+
+		/** Stats */
+	private:
+		static inline RendererStatistics s_RendererStats;
+		
+		static void UpdateRendererStats(void);
+		friend class Core::Application;
+
+	public:
+		static RendererStatistics const& GetRendererStats(void);
 	};
 }

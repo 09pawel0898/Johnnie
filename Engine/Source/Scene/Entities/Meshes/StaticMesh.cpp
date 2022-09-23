@@ -34,8 +34,12 @@ namespace Engine
         Assimp::Importer assimpImporter;
     
         const aiScene* scene = assimpImporter.ReadFile( FilePath.data(),
-                                                        aiProcess_Triangulate | aiProcess_FlipUVs);
-    
+            aiProcess_Triangulate 
+            | aiProcess_FlipUVs 
+            | aiProcess_OptimizeMeshes 
+            | aiProcess_RemoveRedundantMaterials
+            | aiProcess_PreTransformVertices);
+
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
             LOG(Assimp, Error, "{0}", assimpImporter.GetErrorString());
@@ -50,11 +54,12 @@ namespace Engine
     void AStaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
     {
         for (uint8_t i = 0; i < Node->mNumMeshes; i++)
-        {
+        {    
             aiMesh* mesh = Scene->mMeshes[Node->mMeshes[i]];
 
             std::shared_ptr<Mesh> subMesh = ProcessMesh(mesh, Scene);
-            subMesh->SetOwner(shared_from_this());
+            subMesh->SetStaticMeshOwner(shared_from_this());
+            subMesh->GetMeshStatistics().TrisCount = mesh->mNumFaces;
 
             m_SubMeshes.emplace_back(std::move(subMesh));
         }
@@ -254,5 +259,16 @@ namespace Engine
         }
 
         m_Materials[SlotIndex] = Material;
+    }
+
+    uint32_t AStaticMesh::GetTrisCount(void) const
+    {
+        uint32_t totalCount = 0;
+
+        for (auto const& subMesh : m_SubMeshes)
+        {
+            totalCount += subMesh->GetMeshStatistics().TrisCount;
+        }
+        return totalCount;
     }
 }

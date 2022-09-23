@@ -3,20 +3,13 @@
 #include "Core/CoreMinimal.hpp"
 #include "Renderer/RHI/RHITypes.hpp"
 #include "Renderer/Materials/Material.hpp"
+#include "Renderer/RendererStatistics.hpp"
 
 namespace Engine
 {
-	struct TextureData 
-	{
-		uint32_t			ID;
-		std::string_view	Type;
-	};
-
 	namespace RHI
 	{
 		class RHIVertexArray;
-		class RHITexture2D;
-		class RHIShader;
 	}
 	using namespace RHI;
 
@@ -25,41 +18,50 @@ namespace Engine
 	class Mesh
 	{
 	private:
-		std::vector<RHIVertex>		m_Vertices;
-		std::vector<uint32_t>		m_Indices;
-		
+		/** RHI Data */
 		std::shared_ptr<RHIVertexArray>	m_VAO;
 
-	private:
-		uint8_t						m_MaterialIndex = Index::None;
-		std::weak_ptr<AStaticMesh>	m_Owner;
+		/** Material Info */
+		std::weak_ptr<Material> m_HardMaterialReference;
+		bool m_bUseHardMaterialReference{ false };
 
-		void SetupMesh(void);
+		uint8_t						m_MaterialIndex = Index::None;
+		std::weak_ptr<AStaticMesh>	m_StaticMeshOwner;
+
+		/** Mesh Info */
+		MeshStatistics m_MeshStatistics;
+
 	public:
 		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices);
-		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices);
-	
-	public:
+
+		/** Drawing */
 		void Draw(glm::mat4 const& ModelMat) const;
 		
-		void SetOwner(std::shared_ptr<AStaticMesh> const& Owner);
+		/** Stats */
+		MeshStatistics& GetMeshStatistics(void);
+		MeshStatistics const& GetMeshStatistics(void) const;
 
+		/** Materials */
+
+		/* Hard material reference - use when want to set custom material / mesh is not owned by StaticMesh*/
+		void SetHardMaterialReference(std::weak_ptr<Material> Material);
+		void SetUseHardMaterialReference(bool Use);
+		
+		/* Material can also be parsed from StaticMesh when its reference is valid, 
+		then proper material with assigned index is being applied */
+		void SetStaticMeshOwner(std::shared_ptr<AStaticMesh> const& Owner);
 		uint8_t GetMaterialIndex(void) const;
 		void SetMaterialIndex(uint8_t Index);
 	
 	private:
+		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indicesbs);
+
 		std::shared_ptr<Material> GetMaterialFromStaticMeshSlot(uint8_t Index) const;
-
-		std::weak_ptr<Material> m_HardMaterialReference;
-		bool m_bUseHardMaterialReference{ false };
-
-	public:
-		void SetHardMaterialReference(std::weak_ptr<Material> Material);
 	};
 
-	FORCEINLINE void Mesh::SetOwner(std::shared_ptr<AStaticMesh> const& Owner)
+	FORCEINLINE void Mesh::SetStaticMeshOwner(std::shared_ptr<AStaticMesh> const& Owner)
 	{
-		m_Owner = Owner;
+		m_StaticMeshOwner = Owner;
 	}
 
 	FORCEINLINE uint8_t Mesh::GetMaterialIndex(void) const
@@ -70,5 +72,20 @@ namespace Engine
 	FORCEINLINE void Mesh::SetMaterialIndex(uint8_t Index)
 	{
 		m_MaterialIndex = Index;
+	}
+
+	FORCEINLINE void Mesh::SetUseHardMaterialReference(bool Use)
+	{
+		m_bUseHardMaterialReference = Use;
+	}
+
+	FORCEINLINE MeshStatistics& Mesh::GetMeshStatistics(void)
+	{
+		return m_MeshStatistics;
+	}
+
+	FORCEINLINE MeshStatistics const& Mesh::GetMeshStatistics(void) const
+	{
+		return m_MeshStatistics;
 	}
 }

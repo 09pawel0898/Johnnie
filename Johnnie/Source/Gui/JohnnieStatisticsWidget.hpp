@@ -4,12 +4,12 @@
 
 #include <System/MemoryManager.hpp>
 #include <System/System.hpp>
+#include <Engine/Renderer.hpp>
 
-
-enum class SystemStatisticsAction : uint8_t
+enum class StatisticsAction : uint8_t
 {};
 
-class WJohnnieSystemStatisticsWidget final : public ImGuiWidgetBase<SystemStatisticsAction>
+class WJohnnieStatisticsWidget final : public ImGuiWidgetBase<StatisticsAction>
 {
 private:
 	struct ApplicationStats
@@ -24,17 +24,30 @@ private:
 	SystemMemoryInfo		MemoryInfo;
 	SystemVideoMemoryInfo	VideoMemoryInfo;
 
+	RendererStatistics		RendererStats;
+	MeshStatistics			MeshStats;
+
+	MeshStatistics*			MeshStatsPtr{ nullptr };
+
 public:
-	WJohnnieSystemStatisticsWidget();
+	WJohnnieStatisticsWidget();
 
 	void InitStaticStats(void);
 
 	virtual void OnRenderGui(void) override;
 	virtual void OnTick(double DeltaTime) override;
 
+	void SetMeshStats(MeshStatistics* MeshStatistics);
+
 private:
+	void RenderSystemStats(void);
+	void RenderRendererStats(void);
+	void RenderMeshStats(void);
+
 	void UpdateApplicationStats(void);
 	void UpdateMemoryAllocationStats(void);
 	void UpdateMemoryStats(void);
 	void UpdateVideoMemoryStats(void);
+	void UpdateRendererStats(void);
+	void UpdateMeshStats(void);
 };

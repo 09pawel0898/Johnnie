@@ -79,6 +79,7 @@ namespace Engine::Core
                 tLastUpdate = tFrameStart;
 
                 UpdateFrame();
+                Renderer::UpdateRendererStats();
             }
         }
         Shutdown();
@@ -86,28 +87,39 @@ namespace Engine::Core
 
     void Application::UpdateFrame(void)
     {
+        PROFILE_SCOPE("RendererStats_FrameDuration");
         {
+            PROFILE_SCOPE("RendererStats_TickDuration");
             for (auto& layer : *m_LayerManager)
             {
                 layer->OnTick(m_DeltaTime);
             }
-
-            for (auto& layer : *m_LayerManager)
-            {
-                layer->OnRender();
-            }
         }
-
         {
-            m_ImGuiLayer->BeginFrame();
-            for (auto& layer : *m_LayerManager)
+            PROFILE_SCOPE("RendererStats_RenderDuration");
             {
-                layer->OnRenderGui();
+                PROFILE_SCOPE("RendererStats_RenderWorldDuration");
+                for (auto& layer : *m_LayerManager)
+                {
+                    layer->OnRender();
+                }
             }
-            m_ImGuiLayer->EndFrame();
+
+            {
+                PROFILE_SCOPE("RendererStats_RenderGUIDuration");
+                m_ImGuiLayer->BeginFrame();
+                for (auto& layer : *m_LayerManager)
+                {
+                    layer->OnRenderGui();
+                }
+                m_ImGuiLayer->EndFrame();
+            }
+
+            {
+                m_Window->OnTick();
+                Renderer::Get()->Clear();
+            }
         }
-        m_Window->OnTick();
-        Renderer::Get()->Clear();
     }
 
     void Application::InitApplication(const WindowProperties& WindowProperties)

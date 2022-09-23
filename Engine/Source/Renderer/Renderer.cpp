@@ -6,6 +6,8 @@
 #include "RHI/Resources/RHIShader.hpp"
 #include "RHI/RHICommand.hpp"
 
+#include "Core/Debug/ProfileMacros.hpp"
+
 namespace Engine
 {
 	void Renderer::Init(RenderingAPI RenderingAPI)
@@ -69,5 +71,19 @@ namespace Engine
 	MaterialManager& Renderer::GetMaterialManager(void) const
 	{
 		return RHICommand::GetRHI()->GetMaterialManager();
+	}
+
+	void Renderer::UpdateRendererStats(void)
+	{
+		s_RendererStats.FrameDuration			= (double)(GET_PROFILE_RESULT("RendererStats_FrameDuration") / 1000.0);
+		s_RendererStats.TickDuration			= (double)(GET_PROFILE_RESULT("RendererStats_TickDuration") / 1000.0);
+		s_RendererStats.RenderDuration			= (double)(GET_PROFILE_RESULT("RendererStats_RenderDuration") / 1000.0);
+		s_RendererStats.RenderWorldDuration		= (double)(GET_PROFILE_RESULT("RendererStats_RenderWorldDuration") / 1000.0);
+		s_RendererStats.RenderGUIDuration		= (double)(GET_PROFILE_RESULT("RendererStats_RenderGUIDuration") / 1000.0);
+	}
+
+	RendererStatistics const& Renderer::GetRendererStats(void)
+	{
+		return s_RendererStats;
 	}
 }

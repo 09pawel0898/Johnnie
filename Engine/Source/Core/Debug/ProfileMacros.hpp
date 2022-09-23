@@ -7,7 +7,7 @@
 
 #define __PROFILE_SCOPE(UniqueName,Line)\
 	Engine::ProfilingManager::Get()->BeginScopeProfile(##UniqueName);\
-	Engine::Utility::Timer timer##Line(##UniqueName);
+	Engine::Utility::Timer<std::chrono::microseconds> timer##Line(##UniqueName);
 
 
 #define PROFILE_SCOPE(UniqueName)\

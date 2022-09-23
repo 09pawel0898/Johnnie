@@ -62,6 +62,9 @@ namespace Engine
         
         void SetMaterialForSlot(uint8_t SlotIndex, std::shared_ptr<Material> Material);
 
+        /** Stats */
+        uint32_t GetTrisCount(void) const;
+
     private:
         void InitializeMaterialSlots(const aiScene* Scene);
     };

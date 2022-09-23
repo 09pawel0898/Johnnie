@@ -4,12 +4,11 @@
 #include <Engine/Scene.hpp>
 
 #include "Gui/JohnnieMainMenuBarWidget.hpp"
-#include "Gui/JohnnieConsoleLogWidget.hpp"
+#include "Gui/JohnnieLoggerWidget.hpp"
 
 class WJohnnieMainMenuBarWidget;
-class WJohnnieConsoleLogWidget;
 class WJohnnieCameraDataWidget;
-class WJohnnieSystemStatisticsWidget;
+class WJohnnieStatisticsWidget;
 
 namespace Engine
 {
@@ -26,8 +25,8 @@ public:
 private:
 	/** UI Widgets */
 	std::shared_ptr<WJohnnieMainMenuBarWidget>			m_MainMenuBarWidget;
-	std::shared_ptr<WJohnnieConsoleLogWidget>			m_ConsoleLogWidget;
-	std::shared_ptr<WJohnnieSystemStatisticsWidget>		m_SystemStatisticsWidget;
+	std::shared_ptr<WJohnnieLoggerWidget>				m_LoggerWidget;
+	std::shared_ptr<WJohnnieStatisticsWidget>			m_StatisticsWidget;
 	std::shared_ptr<WJohnnieCameraDataWidget>			m_CameraDataWidget;	
 
 	/** Floating Camera */

@@ -9,24 +9,18 @@ namespace Engine
 
 	void ProfilingManager::BeginScopeProfile(std::string_view Name)
 	{
-		if (m_ProfileResults.find(Name) == m_ProfileResults.end())
-		{
-			return;
-		}
-
 		ProfileResult& result = m_ProfileResults[Name];
 		result.Name = Name;
 		result.ThreadID = std::this_thread::get_id();
 	}
 
-	void ProfilingManager::UpdateScopeProfile(std::string_view Name, std::chrono::milliseconds Duration)
+	void ProfilingManager::UpdateScopeProfile(std::string_view Name, std::chrono::microseconds Duration)
 	{
 		m_ProfileResults[Name].Duration = Duration;
 	}
 
 	ProfileResult const& ProfilingManager::GetResult(std::string_view Name)
 	{
-		auto x = m_ProfileResults[Name].Duration.count();
 		return m_ProfileResults[Name];
 	}
 }

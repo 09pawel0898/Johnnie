@@ -1,9 +1,9 @@
-#include "JohnnieConsoleLogWidget.hpp"
+#include "JohnnieLoggerWidget.hpp"
 
 #include "Log/OutputLogSink.hpp"
 #include <regex>
 
-void WJohnnieConsoleLogWidget::OnRenderGui(void)
+void WJohnnieLoggerWidget::OnRenderGui(void)
 {
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
     
@@ -71,7 +71,7 @@ void WJohnnieConsoleLogWidget::OnRenderGui(void)
     ImGui::End();
 }
 
-WJohnnieConsoleLogWidget::WJohnnieConsoleLogWidget(void)
+WJohnnieLoggerWidget::WJohnnieLoggerWidget(void)
 {
     AutoScroll = true;
     SetTickEnabled(false);
@@ -79,10 +79,10 @@ WJohnnieConsoleLogWidget::WJohnnieConsoleLogWidget(void)
     InitLoggerSink();
 }
 
-void WJohnnieConsoleLogWidget::InitLoggerSink(void)
+void WJohnnieLoggerWidget::InitLoggerSink(void)
 {
     std::shared_ptr<OutputLogSink_mt> outputLogSink = std::make_shared<OutputLogSink_mt>();
-    outputLogSink->BindCustomLoggerFunction(std::bind(&WJohnnieConsoleLogWidget::AddLog,this,std::placeholders::_1));
+    outputLogSink->BindCustomLoggerFunction(std::bind(&WJohnnieLoggerWidget::AddLog,this,std::placeholders::_1));
     
     DEFINE_OUTPUT_LOG_SINK(std::move(outputLogSink));
 }
@@ -121,7 +121,7 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
     return Log::Verbosity::Trace;
 }
 
-void WJohnnieConsoleLogWidget::AddLog(std::string const& LogMsg)
+void WJohnnieLoggerWidget::AddLog(std::string const& LogMsg)
 {
     static std::unordered_map<Log::Verbosity, ImVec4> colors =
     {
