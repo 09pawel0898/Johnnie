@@ -11,23 +11,19 @@ namespace Engine
 		:	Actor(WorldLocation),
 			m_LightColor(LightColor),
 			m_SphereMesh(BasicMeshGenerator::CreateSphereMesh(0.1f,100,100))
-	{}
+	{
+        InitializeMaterial();
+    }
 
     void APointLight::Draw(void) const
     {
-        auto& shaderManager = Renderer::Get()->GetShaderManager();
-        auto& lightMeshShader = shaderManager.GetResource("Shader_LightMesh");
-
         if(IsVisible())
         {
             const glm::mat4 modelMat = GetModelMat();
 
             if(m_bIsMeshVisible)
             {
-                lightMeshShader->Bind();
-                lightMeshShader->SetFloat3("uLightColor", m_LightColor);
-
-                m_SphereMesh->Draw(lightMeshShader, modelMat);
+                m_SphereMesh->Draw(modelMat);
             }
         }
     }
@@ -52,6 +48,17 @@ namespace Engine
         {
             UnRegisterLight();
         }
+    }
+
+    void APointLight::InitializeMaterial(void)
+    {
+        MaterialUniform sphereMatUniform;
+        sphereMatUniform.BaseColor = m_LightColor;
+
+        m_SphereEmissiveMaterial = std::make_shared<Material>(std::move(sphereMatUniform));
+        m_SphereEmissiveMaterial->SetMaterialEmissive(true);
+
+        m_SphereMesh->SetHardMaterialReference(m_SphereEmissiveMaterial);
     }
 
     void APointLight::RegisterLight(void)

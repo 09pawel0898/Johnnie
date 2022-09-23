@@ -17,6 +17,12 @@ void JohnnieScene::OnAwake(void)
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
 	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+	
+	auto materialSlot = m_RoundPlatform->GetMaterialInSlot(1);
+	if (materialSlot.has_value())
+	{
+		materialSlot.value().get()->SetMaterialEmissive(true);
+	}
 
 	//int16_t X = 10, Y = 8;
 	//m_Clones.reserve(X*Y);

@@ -37,23 +37,38 @@ namespace Engine
 		m_MaterialUniform.Shiness = Shiness;
 	}
 
+	void Material::SetMaterialEmissive(bool IsMaterialEmissive)
+	{
+		m_bIsMaterialEmissive = IsMaterialEmissive;
+	}
+
+	bool Material::IsMaterialEmissive(void) const
+	{
+		return m_bIsMaterialEmissive;
+	}
+
 	void Material::Bind(std::shared_ptr<RHIShader>& Shader) const
 	{
 		Shader->Bind();
 
 		Shader->SetFloat3("uMaterial.BaseColor",m_MaterialUniform.BaseColor);
-		Shader->SetFloat3("uMaterial.Ambient",	m_MaterialUniform.Ambient);
-		Shader->SetFloat3("uMaterial.Diffuse",	m_MaterialUniform.Diffuse);
-		Shader->SetFloat3("uMaterial.Specular", m_MaterialUniform.Specular);
-		Shader->SetFloat("uMaterial.Shiness",	m_MaterialUniform.Shiness);
-		
-		Shader->SetInt("uMaterial.UseDiffuseMap", (int32_t)m_MaterialUniform.UseDiffuseMap);
-		
-		if (m_MaterialUniform.UseDiffuseMap)
+
+		/** Emissive materials use only base color for now.*/
+		if (!IsMaterialEmissive())
 		{
-			m_MaterialTextures.DiffuseTexture->Bind(0);
-			std::string texName = GetUniformNameByTextureType(m_MaterialTextures.DiffuseTexture->GetType());
-			Shader->SetInt(texName.c_str(), 0);
+			Shader->SetFloat3("uMaterial.Ambient", m_MaterialUniform.Ambient);
+			Shader->SetFloat3("uMaterial.Diffuse", m_MaterialUniform.Diffuse);
+			Shader->SetFloat3("uMaterial.Specular", m_MaterialUniform.Specular);
+			Shader->SetFloat("uMaterial.Shiness", m_MaterialUniform.Shiness);
+
+			Shader->SetInt("uMaterial.UseDiffuseMap", (int32_t)m_MaterialUniform.UseDiffuseMap);
+
+			if (m_MaterialUniform.UseDiffuseMap)
+			{
+				m_MaterialTextures.DiffuseTexture->Bind(0);
+				std::string texName = GetUniformNameByTextureType(m_MaterialTextures.DiffuseTexture->GetType());
+				Shader->SetInt(texName.c_str(), 0);
+			}
 		}
 	}
 }

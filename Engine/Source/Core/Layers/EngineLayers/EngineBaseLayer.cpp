@@ -61,7 +61,7 @@ namespace Engine
 	{
 		RHI::RHIShaderManager& shaderManager = Renderer::Get()->GetShaderManager();
 
-		shaderManager.LoadResource("Shader_StaticMesh", "Assets/Shaders/mesh_shader.glsl");
-		shaderManager.LoadResource("Shader_LightMesh",	"Assets/Shaders/point_light.glsl");
+		shaderManager.LoadResource("Shader_StaticMesh",		"Assets/Shaders/StaticMesh.glsl");
+		shaderManager.LoadResource("Shader_EmissiveMesh",	"Assets/Shaders/EmissiveMesh.glsl");
 	}
 }

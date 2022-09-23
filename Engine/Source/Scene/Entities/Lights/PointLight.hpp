@@ -3,6 +3,7 @@
 #include "Core/CoreMinimal.hpp"
 #include "../Primitives/Actor.hpp"
 #include "../Meshes/Mesh.hpp"
+#include "Renderer/Materials/Material.hpp"
 
 #include "glm/glm.hpp"
 
@@ -33,6 +34,9 @@ namespace Engine
 		glm::vec3 GetColor(void) const;
 
 	private:
+		std::shared_ptr<Material> m_SphereEmissiveMaterial;
+		void InitializeMaterial(void);
+
 		void RegisterLight(void);
 		void UnRegisterLight(void);
 	};

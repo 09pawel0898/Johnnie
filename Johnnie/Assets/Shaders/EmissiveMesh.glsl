@@ -7,6 +7,7 @@ uniform mat4 uViewMat;
 uniform mat4 uProjMat;
 uniform mat4 uModelMat;
 
+
 void main()
 {
 	gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
@@ -16,11 +17,15 @@ void main()
 
 #version 460 core
 
+struct Material
+{
+	vec3 BaseColor;
+};
 
 out vec4 FragColor;
-uniform vec3 uLightColor;
+uniform Material uMaterial;
 
 void main()
 {
-	FragColor = vec4(uLightColor,1.0);
+	FragColor = vec4(uMaterial.BaseColor,1.0);
 }

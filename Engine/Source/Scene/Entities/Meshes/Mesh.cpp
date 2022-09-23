@@ -13,10 +13,9 @@ namespace Engine
 {
 	
 	Mesh::Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)
+		:	m_Vertices(Vertices),
+			m_Indices(Indices)
 	{
-		m_Vertices = Vertices;
-		m_Indices = Indices;
-
 		SetupMesh();
 	}
 
@@ -27,25 +26,39 @@ namespace Engine
 		SetupMesh();
 	}
 
-	void Mesh::Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const
+	void Mesh::Draw(glm::mat4 const& ModelMat) const
 	{  
-		if (auto staticMeshOwner = m_Owner.lock())
+		auto& shaderManager = Renderer::Get()->GetShaderManager();
+
+		auto renderWithAssignedMaterial = 
+		[this,&shaderManager, &ModelMat](std::shared_ptr<Material>& Material)
 		{
-			auto material = staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
-			if (material.has_value())
+			auto& meshShader = !Material->IsMaterialEmissive() ?
+				shaderManager.GetResource("Shader_StaticMesh") : shaderManager.GetResource("Shader_EmissiveMesh");
+
+			Material->Bind(meshShader);
+
+			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
+		};
+
+		if (m_bUseHardMaterialReference)
+		{
+			if (auto hardMaterialRef = m_HardMaterialReference.lock())
 			{
-				std::shared_ptr<Material> assignedMaterial = material->get();
-				if (assignedMaterial != nullptr)
-				{
-					assignedMaterial->Bind(Shader);
-				}
+				renderWithAssignedMaterial(hardMaterialRef);
 			}
+		}
+		else if (auto staticMeshSlotMaterialRef = GetMaterialFromStaticMeshSlot(m_MaterialIndex))
+		{
+			renderWithAssignedMaterial(staticMeshSlotMaterialRef);
 		}
 		else
 		{
-			DefaultMaterials::BasicWhite->Bind(Shader);
+			auto& meshShader = shaderManager.GetResource("Shader_StaticMesh");
+			DefaultMaterials::BasicWhite->Bind(meshShader);
+
+			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
 		}
-		Renderer::Get()->Draw(Shader, m_VAO, ModelMat);
 	}
 	
 	void Mesh::SetupMesh(void)
@@ -67,5 +80,23 @@ namespace Engine
 		m_VAO->AddVertexBuffer(std::move(vbo));
 	}
 
-	
+	std::shared_ptr<Material> Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
+	{
+		if (auto staticMeshOwner = m_Owner.lock())
+		{
+			auto material = staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
+			if (material.has_value())
+			{
+				return material->get();
+			}
+			return nullptr;
+		}
+		return nullptr;
+	}
+
+	void Mesh::SetHardMaterialReference(std::weak_ptr<Material> Material)
+	{
+		m_bUseHardMaterialReference = true;
+		m_HardMaterialReference = std::move(Material);
+	}
 }

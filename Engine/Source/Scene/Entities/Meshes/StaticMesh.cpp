@@ -191,14 +191,11 @@ namespace Engine
 
     void AStaticMesh::Draw(void) const
     {
-        auto& shaderManager = Renderer::Get()->GetShaderManager();
-        auto& staticMeshShader = shaderManager.GetResource("Shader_StaticMesh");
-        
         const glm::mat4 modelMat = GetModelMat();
 
         for (auto& mesh : m_SubMeshes)
         {
-            mesh->Draw(staticMeshShader, modelMat);
+            mesh->Draw(modelMat);
         }
     }
 

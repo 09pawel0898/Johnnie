@@ -40,12 +40,21 @@ namespace Engine
 		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices);
 	
 	public:
-		void Draw(std::shared_ptr<RHIShader>& Shader, glm::mat4 const& ModelMat) const;
+		void Draw(glm::mat4 const& ModelMat) const;
 		
 		void SetOwner(std::shared_ptr<AStaticMesh> const& Owner);
 
 		uint8_t GetMaterialIndex(void) const;
 		void SetMaterialIndex(uint8_t Index);
+	
+	private:
+		std::shared_ptr<Material> GetMaterialFromStaticMeshSlot(uint8_t Index) const;
+
+		std::weak_ptr<Material> m_HardMaterialReference;
+		bool m_bUseHardMaterialReference{ false };
+
+	public:
+		void SetHardMaterialReference(std::weak_ptr<Material> Material);
 	};
 
 	FORCEINLINE void Mesh::SetOwner(std::shared_ptr<AStaticMesh> const& Owner)

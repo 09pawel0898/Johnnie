@@ -43,6 +43,8 @@ namespace Engine
 		MaterialUniform		m_MaterialUniform;
 		MaterialTextures	m_MaterialTextures;
 
+		bool				m_bIsMaterialEmissive{ false };
+
 	public:
 		Material() = default;
 		~Material() = default;
@@ -64,6 +66,9 @@ namespace Engine
 		void SetSpecular(glm::vec3 Specular);
 
 		void SetShiness(float Shiness);
+
+		void SetMaterialEmissive(bool IsMaterialEmissive);
+		bool IsMaterialEmissive(void) const;
 
 		MaterialUniform const& GetMaterialUniform(void) const;
 		MaterialTextures& GetMaterialTextures(void);

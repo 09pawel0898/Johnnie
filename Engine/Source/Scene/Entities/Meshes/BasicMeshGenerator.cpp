@@ -94,7 +94,7 @@ namespace Engine
 		return std::unique_ptr<AStaticMesh>();
 	}
 
-	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
+	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreateSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
 		std::vector<std::shared_ptr<Mesh>> meshes =
 		{

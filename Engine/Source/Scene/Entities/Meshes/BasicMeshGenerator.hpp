@@ -20,7 +20,7 @@ namespace Engine
 		static std::shared_ptr<AStaticMesh> CreatePlane(float Width, float Depth);
 
 		[[nodiscard]]
-		static std::shared_ptr<AStaticMesh> CreatSphere(float Radius, uint32_t SliceCount, uint32_t StackCount);
+		static std::shared_ptr<AStaticMesh> CreateSphere(float Radius, uint32_t SliceCount, uint32_t StackCount);
 
 		[[nodiscard]]
 		static std::unique_ptr<Mesh> CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount);
