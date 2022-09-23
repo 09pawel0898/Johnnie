@@ -4,7 +4,7 @@ namespace Engine
 {
 	struct MeshStatistics
 	{
-		uint32_t TrisCount;
+		uint32_t TrisCount{ 0 };
 	};
 
 	struct RendererStatistics

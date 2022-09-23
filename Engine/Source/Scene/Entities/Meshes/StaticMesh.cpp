@@ -261,14 +261,15 @@ namespace Engine
         m_Materials[SlotIndex] = Material;
     }
 
-    uint32_t AStaticMesh::GetTrisCount(void) const
+    MeshStatistics AStaticMesh::GetMeshStatistics(void) const
     {
-        uint32_t totalCount = 0;
+        MeshStatistics meshStats;
 
-        for (auto const& subMesh : m_SubMeshes)
+        for (auto const& mesh : m_SubMeshes)
         {
-            totalCount += subMesh->GetMeshStatistics().TrisCount;
+            meshStats.TrisCount += mesh->GetMeshStatistics().TrisCount;
         }
-        return totalCount;
+
+        return meshStats;
     }
 }

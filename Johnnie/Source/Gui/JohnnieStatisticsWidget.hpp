@@ -26,8 +26,7 @@ private:
 
 	RendererStatistics		RendererStats;
 	MeshStatistics			MeshStats;
-
-	MeshStatistics*			MeshStatsPtr{ nullptr };
+	bool m_bRenderMeshStats;
 
 public:
 	WJohnnieStatisticsWidget();
@@ -37,7 +36,8 @@ public:
 	virtual void OnRenderGui(void) override;
 	virtual void OnTick(double DeltaTime) override;
 
-	void SetMeshStats(MeshStatistics* MeshStatistics);
+	void SetMeshStats(MeshStatistics&& MeshStatistics);
+	void SetRenderMeshStats(bool ShouldRender);
 
 private:
 	void RenderSystemStats(void);
@@ -49,5 +49,9 @@ private:
 	void UpdateMemoryStats(void);
 	void UpdateVideoMemoryStats(void);
 	void UpdateRendererStats(void);
-	void UpdateMeshStats(void);
 };
+
+FORCEINLINE void WJohnnieStatisticsWidget::SetRenderMeshStats(bool ShouldRender)
+{
+	m_bRenderMeshStats = ShouldRender;
+}

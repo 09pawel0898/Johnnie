@@ -37,9 +37,9 @@ void WJohnnieStatisticsWidget::OnRenderGui(void)
 			RenderRendererStats();
 		}
 
-		if (MeshStatsPtr != nullptr)
+		if (m_bRenderMeshStats)
 		{
-			if(ImGui::CollapsingHeader("Mesh"))
+			if(ImGui::CollapsingHeader("Static Mesh"))
 			{
 				RenderMeshStats();
 			}
@@ -55,12 +55,12 @@ void WJohnnieStatisticsWidget::OnTick(double DeltaTime)
 	UpdateMemoryStats();
 	UpdateVideoMemoryStats();
 	UpdateRendererStats();
-	UpdateMeshStats();
 }
 
-void WJohnnieStatisticsWidget::SetMeshStats(MeshStatistics* MeshStatistics)
+void WJohnnieStatisticsWidget::SetMeshStats(MeshStatistics&& MeshStatistics)
 {
-	MeshStatsPtr = MeshStatistics;
+	MeshStats = std::move(MeshStatistics);
+	SetRenderMeshStats(true);
 }
 
 void WJohnnieStatisticsWidget::RenderSystemStats(void)
@@ -217,12 +217,4 @@ void WJohnnieStatisticsWidget::UpdateRendererStats(void)
 {
 	RendererStatistics const& rendererStats = Renderer::GetRendererStats();
 	RendererStats = rendererStats;
-}
-
-void WJohnnieStatisticsWidget::UpdateMeshStats(void)
-{
-	if (MeshStatsPtr != nullptr)
-	{
-		MeshStats = *MeshStatsPtr;
-	}
 }

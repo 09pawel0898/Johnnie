@@ -18,6 +18,8 @@ void JohnnieScene::OnAwake(void)
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
 	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
 	
+	m_StatisticsWidget->SetMeshStats(m_RoundPlatform->GetMeshStatistics());
+
 	//auto materialSlot = m_RoundPlatform->GetMaterialInSlot(1);
 	//if (materialSlot.has_value())
 	//{
