@@ -150,14 +150,25 @@ void WJohnnieStatisticsWidget::RenderRendererStats(void)
 	}
 	
 	{
-		ImGui::Text("Renderer Statistics");
+		ImGui::Text("Timings");
 		ImGui::Separator();
 		ImGui::Text("Delta Time       : %.4f ms",	ApplicationStats.DeltaTime * 1000.0f);
 		ImGui::Text("Frame			: %.5f ms",		RendererStats.FrameDuration);
-		ImGui::Text("Tick			 : %.5f ms", RendererStats.TickDuration);
-		ImGui::Text("RenderOverall	: %.5f ms", RendererStats.RenderDuration);
-		ImGui::Text("RenderWorld      : %.5f ms", RendererStats.RenderWorldDuration);
-		ImGui::Text("RenderGui		: %.5f ms", RendererStats.RenderGUIDuration);
+		ImGui::Text("Tick			 : %.5f ms",	RendererStats.TickDuration);
+		ImGui::Text("Render Overall   : %.5f ms",	RendererStats.RenderDuration);
+		ImGui::Text("Render World     : %.5f ms",	RendererStats.RenderWorldDuration);
+		ImGui::Text("Render Gui	   : %.5f ms",		RendererStats.RenderGUIDuration);
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0.0f, 20.0f));
+	}
+
+	{
+		ImGui::Text("Entities");
+		ImGui::Separator();
+		ImGui::Text("Draw Calls	   : %d",		RendererStats.DrawCalls);
+		ImGui::Text("Total Tris Count : %d",	RendererStats.TotalTrisCount);
+		ImGui::Text("Actors Count	 : %d",		RendererStats.ActorsCount);
+		ImGui::Text("Meshes Count	 : %d",		RendererStats.MeshesCount);
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}

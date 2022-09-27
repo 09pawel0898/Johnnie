@@ -50,6 +50,10 @@ namespace Engine
 
 			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
 		}
+
+		RendererStatistics& rendererStats = Renderer::GetMutableRendererStats();
+		rendererStats.MeshesCount++;
+		rendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
 	}
 	
 	void Mesh::SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)

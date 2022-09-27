@@ -79,7 +79,6 @@ namespace Engine::Core
                 tLastUpdate = tFrameStart;
 
                 UpdateFrame();
-                Renderer::UpdateRendererStats();
             }
         }
         Shutdown();
@@ -95,6 +94,7 @@ namespace Engine::Core
                 layer->OnTick(m_DeltaTime);
             }
         }
+        Renderer::Get()->OnBeginRenderingFrame();
         {
             PROFILE_SCOPE("RendererStats_RenderDuration");
             {
@@ -120,6 +120,7 @@ namespace Engine::Core
                 Renderer::Get()->Clear();
             }
         }
+        Renderer::Get()->OnEndRenderingFrame();
     }
 
     void Application::InitApplication(const WindowProperties& WindowProperties)

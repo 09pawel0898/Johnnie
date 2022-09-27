@@ -1,6 +1,7 @@
 #include "EnginePCH.hpp"
 
 #include "Actor.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace Engine
 {
@@ -8,6 +9,12 @@ namespace Engine
 		:	Object(),
 			m_Location(WorldLocation)
 	{
+		UpdateRendererStats(true);
+	}
+
+	Actor::~Actor()
+	{
+		UpdateRendererStats(false);
 	}
 
 	glm::mat4 Actor::GetModelMat(void) const
@@ -23,5 +30,12 @@ namespace Engine
 		modelMat = glm::scale(modelMat, m_Scale);
 
 		return modelMat;
+	}
+
+	void Actor::UpdateRendererStats(bool IncreaseActorCount)
+	{
+		RendererStatistics& rendererStats = Renderer::GetMutableRendererStats();
+		
+		IncreaseActorCount ? rendererStats.ActorsCount++ : rendererStats.ActorsCount--;
 	}
 }

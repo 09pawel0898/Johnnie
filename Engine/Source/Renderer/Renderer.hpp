@@ -34,7 +34,9 @@ namespace Engine
 		void Clear(void);
 
 		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
-	
+		
+		void OnBeginRenderingFrame(void);
+		void OnEndRenderingFrame(void);
 	public:
 		/** Resource Management */
 
@@ -52,5 +54,6 @@ namespace Engine
 
 	public:
 		static RendererStatistics const& GetRendererStats(void);
+		static RendererStatistics& GetMutableRendererStats(void);
 	};
 }

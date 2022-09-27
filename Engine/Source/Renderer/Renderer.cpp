@@ -56,6 +56,21 @@ namespace Engine
 		Shader->SetMat3("uNormalMat", glm::mat3(glm::transpose(glm::inverse(ModelMat))));
 		
 		RHICommand::DrawIndexed(VertexArray);
+
+		s_RendererStats.DrawCalls++;
+	}
+
+	void Renderer::OnBeginRenderingFrame(void)
+	{
+		s_RendererStats.MeshesCount = 0;
+		s_RendererStats.DrawCalls = 0;
+		s_RendererStats.TotalTrisCount = 0;
+
+	}
+
+	void Renderer::OnEndRenderingFrame(void)
+	{
+		UpdateRendererStats();
 	}
 
 	RHIShaderManager& Renderer::GetShaderManager(void) const
@@ -75,6 +90,7 @@ namespace Engine
 
 	void Renderer::UpdateRendererStats(void)
 	{
+
 		s_RendererStats.FrameDuration			= (double)(GET_PROFILE_RESULT("RendererStats_FrameDuration") / 1000.0);
 		s_RendererStats.TickDuration			= (double)(GET_PROFILE_RESULT("RendererStats_TickDuration") / 1000.0);
 		s_RendererStats.RenderDuration			= (double)(GET_PROFILE_RESULT("RendererStats_RenderDuration") / 1000.0);
@@ -83,6 +99,11 @@ namespace Engine
 	}
 
 	RendererStatistics const& Renderer::GetRendererStats(void)
+	{
+		return s_RendererStats;
+	}
+	
+	RendererStatistics& Renderer::GetMutableRendererStats(void)
 	{
 		return s_RendererStats;
 	}

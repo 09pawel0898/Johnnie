@@ -19,6 +19,7 @@ namespace Engine
 
 	public:
 		explicit Actor(glm::vec3 const& WorldLocation = { 0.f,0.f,0.f });
+		virtual ~Actor();
 
 		glm::vec3 const& GetLocation(void) const;
 		glm::vec3& GetLocation(void);
@@ -36,6 +37,8 @@ namespace Engine
 		/** Rendering */
 		bool m_bVisible = true;
 
+		void UpdateRendererStats(bool IncreaseActorCount);
+
 	public:
 		virtual void OnTick(double DeltaTime) override {};
 		virtual void Draw(void) const override {};
@@ -44,12 +47,6 @@ namespace Engine
 	public:
 		virtual void SetVisibility(bool Visible);
 		bool IsVisible(void) const override;
-
-	protected:
-		//std::shared_ptr<Actor> SharedFromThis(void)
-		//{
-		//	return shared_from_this();
-		//}
 	};
 
 	FORCEINLINE glm::vec3 const& Actor::GetLocation(void) const

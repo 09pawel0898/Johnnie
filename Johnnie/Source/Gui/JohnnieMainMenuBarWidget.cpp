@@ -13,7 +13,7 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Open...", "Ctrl+O"))
+			if (ImGui::MenuItem("Load Static Mesh", "Ctrl + G"))
 			{
 				ExecuteActionDelegate(MainMenuBarAction::Open);
 			}
