@@ -1,10 +1,9 @@
 #include "JohnnieMainMenuBarWidget.hpp"
 
-#include <Engine/Gui.hpp>
-
 WJohnnieMainMenuBarWidget::WJohnnieMainMenuBarWidget()
 {
 	SetTickEnabled(false);
+	InitFileBrowser();
 }
 
 void WJohnnieMainMenuBarWidget::OnRenderGui(void)
@@ -13,8 +12,9 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	{
 		if (ImGui::BeginMenu("File"))
 		{
-			if (ImGui::MenuItem("Load Static Mesh", "Ctrl + G"))
+			if (ImGui::MenuItem("Load Static Model", "Ctrl + G"))
 			{
+				m_FileBrowser.Open();
 				ExecuteActionDelegate(MainMenuBarAction::Open);
 			}
 
@@ -27,4 +27,18 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 
 		ImGui::EndMainMenuBar();
 	}
+
+	m_FileBrowser.Display();
+
+	if (m_FileBrowser.HasSelected())
+	{
+		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
+		m_FileBrowser.ClearSelected();
+	}
+}
+
+void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
+{
+	m_FileBrowser.SetTitle("Title");
+	m_FileBrowser.SetTypeFilters({ ".obj" });
 }
