@@ -17,6 +17,8 @@
 
 namespace Engine
 {
+    std::unique_ptr<Assimp::Importer> AStaticMesh::m_AssimpImporter = std::make_unique< Assimp::Importer>();
+
     AStaticMesh::AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation),
             m_ModelFilePath(FilePath)
@@ -36,9 +38,7 @@ namespace Engine
 
     void AStaticMesh::LoadModel(std::string_view FilePath)
     {
-        static Assimp::Importer assimpImporter = Assimp::Importer();
-
-        const aiScene* scene = assimpImporter.ReadFile( FilePath.data(),
+        const aiScene* scene = m_AssimpImporter->ReadFile( FilePath.data(),
             aiProcess_Triangulate 
             | aiProcess_FlipUVs 
             | aiProcess_OptimizeMeshes 
@@ -47,7 +47,7 @@ namespace Engine
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LOG(Assimp, Error, "{0}", assimpImporter.GetErrorString());
+            LOG(Assimp, Error, "{0}", m_AssimpImporter->GetErrorString());
             return;
         }
         m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
@@ -232,9 +232,9 @@ namespace Engine
                         }
                     }
                     {
-                        //PROFILE_SCOPE("ProcessMaterials");
-                        //const aiScene* scene = assimpImporter->GetScene();
-                        //ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
+                        PROFILE_SCOPE("ProcessMaterials");
+                        const aiScene* scene = m_AssimpImporter->GetScene();
+                        ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
                     }
                 }
                 //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));

@@ -8,23 +8,33 @@
 [[nodiscard]]
 __forceinline void* operator new(size_t Size)
 {
-	return Engine::Allocator::Allocate(Size);
+	return Engine::Allocator::AllocateArray(Size);
 }
 
 [[nodiscard]]
 __forceinline void* operator new[](size_t Size)
 {
-	return Engine::Allocator::Allocate(Size);
+	return Engine::Allocator::AllocateArray(Size);
 }
 
 __forceinline void operator delete(void* Block, size_t Size)
 {
-	Engine::Allocator::Deallocate(Block, Size);
+	Engine::Allocator::DeallocateArray(Block);
+}
+
+__forceinline void operator delete(void* Block)
+{
+	Engine::Allocator::DeallocateArray(Block);
 }
 
 __forceinline void operator delete[](void* Block, size_t Size)
 {
-	Engine::Allocator::Deallocate(Block, Size);
+	Engine::Allocator::DeallocateArray(Block);
+}
+
+__forceinline void operator delete[](void* Block)
+{
+	Engine::Allocator::DeallocateArray(Block);
 }
 
 #pragma warning(default : 4595)

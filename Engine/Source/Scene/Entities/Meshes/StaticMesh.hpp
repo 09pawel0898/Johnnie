@@ -44,6 +44,8 @@ namespace Engine
         bool m_bWasModelLoadedOnPrevFrame = false;
         std::future<void> m_LoadModelFuture;
 
+        static std::unique_ptr<Assimp::Importer> m_AssimpImporter;
+
     private:
         /** Model Loading */
         

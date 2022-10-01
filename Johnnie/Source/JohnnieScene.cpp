@@ -70,10 +70,18 @@ void JohnnieScene::OnTick(double DeltaTime)
 	if (Input::IsKeyPressed(KeyCode::T))
 	{
 		m_Model = nullptr;
+		allocated = false;
 	}
 	if (Input::IsKeyPressed(KeyCode::R))
 	{
-		m_Model = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
+		if(!allocated)
+		{
+			//m_Model = NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
+			//LOG(Core,Trace,"Model has {0} materials ",m_Model->GetNumMaterials());
+			//m_Model->SetMaterialForSlot(0,DefaultMaterials::BasicWhite);
+			//m_Model->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
+			//allocated = true;
+		}
 		//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 300,300);
 	}
 }
