@@ -1,5 +1,7 @@
 #pragma once
 
+#include <future>
+
 #include "Mesh.hpp"
 
 #include "Renderer/RHI/RHITypes.hpp"
@@ -8,10 +10,17 @@
 #include "Scene/Entities/Primitives/Actor.hpp"
 #include "Scene/Entities/Primitives/Tickable.hpp"
 
+
+
 struct aiNode;
 struct aiMesh;
 struct aiScene;
 struct aiMaterial;
+
+namespace Assimp
+{
+    class Importer;
+}
 
 namespace Engine
 {
@@ -27,9 +36,13 @@ namespace Engine
     private:
         std::vector<std::shared_ptr<Mesh>> m_SubMeshes;
         std::string m_Directory;
-
         std::string m_ModelFilePath;
-        bool        m_bScheduleModelLoadOnConstruct{ false };
+        mutable std::mutex  m_Mutex;
+        bool m_bScheduleModelLoadOnConstruct{ false };
+        bool m_bIsModelLoaded = false;
+        bool m_bIsModelReadyToDraw = false;
+        bool m_bWasModelLoadedOnPrevFrame = false;
+        std::future<void> m_LoadModelFuture;
 
     private:
         /** Model Loading */
@@ -45,8 +58,9 @@ namespace Engine
     public:
         AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
         AStaticMesh(std::vector<std::shared_ptr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
-
-	public:
+        ~AStaticMesh();
+	
+    public:
         virtual void Draw(void) const override;
 		void OnTick(double DeltaTime) override;
         void OnConstruct(void) override;

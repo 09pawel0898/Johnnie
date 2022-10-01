@@ -6,6 +6,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Materials/Material.hpp"
 #include "Scene/Entities/CoreActor.hpp"
+#include "Core/Debug/ProfileMacros.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -26,13 +27,17 @@ namespace Engine
     AStaticMesh::AStaticMesh(std::vector<std::shared_ptr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation)
     {
+        m_bIsModelLoaded = true;
         m_SubMeshes = std::move(SubMeshes);
     }
 
+    AStaticMesh::~AStaticMesh()
+    {}
+
     void AStaticMesh::LoadModel(std::string_view FilePath)
     {
-        Assimp::Importer assimpImporter;
-    
+        static Assimp::Importer assimpImporter = Assimp::Importer();
+
         const aiScene* scene = assimpImporter.ReadFile( FilePath.data(),
             aiProcess_Triangulate 
             | aiProcess_FlipUVs 
@@ -45,10 +50,15 @@ namespace Engine
             LOG(Assimp, Error, "{0}", assimpImporter.GetErrorString());
             return;
         }
-        m_Directory = FilePath.substr(0, FilePath.find_last_of('/'));
+        m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
         
         InitializeMaterialSlots(scene);
         ProcessNode(scene->mRootNode, scene);
+        
+        {
+            std::scoped_lock lock(m_Mutex);
+            m_bIsModelLoaded = true;
+        }
     }
     
     void AStaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
@@ -74,7 +84,6 @@ namespace Engine
     {
         std::vector<RHIVertex> vertices;
         std::vector<uint32_t> indices;
-        std::vector<std::shared_ptr<RHITexture2D>> textures;
     
         /** Process vertices */
         for (unsigned int i = 0; i < _Mesh->mNumVertices; i++)
@@ -111,13 +120,12 @@ namespace Engine
         }
         
         std::shared_ptr<Mesh> subMesh = std::make_shared<Mesh>( std::move(vertices),
-                                                                std::move(indices));
+                                                                std::move(indices),
+                                                                true);
 
         /** Process materials */
         if (_Mesh->mMaterialIndex >= 0)
         {
-            aiMaterial* material = Scene->mMaterials[_Mesh->mMaterialIndex];
-            ProcessMaterial(material,_Mesh->mMaterialIndex);
             subMesh->SetMaterialIndex(_Mesh->mMaterialIndex);
         }
 
@@ -187,7 +195,7 @@ namespace Engine
             texturePath.append(texFileName.C_Str());
             
             auto& textureManager = Renderer::Get()->GetTexture2DManager();
-    
+            
             textureManager.LoadResource(texturePath, Type);
             textures.push_back(textureManager.GetResource(texturePath));
         }
@@ -196,22 +204,52 @@ namespace Engine
 
     void AStaticMesh::Draw(void) const
     {
-        const glm::mat4 modelMat = GetModelMat();
-
-        for (auto& mesh : m_SubMeshes)
+        if(m_bIsModelReadyToDraw)
         {
-            mesh->Draw(modelMat);
+            const glm::mat4 modelMat = GetModelMat();
+
+            for (auto& mesh : m_SubMeshes)
+            {
+                mesh->Draw(modelMat);
+            }
         }
     }
 
     void AStaticMesh::OnTick(double DeltaTime)
-    {}
+    {
+        {
+            std::scoped_lock lock(m_Mutex);
+
+            if (m_bIsModelLoaded && !m_bWasModelLoadedOnPrevFrame)
+            {
+                for (int8_t idx = 0; idx < m_SubMeshes.size(); idx++)
+                {
+                    {
+                        PROFILE_SCOPE("EvaluateMesh");
+                        if (m_SubMeshes[idx]->IsMeshLazyEvaluated() && !m_SubMeshes[idx]->IsManualEvaluationPerformed())
+                        {
+                            m_SubMeshes[idx]->EvaluateMesh();
+                        }
+                    }
+                    {
+                        //PROFILE_SCOPE("ProcessMaterials");
+                        //const aiScene* scene = assimpImporter->GetScene();
+                        //ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
+                    }
+                }
+                //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
+                //LOG(Core, Trace, "Process Materials {0}", (double)(GET_PROFILE_RESULT("ProcessMaterials") / 1000.0));
+                m_bIsModelReadyToDraw = true;
+            }
+        }
+        m_bWasModelLoadedOnPrevFrame = m_bIsModelLoaded;
+    }
 
     void AStaticMesh::OnConstruct(void)
     {
         if(m_bScheduleModelLoadOnConstruct)
         {
-            LoadModel(m_ModelFilePath);
+            m_LoadModelFuture = std::async(std::launch::async, std::bind(&AStaticMesh::LoadModel,this,std::placeholders::_1), m_ModelFilePath);
         }
     }
 

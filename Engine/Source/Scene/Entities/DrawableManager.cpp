@@ -20,10 +20,9 @@ namespace Engine
     template <typename TDrawable>
     static void Draw_Internal(std::vector<std::pair<OUUID,std::weak_ptr<TDrawable>>> const& DrawableObjects, std::vector<OUUID>& OutPendingToUnregister)
     {
-        std::vector<OUUID> pendingDrawablesToUnregister;
-
+        int i = 0;
         for (auto const& [uuid, drawablePtr] : DrawableObjects)
-        {
+        { 
             if (auto drawable = drawablePtr.lock())
             {
                 if (drawable->IsVisible())
@@ -40,7 +39,7 @@ namespace Engine
             }
             else
             {
-                pendingDrawablesToUnregister.emplace_back(uuid);
+                OutPendingToUnregister.emplace_back(uuid);
             }
         }
     }

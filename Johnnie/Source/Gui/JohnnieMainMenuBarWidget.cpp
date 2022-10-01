@@ -6,6 +6,11 @@ WJohnnieMainMenuBarWidget::WJohnnieMainMenuBarWidget()
 	InitFileBrowser();
 }
 
+std::string WJohnnieMainMenuBarWidget::GetSelectedFileName(void) const
+{
+	return m_SelectedFileName;
+}
+
 void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 {
 	if (ImGui::BeginMainMenuBar())
@@ -15,7 +20,6 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 			if (ImGui::MenuItem("Load Static Model", "Ctrl + G"))
 			{
 				m_FileBrowser.Open();
-				ExecuteActionDelegate(MainMenuBarAction::Open);
 			}
 
 			if (ImGui::MenuItem("Exit")) 
@@ -33,6 +37,8 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	if (m_FileBrowser.HasSelected())
 	{
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
+		m_SelectedFileName = m_FileBrowser.GetSelected().string();
+		ExecuteActionDelegate(MainMenuBarAction::Open);
 		m_FileBrowser.ClearSelected();
 	}
 }

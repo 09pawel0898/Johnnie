@@ -12,10 +12,36 @@
 namespace Engine
 {
 	
-	Mesh::Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)
+	Mesh::Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, bool LazyEvaluateMesh)
+		:	m_bIsMeshLazyEvaluated(LazyEvaluateMesh)
 	{
-		SetupMesh(Vertices, Indices);
+		if (!m_bIsMeshLazyEvaluated)
+		{
+			SetupMesh(Vertices, Indices);
+		}
+		else
+		{
+			m_LazyVertices	= Vertices;
+			m_LazyIndices	= Indices;
+		}
 	}
+
+	Mesh::Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, bool LazyEvaluateMesh)
+		:	m_bIsMeshLazyEvaluated(LazyEvaluateMesh)
+	{
+		if (!m_bIsMeshLazyEvaluated)
+		{
+			SetupMesh(Vertices, Indices);
+		}
+		else
+		{
+			m_LazyVertices	= std::move(Vertices);
+			m_LazyIndices	= std::move(Indices);
+		}
+	}
+
+	Mesh::~Mesh()
+	{}
 
 	void Mesh::Draw(glm::mat4 const& ModelMat) const
 	{  
@@ -56,6 +82,18 @@ namespace Engine
 		rendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
 	}
 	
+	void Mesh::EvaluateMesh(void)
+	{
+		if (IsMeshLazyEvaluated() && !IsManualEvaluationPerformed())
+		{ 
+			SetupMesh(m_LazyVertices, m_LazyIndices);
+			m_LazyVertices.clear();
+			m_LazyIndices.clear();
+
+			m_bEvaluated = true;
+		}
+	}
+
 	void Mesh::SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices)
 	{
 		m_VAO = RHIVertexArray::Create();

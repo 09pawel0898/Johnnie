@@ -16,9 +16,11 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	m_RoundPlatform = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
-	
-	m_StatisticsWidget->SetMeshStats(m_RoundPlatform->GetMeshStatistics());
+	//m_Model = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+
+	//m_Model			= BasicMeshGenerator::CreateSphere(2,100,100);
+	//
+	//m_StatisticsWidget->SetMeshStats(m_Model->GetMeshStatistics());
 
 	//auto materialSlot = m_RoundPlatform->GetMaterialInSlot(1);
 	//if (materialSlot.has_value())
@@ -61,6 +63,19 @@ void JohnnieScene::OnTick(double DeltaTime)
 	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
 
 	m_PointLight->SetLocation(lightPos);
+
+	static int* s = nullptr;
+	static bool allocated = false;
+
+	if (Input::IsKeyPressed(KeyCode::T))
+	{
+		m_Model = nullptr;
+	}
+	if (Input::IsKeyPressed(KeyCode::R))
+	{
+		m_Model = NewActor<AStaticMesh>("Assets/Models/backpack.obj");
+		//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 300,300);
+	}
 }
 
 void JohnnieScene::InitGui(void)
@@ -73,8 +88,9 @@ void JohnnieScene::InitGui(void)
 
     /** Init widgets actions */
 	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::Open,
-	[]()
+	[this]()
 	{
-		std::cout << "Open";
+		m_Model = NewActor<AStaticMesh>(m_MainMenuBarWidget->GetSelectedFileName());
+		m_StatisticsWidget->SetMeshStats(m_Model->GetMeshStatistics());
 	});
 }

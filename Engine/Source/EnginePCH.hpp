@@ -13,6 +13,7 @@
 
 #include <memory>
 #include <thread>
+#include <future>
 
 #include <unordered_map>
 #include <vector>

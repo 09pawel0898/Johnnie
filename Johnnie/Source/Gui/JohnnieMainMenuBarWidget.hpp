@@ -14,11 +14,14 @@ class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase<MainMenuBarAction
 {
 private:
 	ImGui::FileBrowser m_FileBrowser;
+	std::string m_SelectedFileName = "";
 
 	void InitFileBrowser(void);
 
 public:
 	WJohnnieMainMenuBarWidget();
+
+	std::string GetSelectedFileName(void) const;
 
 	virtual void OnRenderGui(void) override;
 };

@@ -26,6 +26,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
+/** Returns last profile result in microseconds */
 #define GET_PROFILE_RESULT(Name)\
 	ProfilingManager::Get()->GetResult(##Name).Duration.count()
 

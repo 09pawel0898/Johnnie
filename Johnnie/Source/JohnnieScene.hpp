@@ -33,7 +33,7 @@ private:
 	std::shared_ptr<AFloatingCamera>					m_Camera;
 
 	/** Entities */
-	std::shared_ptr<AStaticMesh>						m_RoundPlatform = nullptr;
+	std::shared_ptr<AStaticMesh>						m_Model = nullptr;
 	std::vector<std::shared_ptr<AStaticMesh>>			m_Clones;
 
 	std::shared_ptr<AStaticMesh>						m_Sphere		= nullptr;

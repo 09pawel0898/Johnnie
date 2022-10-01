@@ -31,8 +31,17 @@ namespace Engine
 		/** Mesh Info */
 		MeshStatistics m_MeshStatistics;
 
+
+		/** Model Evaluation */
+		bool m_bIsMeshLazyEvaluated;
+		bool m_bEvaluated{ false };
+		std::vector<RHIVertex>	m_LazyVertices;
+		std::vector<uint32_t>	m_LazyIndices;
+
 	public:
-		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices);
+		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, bool LazyEvaluateMesh = false);
+		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, bool LazyEvaluateMesh = false);
+		~Mesh();
 
 		/** Drawing */
 		void Draw(glm::mat4 const& ModelMat) const;
@@ -53,6 +62,19 @@ namespace Engine
 		uint8_t GetMaterialIndex(void) const;
 		void SetMaterialIndex(uint8_t Index);
 	
+	public:
+		bool IsMeshLazyEvaluated(void)
+		{
+			return m_bIsMeshLazyEvaluated;
+		}
+		
+		bool IsManualEvaluationPerformed(void)
+		{
+			return m_bEvaluated;
+		}
+
+		void EvaluateMesh(void);
+
 	private:
 		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indicesbs);
 
