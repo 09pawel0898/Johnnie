@@ -34,6 +34,7 @@ struct Material
 	sampler2D TextureDiffuse;
 	bool UseDiffuseMap;
 	
+	bool UseSpecularMap;
 	sampler2D TextureSpecular;
 	
 	vec3 Specular;
@@ -93,7 +94,17 @@ void main()
 	vec3 reflectDir = reflect(-lightDir, norm);
 	
 	float spec = pow(max(dot(viewDir, reflectDir),0.0),uMaterial.Shiness);
-	vec3 specular = uMaterial.Specular * (spec * uLight.Specular);
+	
+	vec3 specular;
+	
+	if(uMaterial.UseSpecularMap)
+	{
+		specular = spec * uLight.Specular * vec3(texture(uMaterial.TextureSpecular,TexCoord));
+	}
+	else
+	{
+		specular = uMaterial.Specular * (spec * uLight.Specular);
+	}
 	
 	if(uMaterial.UseDiffuseMap)
 	{

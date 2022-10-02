@@ -180,7 +180,7 @@ namespace Engine
                     }
                     else if (texture->GetType() == RHITextureType::Specular)
                     {
-
+                        m_Materials[MaterialIdx]->SetSpecularTexture(texture);
                     }
                 }
             }
