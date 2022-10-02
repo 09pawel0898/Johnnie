@@ -27,7 +27,7 @@ namespace Engine
         }
         if(auto pointLight = m_PointLights[0].second.lock())
         {
-            return PointLightData{ pointLight->GetColor(),pointLight->GetLocation() };
+            return pointLight->GetData();
         }
         return std::nullopt;
     }
@@ -69,8 +69,12 @@ namespace Engine
             auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_StaticMesh");
 
             staticMeshShader->Bind();
-            staticMeshShader->SetFloat3("uLightPosition", lightData.WorldLocation);
-            staticMeshShader->SetFloat3("uLightColor", lightData.Color);
+            staticMeshShader->SetFloat3("uLight.Position", lightData.WorldLocation);
+
+            glm::vec3 diffuseColor = lightData.Color * lightData.Diffuse;
+            staticMeshShader->SetFloat3("uLight.Diffuse", diffuseColor);
+            staticMeshShader->SetFloat3("uLight.Ambient", diffuseColor * lightData.Ambient);
+            staticMeshShader->SetFloat3("uLight.Specular", glm::vec3(lightData.Specular));
         }
     }
 }

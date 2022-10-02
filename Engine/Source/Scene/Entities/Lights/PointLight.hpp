@@ -9,10 +9,27 @@
 
 namespace Engine
 {
+	struct PointLightData
+	{
+		glm::vec3 Color;
+		glm::vec3 WorldLocation;
+
+		float Ambient = 0.5f;
+		float Diffuse = 1.0f;
+		float Specular = 0.75f;
+
+		PointLightData() = default;
+		explicit PointLightData(glm::vec3 const& Color, glm::vec3 const& WorldLocation = { 0.f,0.f,0.f })
+			: Color(Color),
+			WorldLocation(WorldLocation)
+		{}
+	};
+
 	class APointLight : public Actor, public SharedFromThis<APointLight>
 	{
 	private:
-		glm::vec3				m_LightColor;
+		PointLightData m_LightData;
+
 		std::shared_ptr<Mesh>	m_SphereMesh;
 		bool m_bIsMeshVisible{ true };
 
@@ -33,6 +50,9 @@ namespace Engine
 		void SetColor(glm::vec3 LightColor);
 		glm::vec3 GetColor(void) const;
 
+		PointLightData const& GetData(void) const;
+		PointLightData& GetData(void);
+
 	private:
 		std::shared_ptr<Material> m_SphereEmissiveMaterial;
 		void InitializeMaterial(void);
@@ -48,11 +68,22 @@ namespace Engine
 
 	FORCEINLINE void APointLight::SetColor(glm::vec3 LightColor)
 	{
-		m_LightColor = LightColor;
+		m_LightData.Color = LightColor;
+		m_SphereEmissiveMaterial->SetBaseColor(LightColor);
 	}
 	
 	FORCEINLINE glm::vec3 APointLight::GetColor(void) const
 	{
-		return m_LightColor;
+		return m_LightData.Color;
+	}
+
+	FORCEINLINE PointLightData const& APointLight::GetData(void) const
+	{
+		return m_LightData;
+	}
+
+	FORCEINLINE PointLightData& APointLight::GetData(void)
+	{
+		return m_LightData;
 	}
 }

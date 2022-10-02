@@ -6,6 +6,7 @@
 
 #include "Gui/JohnnieStatisticsWidget.hpp"
 #include "Gui/JohnnieCameraDataWidget.hpp"
+#include "Gui/JohnnieSceneWidget.hpp"
 
 void JohnnieScene::OnAwake(void)
 {
@@ -16,6 +17,13 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
+
+	//m_Model			= NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
+	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
+	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
+
+	m_SceneWidget->SetManagedPointLight(m_PointLight);
+
 	//m_Model = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
 
 	//m_Model			= BasicMeshGenerator::CreateSphere(2,100,100);
@@ -69,19 +77,16 @@ void JohnnieScene::OnTick(double DeltaTime)
 
 	if (Input::IsKeyPressed(KeyCode::T))
 	{
-		m_Model = nullptr;
-		allocated = false;
+		//m_Model = nullptr;
+		//allocated = false;
 	}
 	if (Input::IsKeyPressed(KeyCode::R))
 	{
-		if(!allocated)
-		{
-			//m_Model = NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
-			//LOG(Core,Trace,"Model has {0} materials ",m_Model->GetNumMaterials());
-			//m_Model->SetMaterialForSlot(0,DefaultMaterials::BasicWhite);
-			//m_Model->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
-			//allocated = true;
-		}
+		//if(!allocated)
+		//{
+		//	//m_Model = NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
+		//	//allocated = true;
+		//}
 		//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 300,300);
 	}
 }
@@ -93,6 +98,7 @@ void JohnnieScene::InitGui(void)
 	m_MainMenuBarWidget	= NewWidget<WJohnnieMainMenuBarWidget, MainMenuBarAction>();
 	m_LoggerWidget		= NewWidget<WJohnnieLoggerWidget, LoggerAction>();
 	m_CameraDataWidget	= NewWidget<WJohnnieCameraDataWidget, CameraDataAction>();
+	m_SceneWidget		= NewWidget<WJohnnieSceneWidget, SceneAction>();
 
     /** Init widgets actions */
 	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::Open,

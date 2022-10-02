@@ -8,17 +8,11 @@
 #include "Scene/Entities/CoreActor.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 #include "AssimpHelpers.hpp"
 
 
 namespace Engine
 {
-    std::unique_ptr<Assimp::Importer> AStaticMesh::m_AssimpImporter = std::make_unique< Assimp::Importer>();
-
     AStaticMesh::AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation),
             m_ModelFilePath(FilePath)
@@ -31,6 +25,8 @@ namespace Engine
     {
         m_bIsModelLoaded = true;
         m_SubMeshes = std::move(SubMeshes);
+
+        InitSingleMaterialSlot();
     }
 
     AStaticMesh::~AStaticMesh()
@@ -38,7 +34,9 @@ namespace Engine
 
     void AStaticMesh::LoadModel(std::string_view FilePath)
     {
-        const aiScene* scene = m_AssimpImporter->ReadFile( FilePath.data(),
+        auto& assetImporter = AssetImporter::Get()->GetImporter();
+
+        const aiScene* scene = assetImporter.ReadFile( FilePath.data(),
             aiProcess_Triangulate 
             | aiProcess_FlipUVs 
             | aiProcess_OptimizeMeshes 
@@ -47,7 +45,7 @@ namespace Engine
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LOG(Assimp, Error, "{0}", m_AssimpImporter->GetErrorString());
+            LOG(Assimp, Error, "{0}", assetImporter.GetErrorString());
             return;
         }
         m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
@@ -145,6 +143,13 @@ namespace Engine
         m_NumMaterials = Scene->mNumMaterials;
     }
 
+    void AStaticMesh::InitSingleMaterialSlot(void)
+    {
+        m_Materials.clear();
+
+        m_Materials.emplace_back(DefaultMaterials::BasicWhite);
+    }
+
     void AStaticMesh::ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx)
     {
         /* If this material hasn't been processed yet */
@@ -224,17 +229,17 @@ namespace Engine
             {
                 for (int8_t idx = 0; idx < m_SubMeshes.size(); idx++)
                 {
+                    if (m_SubMeshes[idx]->IsMeshLazyEvaluated() && !m_SubMeshes[idx]->IsManualEvaluationPerformed())
                     {
-                        PROFILE_SCOPE("EvaluateMesh");
-                        if (m_SubMeshes[idx]->IsMeshLazyEvaluated() && !m_SubMeshes[idx]->IsManualEvaluationPerformed())
                         {
+                            PROFILE_SCOPE("EvaluateMesh");
                             m_SubMeshes[idx]->EvaluateMesh();
                         }
-                    }
-                    {
-                        PROFILE_SCOPE("ProcessMaterials");
-                        const aiScene* scene = m_AssimpImporter->GetScene();
-                        ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
+                        {
+                            PROFILE_SCOPE("ProcessMaterials");
+                            const aiScene* scene = AssetImporter::Get()->GetScene();
+                            ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
+                        }
                     }
                 }
                 //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
@@ -250,6 +255,14 @@ namespace Engine
         if(m_bScheduleModelLoadOnConstruct)
         {
             m_LoadModelFuture = std::async(std::launch::async, std::bind(&AStaticMesh::LoadModel,this,std::placeholders::_1), m_ModelFilePath);
+        }
+        else
+        {
+            for (auto& mesh : m_SubMeshes)
+            {
+                mesh->SetStaticMeshOwner(shared_from_this());
+                mesh->SetMaterialIndex(0);
+            }
         }
     }
 

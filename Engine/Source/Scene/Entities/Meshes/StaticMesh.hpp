@@ -10,17 +10,10 @@
 #include "Scene/Entities/Primitives/Actor.hpp"
 #include "Scene/Entities/Primitives/Tickable.hpp"
 
-
-
 struct aiNode;
 struct aiMesh;
 struct aiScene;
 struct aiMaterial;
-
-namespace Assimp
-{
-    class Importer;
-}
 
 namespace Engine
 {
@@ -43,8 +36,6 @@ namespace Engine
         bool m_bIsModelReadyToDraw = false;
         bool m_bWasModelLoadedOnPrevFrame = false;
         std::future<void> m_LoadModelFuture;
-
-        static std::unique_ptr<Assimp::Importer> m_AssimpImporter;
 
     private:
         /** Model Loading */
@@ -83,5 +74,6 @@ namespace Engine
 
     private:
         void InitializeMaterialSlots(const aiScene* Scene);
+        void InitSingleMaterialSlot(void);
     };
 }

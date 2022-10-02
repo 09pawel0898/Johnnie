@@ -65,6 +65,7 @@ void WJohnnieStatisticsWidget::SetMeshStats(MeshStatistics&& MeshStatistics)
 
 void WJohnnieStatisticsWidget::RenderSystemStats(void)
 {
+#ifndef NDEBUG
 	{
 		ImGui::Text("Memory Allocations");
 		ImGui::Separator();
@@ -75,7 +76,7 @@ void WJohnnieStatisticsWidget::RenderSystemStats(void)
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
-
+#endif
 	{
 		ImGui::Text("Memory Statistics");
 		ImGui::Separator();

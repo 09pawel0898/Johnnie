@@ -9,6 +9,7 @@
 class WJohnnieMainMenuBarWidget;
 class WJohnnieCameraDataWidget;
 class WJohnnieStatisticsWidget;
+class WJohnnieSceneWidget;
 
 namespace Engine
 {
@@ -24,10 +25,11 @@ public:
 
 private:
 	/** UI Widgets */
-	std::shared_ptr<WJohnnieMainMenuBarWidget>			m_MainMenuBarWidget;
-	std::shared_ptr<WJohnnieLoggerWidget>				m_LoggerWidget;
-	std::shared_ptr<WJohnnieStatisticsWidget>			m_StatisticsWidget;
-	std::shared_ptr<WJohnnieCameraDataWidget>			m_CameraDataWidget;	
+	std::shared_ptr<WJohnnieMainMenuBarWidget>	m_MainMenuBarWidget;
+	std::shared_ptr<WJohnnieLoggerWidget>		m_LoggerWidget;
+	std::shared_ptr<WJohnnieStatisticsWidget>	m_StatisticsWidget;
+	std::shared_ptr<WJohnnieCameraDataWidget>	m_CameraDataWidget;	
+	std::shared_ptr<WJohnnieSceneWidget>		m_SceneWidget;
 
 	/** Floating Camera */
 	std::shared_ptr<AFloatingCamera>					m_Camera;

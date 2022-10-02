@@ -9,7 +9,7 @@ namespace Engine
 {
 	APointLight::APointLight(glm::vec3 const&  WorldLocation, glm::vec3 const& LightColor)
 		:	Actor(WorldLocation),
-			m_LightColor(LightColor),
+			m_LightData(PointLightData(LightColor,WorldLocation)),
 			m_SphereMesh(BasicMeshGenerator::CreateSphereMesh(0.1f,100,100))
 	{
         InitializeMaterial();
@@ -29,7 +29,9 @@ namespace Engine
     }
 
     void APointLight::OnTick(double DeltaTime)
-    {}
+    {
+        m_LightData.WorldLocation = GetLocation();
+    }
 
     void APointLight::OnConstruct(void)
     {
@@ -53,7 +55,7 @@ namespace Engine
     void APointLight::InitializeMaterial(void)
     {
         MaterialUniform sphereMatUniform;
-        sphereMatUniform.BaseColor = m_LightColor;
+        sphereMatUniform.BaseColor = m_LightData.Color;
 
         m_SphereEmissiveMaterial = std::make_shared<Material>(std::move(sphereMatUniform));
         m_SphereEmissiveMaterial->SetMaterialEmissive(true);

@@ -4,21 +4,11 @@
 #include "../Primitives/Object.hpp"
 #include "glm/glm.hpp"
 
+#include "PointLight.hpp"
+
 namespace Engine
 {
 	class APointLight;
-
-	struct PointLightData
-	{
-		glm::vec3 Color;
-		glm::vec3 WorldLocation;
-
-		PointLightData() = default;
-		explicit PointLightData(glm::vec3 const& Color, glm::vec3 const& WorldLocation = { 0.f,0.f,0.f })
-			:	Color(Color),
-				WorldLocation(WorldLocation)
-		{}
-	};
 
 	class LightingManager
 	{

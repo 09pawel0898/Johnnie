@@ -31,52 +31,74 @@ struct Material
 {
 	vec3 BaseColor;
 	
-	vec3 Ambient;
-	
-	vec3 Diffuse;
+	sampler2D TextureDiffuse;
 	bool UseDiffuseMap;
+	
+	sampler2D TextureSpecular;
 	
 	vec3 Specular;
 	float Shiness;
 };
+
+struct Light
+{
+	vec3 Position;
+	
+	vec3 Ambient;
+	vec3 Diffuse;
+	vec3 Specular;
+};
+
+uniform Light uLight;
 
 out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragWorldPos;
 
-uniform sampler2D uTextureDiffuse;
-uniform sampler2D uTextureSpecular;
 
 uniform Material uMaterial;
-
-uniform vec3 uLightPosition;
-uniform vec3 uLightColor;
 
 uniform vec3 uCameraPosition;
 
 void main()
 {
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(uLightPosition - FragWorldPos);
+	vec3 lightDir = normalize(uLight.Position - FragWorldPos);
 	
 	float diff = max(dot(norm,lightDir),0.0);
-	vec3 diffuse = (diff * uMaterial.Diffuse) * uLightColor;
 	
-	//float ambientStrength = 0.35;
-	vec3 ambient = uMaterial.Ambient * uLightColor;
+	vec3 diffuse;
+	vec3 ambient;
 	
-	//float specularStrength = 0.6;
+	if(uMaterial.UseDiffuseMap)
+	{
+		diffuse = uLight.Diffuse * diff * vec3(texture(uMaterial.TextureDiffuse, TexCoord));
+	}	
+	else
+	{
+		diffuse = uLight.Diffuse * diff * uMaterial.BaseColor;
+	}
+	
+	if(uMaterial.UseDiffuseMap)
+	{
+		ambient = uLight.Ambient * vec3(texture(uMaterial.TextureDiffuse, TexCoord));
+	}
+	else
+	{
+		ambient = uLight.Ambient * uMaterial.BaseColor;
+	}
+	
 	vec3 viewDir = normalize(uCameraPosition - FragWorldPos);
 	vec3 reflectDir = reflect(-lightDir, norm);
 	
 	float spec = pow(max(dot(viewDir, reflectDir),0.0),uMaterial.Shiness);
-	vec3 specular = uMaterial.Specular * spec * uLightColor;
+	vec3 specular = uMaterial.Specular * (spec * uLight.Specular);
 	
 	if(uMaterial.UseDiffuseMap)
 	{
 		
-		FragColor = vec4(texture(uTextureDiffuse, TexCoord).xyz * (ambient + diffuse + specular),1.0);
+		FragColor = vec4(texture(uMaterial.TextureDiffuse, TexCoord).xyz * (ambient + diffuse + specular),1.0);
 	}
 	else
 	{

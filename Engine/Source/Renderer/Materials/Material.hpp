@@ -17,14 +17,16 @@ namespace Engine
 	{
 		glm::vec3 BaseColor{ 1.0f,1.0f,1.0f };
 
-		glm::vec3 Ambient{ 0.35f, 0.35f, 0.35f };
-
-		glm::vec3 Diffuse{ 1.0f, 1.0f, 1.0f };
-		bool UseDiffuseMap;
+		bool UseDiffuseMap = false;
 
 		glm::vec3 Specular{ 0.6f, 0.6f, 0.6f };
 
 		float Shiness = 32.f;
+
+		MaterialUniform() = default;
+		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& Specular, float Shiness)
+			:	BaseColor(BaseColor), Specular(Specular), Shiness(Shiness)
+		{}
 	};
 
 	struct MaterialTextures
@@ -90,5 +92,8 @@ namespace Engine
 	namespace DefaultMaterials
 	{
 		extern const std::shared_ptr<Material> BasicWhite;
+		extern const std::shared_ptr<Material> Emerald;
+		extern const std::shared_ptr<Material> Gold;
+		extern const std::shared_ptr<Material> Silver;
 	}
 }

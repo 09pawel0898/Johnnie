@@ -28,8 +28,8 @@ namespace Engine::RHI
 		static std::unordered_map<RHITextureType, std::string> RHITextureUniformNames =
 		{
 			{RHITextureType::BasicTexture2D,	"uTexture"},
-			{RHITextureType::Diffuse,			"uTextureDiffuse"},
-			{RHITextureType::Specular,			"uTextureSpecular"}
+			{RHITextureType::Diffuse,			"uMaterial.TextureDiffuse"},
+			{RHITextureType::Specular,			"uMaterial.uTextureSpecular"}
 		};
 		return RHITextureUniformNames[TextureType];
 	}

@@ -10,6 +10,8 @@ WJohnnieCameraDataWidget::WJohnnieCameraDataWidget()
 
 void WJohnnieCameraDataWidget::OnRenderGui(void)
 {
+    ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
+
     ImGui::Begin("Camera");
     {
         ImGui::Separator();

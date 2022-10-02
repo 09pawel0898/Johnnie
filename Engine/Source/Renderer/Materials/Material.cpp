@@ -11,16 +11,6 @@ namespace Engine
 		m_MaterialUniform.BaseColor = BaseColor;
 	}
 
-	void Material::SetAmbient(glm::vec3 Ambient)
-	{
-		m_MaterialUniform.Ambient = Ambient;
-	}
-
-	void Material::SetDiffuse(glm::vec3 Diffuse)
-	{
-		m_MaterialUniform.Diffuse = Diffuse;
-	}
-
 	void Material::SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture)
 	{
 		m_MaterialTextures.DiffuseTexture = std::move(DiffuseTexture);
@@ -56,8 +46,6 @@ namespace Engine
 		/** Emissive materials use only base color for now.*/
 		if (!IsMaterialEmissive())
 		{
-			Shader->SetFloat3("uMaterial.Ambient", m_MaterialUniform.Ambient);
-			Shader->SetFloat3("uMaterial.Diffuse", m_MaterialUniform.Diffuse);
 			Shader->SetFloat3("uMaterial.Specular", m_MaterialUniform.Specular);
 			Shader->SetFloat("uMaterial.Shiness", m_MaterialUniform.Shiness);
 
