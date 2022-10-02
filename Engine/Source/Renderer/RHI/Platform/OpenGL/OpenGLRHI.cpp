@@ -100,6 +100,18 @@ namespace Engine::RHI
 		glViewport(X, Y, Width, Height);
 	}
 
+	void OpenGLRHI::SetWireframeMode(bool Enabled)
+	{
+		if(Enabled)
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}
+		else
+		{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
+	}
+
 	void OpenGLRHI::SetClearColor(const glm::vec4& Color)
 	{
 		glClearColor(Color.r,Color.g,Color.b,Color.a);

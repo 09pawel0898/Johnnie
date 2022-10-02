@@ -65,12 +65,16 @@ namespace Engine
 		s_RendererStats.MeshesCount = 0;
 		s_RendererStats.DrawCalls = 0;
 		s_RendererStats.TotalTrisCount = 0;
-
 	}
 
 	void Renderer::OnEndRenderingFrame(void)
 	{
 		UpdateRendererStats();
+	}
+
+	void Renderer::SetWireframeMode(bool Enabled)
+	{
+		RHICommand::GetRHI()->SetWireframeMode(Enabled);
 	}
 
 	RHIShaderManager& Renderer::GetShaderManager(void) const

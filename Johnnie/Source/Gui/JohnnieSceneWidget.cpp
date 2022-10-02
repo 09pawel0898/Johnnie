@@ -1,5 +1,6 @@
 #include "JohnnieSceneWidget.hpp"
 
+#include <Engine/Renderer.hpp>
 
 WJohnnieSceneWidget::WJohnnieSceneWidget()
 {
@@ -11,6 +12,13 @@ void WJohnnieSceneWidget::OnRenderGui(void)
 
 	ImGui::Begin("Scene");
 	{
+		if (ImGui::CollapsingHeader("Rendering"))
+		{
+			if (ImGui::Checkbox("Wireframe Mode", &m_bWireframeMode))
+			{
+				SetRendererWireframemode(m_bWireframeMode);
+			}
+		}
 		if (ImGui::CollapsingHeader("Point Light"))
 		{
 			if (m_ManagedPointLight)
@@ -61,4 +69,9 @@ void WJohnnieSceneWidget::SetManagedPointLight(std::shared_ptr<APointLight> Poin
 		m_ManagedPointLight->GetColor().g,
 		m_ManagedPointLight->GetColor().b
 	};
+}
+
+void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)
+{
+	Renderer::Get()->SetWireframeMode(Enabled);
 }

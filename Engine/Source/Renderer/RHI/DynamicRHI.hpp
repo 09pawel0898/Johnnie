@@ -59,6 +59,7 @@ namespace Engine::RHI
 		/** RHI Methods */
 
 		virtual void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height) = 0;
+		virtual void SetWireframeMode(bool Enable) = 0;
 		virtual void SetClearColor(const glm::vec4& Color) = 0;
 		virtual void Clear(void) = 0;
 

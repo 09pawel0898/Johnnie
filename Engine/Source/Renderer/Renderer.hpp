@@ -32,11 +32,13 @@ namespace Engine
 		void InitializeViewport(glm::i32vec4 ViewportBounds);
 
 		void Clear(void);
-
 		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
 		
 		void OnBeginRenderingFrame(void);
 		void OnEndRenderingFrame(void);
+
+		void SetWireframeMode(bool Enabled);
+
 	public:
 		/** Resource Management */
 
