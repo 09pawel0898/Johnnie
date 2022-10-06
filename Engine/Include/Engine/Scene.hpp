@@ -9,6 +9,7 @@
 #include "Scene/Entities/Meshes/BasicMeshGenerator.hpp"
 
 #include "Scene/Entities/Lights/PointLight.hpp"
+#include "Scene/SceneDeleates.hpp"
 
 #include "Scene/SceneManager.hpp"
 

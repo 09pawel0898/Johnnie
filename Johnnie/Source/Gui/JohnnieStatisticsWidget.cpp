@@ -4,6 +4,7 @@
 #include <Engine/System.hpp>
 #include <Engine/Utilities.hpp>
 #include <Engine/Debug.hpp>
+#include <Engine/Scene.hpp>
 
 #include <Core/Application/Application.hpp>
 
@@ -14,6 +15,12 @@ WJohnnieStatisticsWidget::WJohnnieStatisticsWidget()
 	InitStaticStats();
 
 	SetTickInterval(0.1f);
+
+	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda(
+	[this](AStaticMesh* StaticMesh)
+	{
+		SetMeshStats(StaticMesh->GetMeshStatistics());
+	});
 }
 
 void WJohnnieStatisticsWidget::InitStaticStats(void)

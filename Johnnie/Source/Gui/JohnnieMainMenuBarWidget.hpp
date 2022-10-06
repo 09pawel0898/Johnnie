@@ -6,7 +6,7 @@
 
 enum class MainMenuBarAction : uint8_t
 {
-	Open = 0,
+	LoadStaticModel = 0,
 	Exit,
 };
 
@@ -14,6 +14,8 @@ class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase<MainMenuBarAction
 {
 private:
 	ImGui::FileBrowser m_FileBrowser;
+	bool m_bIsFileBrowserOpened{ false };
+
 	std::string m_SelectedFileName = "";
 
 	void InitFileBrowser(void);
@@ -23,5 +25,6 @@ public:
 
 	std::string GetSelectedFileName(void) const;
 
+	virtual void OnTick(double DeltaTime) override;
 	virtual void OnRenderGui(void) override;
 };

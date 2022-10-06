@@ -31,13 +31,23 @@ namespace Engine
 	}
 
 
-	bool Input::IsKeyPressed(Events::KeyCode KeyCode)
+	bool Input::IsKeyPressed(Events::KeyCode KeyCode, Events::KeyCode OptionalSpecialKey)
 	{
 		GLFWwindow* windowHandle = static_cast<GLFWwindow*>(Core::Application::Get()->GetWindow()->GetNativeWindow());
 		Check(windowHandle);
 
-		int keyState = glfwGetKey(windowHandle, (int16_t)KeyCode);
-		return keyState == GLFW_PRESS || keyState == GLFW_REPEAT;
+		int mainKeyState = glfwGetKey(windowHandle, (int16_t)KeyCode);
+
+		if (OptionalSpecialKey == Events::KeyCode::None)
+		{
+			return mainKeyState == GLFW_PRESS || mainKeyState == GLFW_REPEAT;
+		}
+		else
+		{
+			int specialKeyState = glfwGetKey(windowHandle, (int16_t)OptionalSpecialKey);
+			return ((mainKeyState == GLFW_PRESS || mainKeyState == GLFW_REPEAT)
+				&&(specialKeyState == GLFW_PRESS || specialKeyState == GLFW_REPEAT));
+		}
 	}
 
 	bool Input::IsMouseButtonPressed(Events::MouseButtonCode MouseButtonCode)

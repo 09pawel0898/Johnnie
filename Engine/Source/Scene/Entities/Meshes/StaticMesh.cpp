@@ -6,6 +6,7 @@
 #include "Renderer/Renderer.hpp"
 #include "Renderer/Materials/Material.hpp"
 #include "Scene/Entities/CoreActor.hpp"
+#include "Scene/SceneDeleates.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 
 #include "AssimpHelpers.hpp"
@@ -240,6 +241,7 @@ namespace Engine
                             const aiScene* scene = AssetImporter::Get()->GetScene();
                             ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
                         }
+                        SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
                     }
                 }
                 //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));

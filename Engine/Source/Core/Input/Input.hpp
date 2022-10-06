@@ -14,7 +14,7 @@ namespace Engine
 		
 		static void SetMousePosition(glm::vec2 MousePos);
 
-		static bool IsKeyPressed(Events::KeyCode KeyCode);
+		static bool IsKeyPressed(Events::KeyCode KeyCode, Events::KeyCode OptionalSpecialKey = Events::KeyCode::None);
 
 		static bool IsMouseButtonPressed(Events::MouseButtonCode MouseButtonCode);
 	};

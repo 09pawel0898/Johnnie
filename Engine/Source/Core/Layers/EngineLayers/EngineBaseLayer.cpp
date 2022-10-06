@@ -35,6 +35,9 @@ namespace Engine
 	void EngineBaseLayer::OnEvent(Events::Event& Event)
 	{
 		CameraController::Get()->OnEvent(Event);
+
+		auto& activeScene = SceneManager::Get()->GetActiveScene();
+		activeScene->OnEvent(Event);
 	}
 
 	void EngineBaseLayer::OnRender(void) const

@@ -71,24 +71,6 @@ void JohnnieScene::OnTick(double DeltaTime)
 	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
 
 	m_PointLight->SetLocation(lightPos);
-
-	static int* s = nullptr;
-	static bool allocated = false;
-
-	if (Input::IsKeyPressed(KeyCode::T))
-	{
-		//m_Model = nullptr;
-		//allocated = false;
-	}
-	if (Input::IsKeyPressed(KeyCode::R))
-	{
-		//if(!allocated)
-		//{
-		//	//m_Model = NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
-		//	//allocated = true;
-		//}
-		//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 300,300);
-	}
 }
 
 void JohnnieScene::InitGui(void)
@@ -101,10 +83,10 @@ void JohnnieScene::InitGui(void)
 	m_SceneWidget		= NewWidget<WJohnnieSceneWidget, SceneAction>();
 
     /** Init widgets actions */
-	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::Open,
+
+	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::LoadStaticModel,
 	[this]()
 	{
 		m_Model = NewActor<AStaticMesh>(m_MainMenuBarWidget->GetSelectedFileName());
-		m_StatisticsWidget->SetMeshStats(m_Model->GetMeshStatistics());
 	});
 }

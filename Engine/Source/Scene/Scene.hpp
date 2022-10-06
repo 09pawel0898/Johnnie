@@ -3,6 +3,7 @@
 #include "Entities/TickableManager.hpp"
 #include "Entities/DrawableManager.hpp"
 #include "Entities/Lights/LightingManager.hpp"
+#include "Events/Event.hpp"
 
 namespace Engine
 {
@@ -24,9 +25,11 @@ namespace Engine
 		Scene& operator=(Scene&&) = delete;
 
 	public:
-		virtual void OnAwake(void) {};
-		virtual void OnDetach(void) {};
+		virtual void OnAwake(void) = 0;
+		virtual void OnDetach(void) = 0;
 		virtual void OnTick(double DeltaTime) = 0;
+
+		virtual void OnEvent(Events::Event& Event) {};
 
 	private:
 		void Tick(double DeltaTime);

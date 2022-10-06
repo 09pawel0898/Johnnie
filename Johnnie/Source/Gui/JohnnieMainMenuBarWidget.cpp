@@ -1,14 +1,30 @@
 #include "JohnnieMainMenuBarWidget.hpp"
 
+#include <Engine/Utilities.hpp>
+
 WJohnnieMainMenuBarWidget::WJohnnieMainMenuBarWidget()
 {
-	SetTickEnabled(false);
+	SetTickEnabled(true);
 	InitFileBrowser();
 }
 
 std::string WJohnnieMainMenuBarWidget::GetSelectedFileName(void) const
 {
 	return m_SelectedFileName;
+}
+
+void WJohnnieMainMenuBarWidget::OnTick(double DeltaTime)
+{
+	using namespace Events;
+
+	if (Input::IsKeyPressed(KeyCode::G, KeyCode::LeftCtrl))
+	{
+		if(!m_bIsFileBrowserOpened)
+		{
+			m_FileBrowser.Open();
+			m_bIsFileBrowserOpened = true;
+		}
+	}
 }
 
 void WJohnnieMainMenuBarWidget::OnRenderGui(void)
@@ -20,11 +36,12 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 			if (ImGui::MenuItem("Load Static Model", "Ctrl + G"))
 			{
 				m_FileBrowser.Open();
+				m_bIsFileBrowserOpened = true;
 			}
 
 			if (ImGui::MenuItem("Exit")) 
 			{
-
+				// Exit application
 			}
 			ImGui::EndMenu();
 		}
@@ -38,8 +55,13 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	{
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
 		m_SelectedFileName = m_FileBrowser.GetSelected().string();
-		ExecuteActionDelegate(MainMenuBarAction::Open);
+		ExecuteActionDelegate(MainMenuBarAction::LoadStaticModel);
 		m_FileBrowser.ClearSelected();
+	}
+
+	if (!m_FileBrowser.IsOpened())
+	{
+		m_bIsFileBrowserOpened = false;
 	}
 }
 
