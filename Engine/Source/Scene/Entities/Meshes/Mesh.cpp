@@ -43,6 +43,22 @@ namespace Engine
 	Mesh::~Mesh()
 	{}
 
+	static std::shared_ptr<RHIShader>& GetShaderForMesh(bool IsMaterialEmmissive)
+	{
+		auto& shaderManager = Renderer::Get()->GetShaderManager();
+
+		if (IsMaterialEmmissive)
+		{
+			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
+				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_EmissiveMesh");
+		}
+		else
+		{
+			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
+				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_StaticMesh");
+		}
+	}
+
 	void Mesh::Draw(glm::mat4 const& ModelMat) const
 	{  
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
@@ -50,8 +66,7 @@ namespace Engine
 		auto renderWithAssignedMaterial = 
 		[this,&shaderManager, &ModelMat](std::shared_ptr<Material>& Material)
 		{
-			auto& meshShader = !Material->IsMaterialEmissive() ?
-				shaderManager.GetResource("Shader_StaticMesh") : shaderManager.GetResource("Shader_EmissiveMesh");
+			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
 			Material->Bind(meshShader);
 
@@ -71,7 +86,7 @@ namespace Engine
 		}
 		else
 		{
-			auto& meshShader = shaderManager.GetResource("Shader_StaticMesh");
+			auto& meshShader = GetShaderForMesh(false);
 			DefaultMaterials::BasicWhite->Bind(meshShader);
 
 			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);

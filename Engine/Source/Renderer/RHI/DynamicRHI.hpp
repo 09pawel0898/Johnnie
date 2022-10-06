@@ -33,9 +33,11 @@ namespace Engine::RHI
 		[[nodiscard]]
 		static std::unique_ptr<DynamicRHI> Create(RenderingAPI RenderingAPI);
 
-	public:
+	protected:
 		RenderingAPI m_RHIType;
+		bool m_bWireframeMode{ false };
 
+	public:
 		RenderingAPI GetType(void) const
 		{
 			return m_RHIType;
@@ -65,7 +67,12 @@ namespace Engine::RHI
 
 		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
 		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
-	
+		
+		bool IsWireframeMode(void) const
+		{
+			return m_bWireframeMode;
+		}
+
 	public:
 		/** Shaders / Materials binding management */
 		static constexpr int8_t s_MaxTexturesPerShader = 8;

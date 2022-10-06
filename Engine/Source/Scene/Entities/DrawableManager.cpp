@@ -17,6 +17,19 @@ namespace Engine
             std::make_pair(DrawableActor->GetUUID(), std::weak_ptr<IDrawable>(DrawableActor)));
     }
 
+    void DrawableManager::RegisterWidget(std::shared_ptr<ImGuiWidgetBase> const& DrawableWidget)
+    {
+        Check(m_DrawableWidgets.cend() ==
+            std::find_if(m_DrawableWidgets.cbegin(), m_DrawableWidgets.cend(),
+                [&DrawableWidget](std::pair<OUUID, std::weak_ptr<IDrawableWidget>> const& Element) -> bool
+                {
+                    return DrawableWidget->GetUUID() == Element.first;
+                }));
+
+        m_DrawableWidgets.emplace_back(
+            std::make_pair(DrawableWidget->GetUUID(), std::weak_ptr<IDrawableWidget>(DrawableWidget)));
+    }
+
     template <typename TDrawable>
     static void Draw_Internal(std::vector<std::pair<OUUID,std::weak_ptr<TDrawable>>> const& DrawableObjects, std::vector<OUUID>& OutPendingToUnregister)
     {

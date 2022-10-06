@@ -6,10 +6,7 @@
 #include "ImGui/ImGuiWidgetBase.hpp"
 #include <list>
 
-enum class LoggerAction : uint8_t
-{};
-
-class WJohnnieLoggerWidget final : public ImGuiWidgetBase<LoggerAction>
+class WJohnnieLoggerWidget final : public ImGuiWidgetBase
 {
 public:
     WJohnnieLoggerWidget();

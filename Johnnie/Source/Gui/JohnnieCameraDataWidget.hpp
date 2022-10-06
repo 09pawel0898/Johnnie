@@ -3,10 +3,7 @@
 #include "ImGui/ImGuiWidgetBase.hpp"
 #include <glm/glm.hpp>
 
-enum class CameraDataAction : uint8_t
-{};
-
-class WJohnnieCameraDataWidget final : public ImGuiWidgetBase<CameraDataAction>
+class WJohnnieCameraDataWidget final : public ImGuiWidgetBase
 {
 public:
 	WJohnnieCameraDataWidget();

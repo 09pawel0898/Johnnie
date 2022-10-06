@@ -76,17 +76,16 @@ void JohnnieScene::OnTick(double DeltaTime)
 void JohnnieScene::InitGui(void)
 {
     /** Add widgets */
-    m_StatisticsWidget	= NewWidget<WJohnnieStatisticsWidget , StatisticsAction>();
-	m_MainMenuBarWidget	= NewWidget<WJohnnieMainMenuBarWidget, MainMenuBarAction>();
-	m_LoggerWidget		= NewWidget<WJohnnieLoggerWidget, LoggerAction>();
-	m_CameraDataWidget	= NewWidget<WJohnnieCameraDataWidget, CameraDataAction>();
-	m_SceneWidget		= NewWidget<WJohnnieSceneWidget, SceneAction>();
+    m_StatisticsWidget	= NewWidget<WJohnnieStatisticsWidget>();
+	m_MainMenuBarWidget	= NewWidget<WJohnnieMainMenuBarWidget>();
+	m_LoggerWidget		= NewWidget<WJohnnieLoggerWidget>();
+	m_CameraDataWidget	= NewWidget<WJohnnieCameraDataWidget>();
+	m_SceneWidget		= NewWidget<WJohnnieSceneWidget>();
 
     /** Init widgets actions */
 
-	m_MainMenuBarWidget->BindActionDelegate(MainMenuBarAction::LoadStaticModel,
-	[this]()
+	m_MainMenuBarWidget->OnStaticModelToLoadSelected.BindLambda([this](std::string const& FileName)
 	{
-		m_Model = NewActor<AStaticMesh>(m_MainMenuBarWidget->GetSelectedFileName());
+		m_Model = NewActor<AStaticMesh>(FileName);
 	});
 }

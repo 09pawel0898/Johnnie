@@ -6,10 +6,7 @@
 #include <System/System.hpp>
 #include <Engine/Renderer.hpp>
 
-enum class StatisticsAction : uint8_t
-{};
-
-class WJohnnieStatisticsWidget final : public ImGuiWidgetBase<StatisticsAction>
+class WJohnnieStatisticsWidget final : public ImGuiWidgetBase
 {
 private:
 	struct ApplicationStats

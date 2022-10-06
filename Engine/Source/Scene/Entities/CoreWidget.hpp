@@ -7,8 +7,8 @@
 
 namespace Engine
 {
-	template <typename WidgetType, typename WidgetAction, typename... Args>
-		requires std::is_base_of<ImGuiWidgetBase<WidgetAction>, WidgetType>::value
+	template <typename WidgetType, typename... Args>
+		requires std::is_base_of<ImGuiWidgetBase, WidgetType>::value
 	FORCEINLINE std::shared_ptr<WidgetType> NewWidget(Args&&... _Args)
 	{
 		auto& activeScene = SceneManager::Get()->GetActiveScene();
@@ -18,7 +18,7 @@ namespace Engine
 		std::shared_ptr<WidgetType> newWidget = std::make_shared<WidgetType>(std::forward<Args>(_Args)...);
 
 		activeScene->GetTickableManager().RegisterTickable(newWidget);
-		activeScene->GetDrawableManager().RegisterWidget(static_pointer_cast<ImGuiWidgetBase<WidgetAction>>(newWidget));
+		activeScene->GetDrawableManager().RegisterWidget(static_pointer_cast<ImGuiWidgetBase>(newWidget));
 
 		return newWidget;
 	}

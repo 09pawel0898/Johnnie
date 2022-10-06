@@ -5,10 +5,7 @@
 
 #include "ImGui/ImGuiWidgetBase.hpp"
 
-enum class SceneAction : uint8_t
-{};
-
-class WJohnnieSceneWidget final : public ImGuiWidgetBase<SceneAction>
+class WJohnnieSceneWidget final : public ImGuiWidgetBase
 {
 private:
 	/** Point Light */

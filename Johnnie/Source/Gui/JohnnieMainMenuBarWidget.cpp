@@ -8,11 +8,6 @@ WJohnnieMainMenuBarWidget::WJohnnieMainMenuBarWidget()
 	InitFileBrowser();
 }
 
-std::string WJohnnieMainMenuBarWidget::GetSelectedFileName(void) const
-{
-	return m_SelectedFileName;
-}
-
 void WJohnnieMainMenuBarWidget::OnTick(double DeltaTime)
 {
 	using namespace Events;
@@ -55,7 +50,7 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	{
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
 		m_SelectedFileName = m_FileBrowser.GetSelected().string();
-		ExecuteActionDelegate(MainMenuBarAction::LoadStaticModel);
+		OnStaticModelToLoadSelected.ExecuteIfBound(m_SelectedFileName);
 		m_FileBrowser.ClearSelected();
 	}
 

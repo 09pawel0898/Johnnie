@@ -39,8 +39,7 @@ namespace Engine
 	public:
 		void RegisterActor(std::shared_ptr<Actor> const& DrawableActor);
 
-		template<typename ActionType>
-		void RegisterWidget(std::shared_ptr<ImGuiWidgetBase<ActionType>> const& DrawableWidget);
+		void RegisterWidget(std::shared_ptr<ImGuiWidgetBase> const& DrawableWidget);
 
 		void DrawActors(void);
 		void DrawWidgets(void);
@@ -48,18 +47,4 @@ namespace Engine
 	private:
 		void UnRegisterDrawables(DrawableType Type, std::vector<OUUID> const& PendingIDsToUnregister);
 	};
-
-	template <typename ActionType>
-	void DrawableManager::RegisterWidget(std::shared_ptr<ImGuiWidgetBase<ActionType>> const& DrawableWidget)
-	{
-		Check(m_DrawableWidgets.cend() ==
-			std::find_if(m_DrawableWidgets.cbegin(), m_DrawableWidgets.cend(),
-			[&DrawableWidget](std::pair<OUUID, std::weak_ptr<IDrawableWidget>> const& Element) -> bool
-			{
-				return DrawableWidget->GetUUID() == Element.first;
-			}));
-
-		m_DrawableWidgets.emplace_back(
-			std::make_pair(DrawableWidget->GetUUID(), std::weak_ptr<IDrawableWidget>(DrawableWidget)));
-	}
 }

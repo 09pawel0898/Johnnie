@@ -1,16 +1,13 @@
 #pragma once
 
 #include <Engine/Gui.hpp>
+#include <Engine/Utilities.hpp>
 
 #include "ImGui/ImGuiWidgetBase.hpp"
 
-enum class MainMenuBarAction : uint8_t
-{
-	LoadStaticModel = 0,
-	Exit,
-};
+DECLARE_DELEGATE(OnStaticModelToLoadSelected, std::string const&);
 
-class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase<MainMenuBarAction>
+class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase
 {
 private:
 	ImGui::FileBrowser m_FileBrowser;
@@ -23,8 +20,9 @@ private:
 public:
 	WJohnnieMainMenuBarWidget();
 
-	std::string GetSelectedFileName(void) const;
-
 	virtual void OnTick(double DeltaTime) override;
 	virtual void OnRenderGui(void) override;
+
+public:
+	OnStaticModelToLoadSelected OnStaticModelToLoadSelected;
 };
