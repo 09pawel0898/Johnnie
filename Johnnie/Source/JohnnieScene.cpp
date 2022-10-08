@@ -17,7 +17,7 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	//m_DirectionalLight = NewActor<ADirectionalLight>();
+	m_DirectionalLight = NewActor<ADirectionalLight>();
 
 	//m_Model			= NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
 	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
