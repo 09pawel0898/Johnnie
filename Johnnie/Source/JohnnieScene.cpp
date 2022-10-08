@@ -17,6 +17,7 @@ void JohnnieScene::OnAwake(void)
 	CameraController::Get()->SetViewTarget(m_Camera);
 	
 	m_PointLight	= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
+	//m_DirectionalLight = NewActor<ADirectionalLight>();
 
 	//m_Model			= NewActor<AStaticMesh>("Assets\\Models\\backpack.obj");
 	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
@@ -64,12 +65,12 @@ void JohnnieScene::OnTick(double DeltaTime)
 {	
 	static double step = 0.0;
 	step += DeltaTime;
-
+	
 	float lightX = (float)(3.0f * sin(step));
 	float lightY = 2.f;
 	float lightZ = (float)(1.5f * cos(step));
 	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
-
+	
 	m_PointLight->SetLocation(lightPos);
 }
 

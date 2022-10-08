@@ -61,14 +61,17 @@ void WJohnnieSceneWidget::OnTick(double DeltaTime)
 
 void WJohnnieSceneWidget::SetManagedPointLight(std::shared_ptr<APointLight> PointLight)
 {
-	m_ManagedPointLight = std::move(PointLight);
-
-	m_PointLightColor =
+	if(PointLight)
 	{
-		m_ManagedPointLight->GetColor().r,
-		m_ManagedPointLight->GetColor().g,
-		m_ManagedPointLight->GetColor().b
-	};
+		m_ManagedPointLight = std::move(PointLight);
+
+		m_PointLightColor =
+		{
+			m_ManagedPointLight->GetColor().r,
+			m_ManagedPointLight->GetColor().g,
+			m_ManagedPointLight->GetColor().b
+		};
+	}
 }
 
 void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)

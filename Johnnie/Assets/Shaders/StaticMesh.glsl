@@ -43,11 +43,18 @@ struct Material
 
 struct Light
 {
+	bool bIsDirectional;
+	
 	vec3 Position;
+	vec3 Direction;
 	
 	vec3 Ambient;
 	vec3 Diffuse;
 	vec3 Specular;
+	
+	float Constant;
+    float Linear;
+    float Quadratic;
 };
 
 uniform Light uLight;
@@ -65,7 +72,21 @@ uniform vec3 uCameraPosition;
 void main()
 {
 	vec3 norm = normalize(Normal);
-	vec3 lightDir = normalize(uLight.Position - FragWorldPos);
+	vec3 lightDir;
+	float attenuation = 1.0;
+	
+	if(uLight.bIsDirectional)
+	{
+		lightDir = normalize(-uLight.Direction);
+	}
+	else
+	{
+		lightDir = normalize(uLight.Position - FragWorldPos);
+		
+		float distance = length(uLight.Position - FragWorldPos);
+		attenuation = 1.0 / (uLight.Constant + uLight.Linear * distance + 
+		uLight.Quadratic * (distance * distance));  
+	}
 	
 	float diff = max(dot(norm,lightDir),0.0);
 	
@@ -75,19 +96,23 @@ void main()
 	if(uMaterial.UseDiffuseMap)
 	{
 		diffuse = uLight.Diffuse * diff * vec3(texture(uMaterial.TextureDiffuse, TexCoord));
+		diffuse *= attenuation;
 	}	
 	else
 	{
 		diffuse = uLight.Diffuse * diff * uMaterial.BaseColor;
+		diffuse *= attenuation;
 	}
 	
 	if(uMaterial.UseDiffuseMap)
 	{
 		ambient = uLight.Ambient * vec3(texture(uMaterial.TextureDiffuse, TexCoord));
+		ambient *= attenuation;
 	}
 	else
 	{
 		ambient = uLight.Ambient * uMaterial.BaseColor;
+		ambient *= attenuation;
 	}
 	
 	vec3 viewDir = normalize(uCameraPosition - FragWorldPos);
@@ -100,10 +125,12 @@ void main()
 	if(uMaterial.UseSpecularMap)
 	{
 		specular = spec * uLight.Specular * vec3(texture(uMaterial.TextureSpecular,TexCoord));
+		specular *= attenuation;
 	}
 	else
 	{
 		specular = uMaterial.Specular * (spec * uLight.Specular);
+		specular *= attenuation;
 	}
 	
 	if(uMaterial.UseDiffuseMap)

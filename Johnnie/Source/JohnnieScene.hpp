@@ -15,7 +15,6 @@ namespace Engine
 {
 	class AFloatingCamera;
 	class AStaticMesh;
-	class APointLight;
 }
 
 class JohnnieScene final : public Scene
@@ -36,10 +35,10 @@ private:
 
 	/** Entities */
 	std::shared_ptr<AStaticMesh>						m_Model = nullptr;
-	std::vector<std::shared_ptr<AStaticMesh>>			m_Clones;
 
-	std::shared_ptr<AStaticMesh>						m_Sphere		= nullptr;
-	std::shared_ptr<APointLight>						m_PointLight	= nullptr;
+	std::shared_ptr<AStaticMesh>						m_Sphere			= nullptr;
+	std::shared_ptr<APointLight>						m_PointLight		= nullptr;
+	std::shared_ptr<ADirectionalLight>					m_DirectionalLight	= nullptr;
 
 private:
 	/** Layer Interface Impl*/

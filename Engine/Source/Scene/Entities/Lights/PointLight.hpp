@@ -11,17 +11,25 @@ namespace Engine
 {
 	struct PointLightData
 	{
+	public:
 		glm::vec3 Color;
 		glm::vec3 WorldLocation;
 
 		float Ambient = 0.5f;
 		float Diffuse = 1.0f;
 		float Specular = 0.75f;
+		
+		float Constant = 1.f;
+		float Linear = 0.09f;
+		float Quadratic = 0.032f;
 
+		static std::unordered_map<int16_t,std::pair<float,float>> PointLightStrength;
+	
+	public:
 		PointLightData() = default;
 		explicit PointLightData(glm::vec3 const& Color, glm::vec3 const& WorldLocation = { 0.f,0.f,0.f })
-			: Color(Color),
-			WorldLocation(WorldLocation)
+			:	Color(Color),
+				WorldLocation(WorldLocation)
 		{}
 	};
 
@@ -34,7 +42,7 @@ namespace Engine
 		bool m_bIsMeshVisible{ true };
 
 	public:	
-		APointLight(glm::vec3 const& WorldLocation = {0.f, 0.f, 0.f}, glm::vec3 const& LightColor = { 1.f, 1.f, 1.f });
+		APointLight(glm::vec3 const& WorldLocation = {0.f, 0.f, 0.f}, glm::vec3 const& LightColor = { 1.f, 1.f, 1.f }, int8_t Strength = 4);
 		
 	public:
 		void SetBoxMeshVisibility(bool Visible);
@@ -45,6 +53,8 @@ namespace Engine
 
 		/** Sets visibility and and registers/unregisters point light in lighting manager at the same time. */
 		virtual void SetVisibility(bool Visible) override;
+
+		void SetIntensity(int8_t Intensity /*0-10*/);
 
 		/** Color */
 		void SetColor(glm::vec3 LightColor);
