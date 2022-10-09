@@ -23,6 +23,7 @@ void JohnnieScene::OnAwake(void)
 	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
 	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
 
+
 	m_SceneWidget->SetManagedPointLight(m_PointLight);
 
 	//m_Model = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
@@ -88,5 +89,6 @@ void JohnnieScene::InitGui(void)
 	m_MainMenuBarWidget->OnStaticModelToLoadSelected.BindLambda([this](std::string const& FileName)
 	{
 		m_Model = NewActor<AStaticMesh>(FileName);
+		m_Model->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
 	});
 }

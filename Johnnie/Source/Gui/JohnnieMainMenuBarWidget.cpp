@@ -63,5 +63,5 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
 {
 	m_FileBrowser.SetTitle("Title");
-	m_FileBrowser.SetTypeFilters({ ".obj" });
+	m_FileBrowser.SetTypeFilters({ ".obj",".fbx"});
 }

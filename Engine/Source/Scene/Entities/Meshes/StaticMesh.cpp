@@ -39,7 +39,6 @@ namespace Engine
 
         const aiScene* scene = assetImporter.ReadFile( FilePath.data(),
             aiProcess_Triangulate 
-            | aiProcess_FlipUVs 
             | aiProcess_OptimizeMeshes 
             | aiProcess_RemoveRedundantMaterials
             | aiProcess_PreTransformVertices);
