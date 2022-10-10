@@ -15,6 +15,7 @@ namespace Engine::RHI
 
 		virtual void Bind(uint8_t TextureSlotID) override;
 		virtual void Unbind(void) override;
+		virtual uint32_t GetRendererID(void) const override;
 		virtual bool operator==(RHITexture const& rhs) const override;
 	
 	private:

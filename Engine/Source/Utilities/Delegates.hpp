@@ -216,6 +216,7 @@ public:
         return !m_Delegates.empty();
     }
 
+    template <typename... Args>
     void Broadcast(Args&&... Args_)
     {
         for (auto& delegate_ : m_Delegates)

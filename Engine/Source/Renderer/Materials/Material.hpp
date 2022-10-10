@@ -15,8 +15,7 @@ namespace Engine
 
 	struct MaterialUniform
 	{
-		glm::vec3 BaseColor{ 1.0f,1.0f,1.0f };
-
+		glm::vec3 BaseColor{ 0.47f,0.47f,0.47f };
 		bool UseDiffuseMap = false;
 
 		glm::vec3 Specular{ 0.6f, 0.6f, 0.6f };
@@ -34,11 +33,13 @@ namespace Engine
 	{
 		std::shared_ptr<RHITexture2D> DiffuseTexture{ nullptr };
 		std::shared_ptr<RHITexture2D> SpecularTexture{ nullptr };
+		std::shared_ptr<RHITexture2D> NormalTexture{ nullptr };
 
 		std::vector<std::reference_wrapper<std::shared_ptr<RHITexture2D>>> GetTextures(void)
 		{
 			return {	std::ref(DiffuseTexture),
-						std::ref(SpecularTexture)};
+						std::ref(SpecularTexture),
+						std::ref(NormalTexture)};
 		}
 	};
 
@@ -65,6 +66,8 @@ namespace Engine
 
 		void SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture);
 		void SetSpecularTexture(std::shared_ptr<RHITexture2D> SpecularTexture);
+		bool SetUseDiffuseTexture(bool Use);
+		bool SetUseSpecularTexture(bool Use);
 
 		void SetSpecular(glm::vec3 Specular);
 

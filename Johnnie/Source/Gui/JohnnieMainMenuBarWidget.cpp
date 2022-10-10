@@ -1,4 +1,5 @@
 #include "JohnnieMainMenuBarWidget.hpp"
+#include "../JohnnieDelegates.hpp"
 
 #include <Engine/Utilities.hpp>
 
@@ -50,7 +51,9 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 	{
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
 		m_SelectedFileName = m_FileBrowser.GetSelected().string();
-		OnStaticModelToLoadSelected.ExecuteIfBound(m_SelectedFileName);
+
+		JohnnieDelegates::Get()->OnBeginLoadingNewModel.Broadcast(m_SelectedFileName);
+		
 		m_FileBrowser.ClearSelected();
 	}
 
@@ -62,6 +65,6 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 
 void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
 {
-	m_FileBrowser.SetTitle("Title");
-	m_FileBrowser.SetTypeFilters({ ".obj",".fbx"});
+	m_FileBrowser.SetTitle("Select Mesh File");
+	m_FileBrowser.SetTypeFilters({".fbx"});
 }

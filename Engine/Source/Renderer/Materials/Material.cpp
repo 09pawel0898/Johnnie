@@ -9,6 +9,7 @@ namespace Engine
 	void Material::SetBaseColor(glm::vec3 BaseColor)
 	{
 		m_MaterialUniform.BaseColor = BaseColor;
+		m_MaterialUniform.UseDiffuseMap = false;
 	}
 
 	void Material::SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture)
@@ -23,9 +24,32 @@ namespace Engine
 		m_MaterialUniform.UseSpecularMap = true;
 	}
 
+	bool Material::SetUseDiffuseTexture(bool Use)
+	{
+		if (m_MaterialTextures.DiffuseTexture != nullptr)
+		{
+			m_MaterialUniform.UseDiffuseMap = Use;
+			return true;
+		}
+		m_MaterialUniform.UseDiffuseMap = false;
+		return false;
+	}
+
+	bool Material::SetUseSpecularTexture(bool Use)
+	{
+		if (m_MaterialTextures.SpecularTexture != nullptr)
+		{
+			m_MaterialUniform.UseSpecularMap = Use;
+			return true;
+		}
+		m_MaterialUniform.UseSpecularMap = false;
+		return false;
+	}
+
 	void Material::SetSpecular(glm::vec3 Specular)
 	{
 		m_MaterialUniform.Specular = Specular;
+		m_MaterialUniform.UseSpecularMap = false;
 	}
 
 	void Material::SetShiness(float Shiness)

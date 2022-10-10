@@ -5,8 +5,6 @@
 
 #include "ImGui/ImGuiWidgetBase.hpp"
 
-DECLARE_DELEGATE(OnStaticModelToLoadSelected, std::string const&);
-
 class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase
 {
 private:
@@ -22,7 +20,4 @@ public:
 
 	virtual void OnTick(double DeltaTime) override;
 	virtual void OnRenderGui(void) override;
-
-public:
-	OnStaticModelToLoadSelected OnStaticModelToLoadSelected;
 };

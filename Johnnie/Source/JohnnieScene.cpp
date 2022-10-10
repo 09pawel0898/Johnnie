@@ -7,6 +7,7 @@
 #include "Gui/JohnnieStatisticsWidget.hpp"
 #include "Gui/JohnnieCameraDataWidget.hpp"
 #include "Gui/JohnnieSceneWidget.hpp"
+#include "JohnnieDelegates.hpp"
 
 void JohnnieScene::OnAwake(void)
 {
@@ -86,7 +87,7 @@ void JohnnieScene::InitGui(void)
 
     /** Init widgets actions */
 
-	m_MainMenuBarWidget->OnStaticModelToLoadSelected.BindLambda([this](std::string const& FileName)
+	JohnnieDelegates::Get()->OnBeginLoadingNewModel.AddLambda([this](std::string const& FileName)
 	{
 		m_Model = NewActor<AStaticMesh>(FileName);
 		m_Model->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));

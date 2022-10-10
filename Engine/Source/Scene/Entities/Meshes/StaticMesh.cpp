@@ -152,9 +152,29 @@ namespace Engine
 
     void AStaticMesh::ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx)
     {
+
+        
         /* If this material hasn't been processed yet */
         if (m_Materials[MaterialIdx] == nullptr)
         {
+            aiColor3D color;
+            Material_->Get(AI_MATKEY_COLOR_DIFFUSE, color);
+            LOG(Core, Trace, "COLOR_DIFFUSE {0},{1},{2}", color.r, color.g, color.b);
+
+            Material_->Get(AI_MATKEY_COLOR_SPECULAR, color);
+            LOG(Core, Trace, "COLOR_SPECULAR {0},{1},{2}", color.r, color.g, color.b);
+
+            Material_->Get(AI_MATKEY_COLOR_AMBIENT, color);
+            LOG(Core, Trace, "COLOR_AMBIENT {0},{1},{2}", color.r, color.g, color.b);
+            
+            float useShiness = 0.f;
+            Material_->Get(AI_MATKEY_SHININESS, useShiness);
+            LOG(Core, Trace, "SHININESS {0}", useShiness);
+            
+            float shininessStrength = 1.f;
+            Material_->Get(AI_MATKEY_SHININESS_STRENGTH, shininessStrength);
+            LOG(Core, Trace, "SHININESS_STRENGTH {0}", shininessStrength);
+
             std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
             std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
             
@@ -240,9 +260,9 @@ namespace Engine
                             const aiScene* scene = AssetImporter::Get()->GetScene();
                             ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
                         }
-                        SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
                     }
                 }
+                SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
                 //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
                 //LOG(Core, Trace, "Process Materials {0}", (double)(GET_PROFILE_RESULT("ProcessMaterials") / 1000.0));
                 m_bIsModelReadyToDraw = true;
