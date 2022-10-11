@@ -5,6 +5,8 @@
 #include <Engine/Scene.hpp>
 #include <Engine/Debug.hpp>
 
+#include <imgui_internal.h>
+
 WJohnnieSceneWidget::WJohnnieSceneWidget()
 {
 	Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/NoTexture_Image.png");
@@ -66,11 +68,7 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 {
 	if (ImGui::CollapsingHeader("Lighting"))
 	{
-		ImGui::Columns(2, nullptr, false);
-		ImGui::SetColumnWidth(0, 20);
-		ImGui::NextColumn();
-
-		if (ImGui::CollapsingHeader("Point Light"))
+		if (ImGui::TreeNode("Point Light"))
 		{
 			if (m_ManagedPointLight)
 			{
@@ -96,8 +94,8 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				
 				ImGui::Separator();
 			}
+			ImGui::TreePop();
 		}
-		ImGui::Columns(1);
 	}
 }
 
@@ -118,10 +116,6 @@ void WJohnnieSceneWidget::OnRenderMeshSubtab()
 	{
 		if (ImGui::CollapsingHeader(m_MeshSubtabName.value().c_str()))
 		{
-			ImGui::Columns(2, nullptr, false);
-			ImGui::SetColumnWidth(0, 20);
-			ImGui::NextColumn();
-
 			if (m_MaterialSlotWidgets.size() > 0)
 			{
 				std::string materialsHeader = "Materials [" + std::to_string(m_MaterialSlotWidgets.size()) + "]";
@@ -133,13 +127,13 @@ void WJohnnieSceneWidget::OnRenderMeshSubtab()
 				for (int16_t idx = 0; idx < m_MaterialSlotWidgets.size(); idx++)
 				{
 					std::string slotName = "Slot " + std::to_string(idx);
-					if (ImGui::CollapsingHeader(slotName.c_str()))
+					if (ImGui::TreeNode(slotName.c_str()))
 					{
 						m_MaterialSlotWidgets[idx].OnRenderGui();
+						ImGui::TreePop();
 					}
 				}
 			}
-			ImGui::Columns(1);
 		}
 	}
 }
@@ -185,6 +179,8 @@ void MaterialSlotWidget::RefreshMaterial(void)
 		m_bUseDiffuseMap = uniform.UseDiffuseMap;
 		m_bUseSpecularMap = uniform.UseSpecularMap;
 		m_BaseColor = ImVec4(uniform.BaseColor.x, uniform.BaseColor.y, uniform.BaseColor.z, 1.0f);
+		m_Specular = (uniform.Specular.r + uniform.Specular.g + uniform.Specular.b) / 3.f;
+		m_Shininess = (int32_t)std::log2(uniform.Shiness);
 	}
 }
 
@@ -198,8 +194,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 			m_MaterialRef->SetBaseColor(glm::vec3(m_BaseColor.x, m_BaseColor.y, m_BaseColor.z));
 			m_MaterialRef->SetUseDiffuseTexture(m_bUseDiffuseMap);
 		}
-
-		ImGui::Dummy(ImVec2(0.f, 10.f));
+		ImGui::Dummy(ImVec2(0.f, 5.f));
 	}
 
 	MaterialTextures& materialTextures = m_MaterialRef->GetMaterialTextures();
@@ -214,12 +209,12 @@ void MaterialSlotWidget::OnRenderGui(void)
 		ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
 	}
 
-	
-	if (ImGui::Button("...", ImVec2(60, 20)))
+	ImGui::Dummy(ImVec2(0.f, 2.f));
+	if (ImGui::Button("Load Diffuse Map", ImVec2(120, 20)))
 	{
 		m_FileBrowser.Open();
+		m_TextureTypeFileBrowserOpenedFor = RHITextureType::Diffuse;
 	}
-	m_FileBrowser.Display();
 
 	if (ImGui::Checkbox("Use Diffuse Map", &m_bUseDiffuseMap))
 	{
@@ -235,11 +230,77 @@ void MaterialSlotWidget::OnRenderGui(void)
 			m_MaterialRef->SetBaseColor(glm::vec3(m_BaseColor.x, m_BaseColor.y, m_BaseColor.z));
 		}
 	}
-	//
-	//if (ImGui::Checkbox("Use Specular Map", &m_bUseSpecularMap))
-	//{
-	//	LOG(Core, Trace, "b");
-	//}
+	
+	{
+		ImGui::Dummy(ImVec2(0.f, 5.f));
+
+		if (ImGui::SliderFloat("Specular", &m_Specular,0.f,1.f))
+		{
+			m_MaterialRef->SetSpecular(glm::vec3(m_Specular, m_Specular, m_Specular));
+			m_MaterialRef->SetUseSpecularTexture(m_bUseSpecularMap);
+		}
+
+		ImGui::Dummy(ImVec2(0.f, 5.f));
+
+		if (materialTextures.SpecularTexture != nullptr)
+		{
+			ImGui::Image((void*)(intptr_t)materialTextures.SpecularTexture->GetRendererID(), ImVec2(80, 80));
+		}
+		else
+		{
+			auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture_Image.png");
+			ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
+		}
+
+		ImGui::Dummy(ImVec2(0.f, 2.f));
+		if (ImGui::Button("Load Specular Map", ImVec2(128, 20)))
+		{
+			m_FileBrowser.Open();
+			m_TextureTypeFileBrowserOpenedFor = RHITextureType::Specular;
+		}
+	}
+
+	if (ImGui::Checkbox("Use Specular Map", &m_bUseSpecularMap))
+	{
+		if (m_bUseSpecularMap)
+		{
+			if (!m_MaterialRef->SetUseSpecularTexture(true))
+			{
+				m_bUseSpecularMap = false;
+			}
+		}
+		else
+		{
+			m_MaterialRef->SetSpecular(glm::vec3(m_Specular, m_Specular, m_Specular));
+		}
+	}
+
+	if (ImGui::SliderInt("Shininess", &m_Shininess,1,8))
+	{
+		m_MaterialRef->SetShiness((float)pow(2.0, (double)m_Shininess));
+	}
+
+	m_FileBrowser.Display();
+	
+	std::string selectedFileName;
+	if (m_FileBrowser.HasSelected())
+	{
+		selectedFileName = m_FileBrowser.GetSelected().string();
+
+		Renderer::Get()->GetTexture2DManager().LoadResource(selectedFileName);
+		
+		auto loadedTexture = Renderer::Get()->GetTexture2DManager().GetResource(selectedFileName);
+
+		if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Diffuse)
+		{
+			m_MaterialRef->SetDiffuseTexture(std::move(loadedTexture));
+		}
+		else if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Specular)
+		{
+			m_MaterialRef->SetSpecularTexture(std::move(loadedTexture));
+		}
+		m_FileBrowser.ClearSelected();
+	}
 }
 
 void MaterialSlotWidget::InitializeFileBrowser(void)

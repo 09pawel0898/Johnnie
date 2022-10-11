@@ -21,7 +21,7 @@ namespace Engine
 		glm::vec3 Specular{ 0.6f, 0.6f, 0.6f };
 		bool UseSpecularMap = false;
 
-		float Shiness = 32.f;
+		float Shiness = 8.f;
 
 		MaterialUniform() = default;
 		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& Specular, float Shiness)

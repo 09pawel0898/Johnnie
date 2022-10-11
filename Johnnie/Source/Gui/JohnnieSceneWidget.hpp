@@ -11,9 +11,13 @@ private:
 	std::shared_ptr<Material>& m_MaterialRef;
 	bool m_bUseDiffuseMap{ false };
 	bool m_bUseSpecularMap{ false };
+	float m_Specular = 0.5f;
+	int32_t m_Shininess = 3;
+
 	ImVec4 m_BaseColor{ ImVec4() };
 
 	ImGui::FileBrowser m_FileBrowser{};
+	RHITextureType m_TextureTypeFileBrowserOpenedFor = RHITextureType::BasicTexture2D;
 
 public:
 	MaterialSlotWidget(std::shared_ptr<Material>& MaterialRef);
