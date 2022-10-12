@@ -141,6 +141,8 @@ namespace Engine::Core
 #ifndef NDEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 #endif
+		glfwWindowHint(GLFW_SAMPLES, 8);
+
 		m_WindowHandle = glfwCreateWindow(	Properties.Width,
 											Properties.Height,
 											Properties.Title.c_str(),

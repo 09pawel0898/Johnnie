@@ -87,9 +87,6 @@ namespace Engine::RHI
 
 		void SetBoundMaterialUUID(AUUID const& UUID);
 		AUUID GetBoundMaterialUUID(void) const;
-
-		void SetBoundTextureUUID(AUUID const& UUID, uint8_t TextureSlot);
-		AUUID GetBoundTextureUUID(uint8_t TextureSlot) const;
 	};
 
 	FORCEINLINE RHITexture2DManager& DynamicRHI::GetTexture2DManager(void)

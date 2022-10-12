@@ -46,16 +46,6 @@ namespace Engine::RHI
 		return m_BoundMaterialUUID;
 	}
 
-	void DynamicRHI::SetBoundTextureUUID(AUUID const& UUID, uint8_t TextureSlot)
-	{
-		m_BoundTexturesUUID[TextureSlot] = UUID;
-	}
-
-	AUUID DynamicRHI::GetBoundTextureUUID(uint8_t TextureSlot) const
-	{
-		return m_BoundTexturesUUID[TextureSlot];
-	}
-
 	void DynamicRHI::SetBoundShaderUUID(AUUID const& UUID)
 	{
 		m_BoundShaderUUID = UUID;

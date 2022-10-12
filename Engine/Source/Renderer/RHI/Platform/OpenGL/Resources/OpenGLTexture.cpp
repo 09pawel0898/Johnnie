@@ -30,12 +30,8 @@ namespace Engine::RHI
 	{
 		auto& RHI = Renderer::Get()->GetRHI();
 
-		//if (GetUUID() != RHI->GetBoundTextureUUID(TextureSlotID))
-		//{
-		//	RHI->SetBoundTextureUUID(GetUUID(),TextureSlotID);
 		glActiveTexture(GL_TEXTURE0 + TextureSlotID);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
-		//}
+		glBindTexture(GL_TEXTURE_2D, m_ID);	
 	}
 
 	void OpenGLTexture2D::Unbind(void)

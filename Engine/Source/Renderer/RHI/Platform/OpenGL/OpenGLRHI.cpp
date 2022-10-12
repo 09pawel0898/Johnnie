@@ -93,6 +93,9 @@ namespace Engine::RHI
 
 		/** Enable draw lines with correct filtering instead of aliased */
 		glEnable(GL_LINE_SMOOTH);
+
+		/** Enable MSAA */
+		glEnable(GL_MULTISAMPLE);
 	}
 
 	void OpenGLRHI::SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height)
