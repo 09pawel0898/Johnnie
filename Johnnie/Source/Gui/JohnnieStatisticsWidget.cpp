@@ -76,10 +76,10 @@ void WJohnnieStatisticsWidget::RenderSystemStats(void)
 	{
 		ImGui::Text("Memory Allocations");
 		ImGui::Separator();
-		ImGui::Text("Currently Allocated : %s", Utility::BytesToString(MemoryStats.CurrentlyAllocated).c_str());
-		ImGui::Text("Total Allocated : %s", Utility::BytesToString(MemoryStats.TotalAllocated).c_str());
-		ImGui::Text("Total Allocations : %d", MemoryStats.TotalAllocations);
-		ImGui::Text("Total Freed : %s ", Utility::BytesToString(MemoryStats.TotalFreed).c_str());
+		ImGui::Text("Currently Allocated  : %s", Utility::BytesToString(MemoryStats.CurrentlyAllocated).c_str());
+		ImGui::Text("Total Allocated      : %s", Utility::BytesToString(MemoryStats.TotalAllocated).c_str());
+		ImGui::Text("Total Allocations    : %d", MemoryStats.TotalAllocations);
+		ImGui::Text("Total Freed          : %s", Utility::BytesToString(MemoryStats.TotalFreed).c_str());
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}
@@ -152,7 +152,7 @@ void WJohnnieStatisticsWidget::RenderRendererStats(void)
 		ImGui::Text("General");
 		ImGui::Separator();
 
-		ImGui::Text("FPS		   : %.2f",		ApplicationStats.Fps);
+		ImGui::Text("FPS		      : %.2f",		ApplicationStats.Fps);
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 20.0f));
 	}

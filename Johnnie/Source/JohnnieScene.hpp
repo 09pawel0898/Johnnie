@@ -7,7 +7,7 @@
 #include "Gui/JohnnieLoggerWidget.hpp"
 
 class WJohnnieMainMenuBarWidget;
-class WJohnnieCameraDataWidget;
+class WJohnnieCameraWidget;
 class WJohnnieStatisticsWidget;
 class WJohnnieSceneWidget;
 
@@ -27,7 +27,7 @@ private:
 	std::shared_ptr<WJohnnieMainMenuBarWidget>	m_MainMenuBarWidget;
 	std::shared_ptr<WJohnnieLoggerWidget>		m_LoggerWidget;
 	std::shared_ptr<WJohnnieStatisticsWidget>	m_StatisticsWidget;
-	std::shared_ptr<WJohnnieCameraDataWidget>	m_CameraDataWidget;	
+	std::shared_ptr<WJohnnieCameraWidget>		m_CameraDataWidget;
 	std::shared_ptr<WJohnnieSceneWidget>		m_SceneWidget;
 
 	/** Floating Camera */

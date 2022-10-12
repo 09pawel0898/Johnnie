@@ -91,8 +91,11 @@ namespace Engine
             aiVector3D const& vertexPosition = _Mesh->mVertices[i];
             vertex.Position = { vertexPosition.x, vertexPosition.y, vertexPosition.z };
             
-            aiVector3D const& normal = _Mesh->mNormals[i];
-            vertex.Normal = { normal.x, normal.y, normal.z };
+            if (_Mesh->mNormals)
+            {
+                aiVector3D const& normal = _Mesh->mNormals[i];
+                vertex.Normal = { normal.x, normal.y, normal.z };
+            }
     
             /** Check if the mesh contain texture coordinates */
             if (_Mesh->mTextureCoords[0])
@@ -157,24 +160,6 @@ namespace Engine
         /* If this material hasn't been processed yet */
         if (m_Materials[MaterialIdx] == nullptr)
         {
-            aiColor3D color;
-            Material_->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-            LOG(Core, Trace, "COLOR_DIFFUSE {0},{1},{2}", color.r, color.g, color.b);
-
-            Material_->Get(AI_MATKEY_COLOR_SPECULAR, color);
-            LOG(Core, Trace, "COLOR_SPECULAR {0},{1},{2}", color.r, color.g, color.b);
-
-            Material_->Get(AI_MATKEY_COLOR_AMBIENT, color);
-            LOG(Core, Trace, "COLOR_AMBIENT {0},{1},{2}", color.r, color.g, color.b);
-            
-            float useShiness = 0.f;
-            Material_->Get(AI_MATKEY_SHININESS, useShiness);
-            LOG(Core, Trace, "SHININESS {0}", useShiness);
-            
-            float shininessStrength = 1.f;
-            Material_->Get(AI_MATKEY_SHININESS_STRENGTH, shininessStrength);
-            LOG(Core, Trace, "SHININESS_STRENGTH {0}", shininessStrength);
-
             std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
             std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
             

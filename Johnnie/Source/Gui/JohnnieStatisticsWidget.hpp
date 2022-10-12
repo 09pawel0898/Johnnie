@@ -23,7 +23,7 @@ private:
 
 	RendererStatistics		RendererStats;
 	MeshStatistics			MeshStats;
-	bool m_bRenderMeshStats;
+	bool m_bRenderMeshStats{ false };
 
 public:
 	WJohnnieStatisticsWidget();

@@ -92,7 +92,7 @@ namespace Engine
 			{
 				m_MaterialTextures.SpecularTexture->Bind(1);
 				std::string texName = GetUniformNameByTextureType(m_MaterialTextures.SpecularTexture->GetType());
-				Shader->SetInt(texName.c_str(), 0);
+				Shader->SetInt(texName.c_str(), 1);
 			}
 		}
 	}

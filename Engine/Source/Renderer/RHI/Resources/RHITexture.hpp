@@ -30,8 +30,9 @@ namespace Engine::RHI
 		std::string_view GetPath(void) const	{	return m_FilePath;		}
 		int32_t GetWidth(void) const			{	return m_Width;			}
 		int32_t GetHeight(void) const			{	return m_Height;		}
-		RHITextureType GetType(void) const		{	return m_TextureType;	}
 
+		RHITextureType GetType(void) const		{	return m_TextureType;	}
+		void SetType(RHITextureType Type)		{ m_TextureType = Type;		}	
 	public:
 		virtual void Bind(uint8_t TextureSlotID) = 0;
 		virtual void Unbind(void) = 0;
