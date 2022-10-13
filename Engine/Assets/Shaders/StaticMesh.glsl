@@ -84,8 +84,8 @@ vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir
     
 	float diff = max(dot(Normal, lightDir), 0.0);
 
-    vec3 reflectDir = reflect(-lightDir, Normal);
-	float spec = pow(max(dot(ViewDir, reflectDir), 0.0), uMaterial.Shiness);
+    vec3 halfwayDir = normalize(lightDir + ViewDir);
+	float spec = pow(max(dot(ViewDir, halfwayDir), 0.0), uMaterial.Shiness);
     
 	vec3 diffuse,ambient,specular;
 	
