@@ -178,7 +178,8 @@ void MaterialSlotWidget::RefreshMaterial(void)
 
 		m_bUseDiffuseMap =		uniform.UseDiffuseMap;
 		m_bUseSpecularMap =		uniform.UseSpecularMap;
-		
+		m_bUseNormalMap =		uniform.UseNormalMap;
+
 		m_BaseColor = ImVec4(	uniform.BaseColor.x, 
 								uniform.BaseColor.y, 
 								uniform.BaseColor.z, 1.0f);
@@ -323,6 +324,50 @@ void MaterialSlotWidget::OnRenderGui(void)
 	}
 	ImGui::Dummy(ImVec2(0.f, 5.f));
 
+	// Normal Map //
+	{
+		if (ImGui::BeginTable("NormalMapTable", 2, ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersOuterV))
+		{
+			ImGui::TableNextRow();
+			for (uint16_t columnIdx = 0; columnIdx < 2; ++columnIdx)
+			{
+				ImGui::TableSetColumnIndex(columnIdx);
+
+				if (columnIdx == 0)
+				{
+					if (materialTextures.NormalTexture != nullptr)
+					{
+						ImGui::Image((void*)(intptr_t)materialTextures.NormalTexture->GetRendererID(), ImVec2(80, 80));
+					}
+					else
+					{
+						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture_Image.png");
+						ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
+					}
+				}
+				else if (columnIdx == 1)
+				{
+					ImGui::Dummy(ImVec2(0.f, 2.f));
+					if (ImGui::Button("Load Normal Map", ImVec2(133, 20)))
+					{
+						m_FileBrowser.Open();
+						m_TextureTypeFileBrowserOpenedFor = RHITextureType::Normal;
+					}
+					ImGui::Dummy(ImVec2(0.f, 23.f));
+
+					if (ImGui::Checkbox("Use Normal Map", &m_bUseNormalMap))
+					{
+						if (!m_MaterialRef->SetUseNormalTexture(m_bUseNormalMap))
+						{
+							m_bUseNormalMap = false;
+						}
+					}
+				}
+			}
+			ImGui::EndTable();
+		}
+	}
+
 	// File Browser Displaying //
 	m_FileBrowser.Display();
 	
@@ -345,6 +390,12 @@ void MaterialSlotWidget::OnRenderGui(void)
 			loadedTexture->SetType(RHITextureType::Specular);
 			m_MaterialRef->SetSpecularTexture(std::move(loadedTexture));
 		}
+		else if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Normal)
+		{
+			loadedTexture->SetType(RHITextureType::Normal);
+			m_MaterialRef->SetNormalTexture(std::move(loadedTexture));
+		}
+
 		m_FileBrowser.ClearSelected();
 	}
 }

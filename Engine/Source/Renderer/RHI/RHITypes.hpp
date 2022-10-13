@@ -24,7 +24,8 @@ namespace Engine::RHI
 	{
 		BasicTexture2D,
 		Diffuse,
-		Specular
+		Specular,
+		Normal
 	};
 
 	std::string GetUniformNameByTextureType(RHITextureType TextureType);

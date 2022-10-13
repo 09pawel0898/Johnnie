@@ -31,6 +31,7 @@ namespace Engine
 		{
 			{RHI::RHITextureType::Diffuse,	aiTextureType_DIFFUSE	},
 			{RHI::RHITextureType::Specular,	aiTextureType_SPECULAR	},
+			{RHI::RHITextureType::Normal,	aiTextureType_NORMALS	},
 		};
 		return map[RHITextureType];
 	}

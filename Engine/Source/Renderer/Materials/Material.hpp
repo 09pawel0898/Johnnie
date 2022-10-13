@@ -21,6 +21,8 @@ namespace Engine
 		glm::vec3 Specular{ 0.6f, 0.6f, 0.6f };
 		bool UseSpecularMap = false;
 
+		bool UseNormalMap = false;
+
 		float Shiness = 8.f;
 
 		MaterialUniform() = default;
@@ -66,8 +68,11 @@ namespace Engine
 
 		void SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture);
 		void SetSpecularTexture(std::shared_ptr<RHITexture2D> SpecularTexture);
+		void SetNormalTexture(std::shared_ptr<RHITexture2D> NormalTexture);
+		
 		bool SetUseDiffuseTexture(bool Use);
 		bool SetUseSpecularTexture(bool Use);
+		bool SetUseNormalTexture(bool Use);
 
 		void SetSpecular(glm::vec3 Specular);
 

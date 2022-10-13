@@ -162,6 +162,7 @@ namespace Engine
         {
             std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
             std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
+            std::vector<std::shared_ptr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
             
             std::vector<std::shared_ptr<RHITexture2D>> materialTextures;
 
@@ -207,6 +208,10 @@ namespace Engine
             auto& textureManager = Renderer::Get()->GetTexture2DManager();
             
             textureManager.LoadResource(texturePath, Type);
+            
+            auto& loadedTexture = textureManager.GetResource(texturePath);
+            loadedTexture->SetType(Type);
+
             textures.push_back(textureManager.GetResource(texturePath));
         }
         return textures;

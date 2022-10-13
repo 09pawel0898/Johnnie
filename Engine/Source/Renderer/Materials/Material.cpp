@@ -24,6 +24,12 @@ namespace Engine
 		m_MaterialUniform.UseSpecularMap = true;
 	}
 
+	void Material::SetNormalTexture(std::shared_ptr<RHITexture2D> NormalTexture)
+	{
+		m_MaterialTextures.NormalTexture = std::move(NormalTexture);
+		m_MaterialUniform.UseNormalMap = true;
+	}
+
 	bool Material::SetUseDiffuseTexture(bool Use)
 	{
 		if (m_MaterialTextures.DiffuseTexture != nullptr)
@@ -43,6 +49,17 @@ namespace Engine
 			return true;
 		}
 		m_MaterialUniform.UseSpecularMap = false;
+		return false;
+	}
+
+	bool Material::SetUseNormalTexture(bool Use)
+	{
+		if (m_MaterialTextures.NormalTexture != nullptr)
+		{
+			m_MaterialUniform.UseNormalMap = Use;
+			return true;
+		}
+		m_MaterialUniform.UseNormalMap= false;
 		return false;
 	}
 
@@ -81,6 +98,7 @@ namespace Engine
 
 			Shader->SetInt("uMaterial.UseDiffuseMap", (int32_t)m_MaterialUniform.UseDiffuseMap);
 			Shader->SetInt("uMaterial.UseSpecularMap", (int32_t)m_MaterialUniform.UseSpecularMap);
+			Shader->SetInt("uMaterial.UseNormalMap", (int32_t)m_MaterialUniform.UseNormalMap);
 
 			if (m_MaterialUniform.UseDiffuseMap)
 			{
@@ -93,6 +111,12 @@ namespace Engine
 				m_MaterialTextures.SpecularTexture->Bind(1);
 				std::string texName = GetUniformNameByTextureType(m_MaterialTextures.SpecularTexture->GetType());
 				Shader->SetInt(texName.c_str(), 1);
+			}
+			if (m_MaterialUniform.UseNormalMap)
+			{
+				m_MaterialTextures.NormalTexture->Bind(2);
+				std::string texName = GetUniformNameByTextureType(m_MaterialTextures.NormalTexture->GetType());
+				Shader->SetInt(texName.c_str(), 2);
 			}
 		}
 	}

@@ -11,6 +11,8 @@ private:
 	std::shared_ptr<Material>& m_MaterialRef;
 	bool m_bUseDiffuseMap{ false };
 	bool m_bUseSpecularMap{ false };
+	bool m_bUseNormalMap{ false };
+
 	float m_Specular = 0.5f;
 	int32_t m_Shininess = 3;
 
