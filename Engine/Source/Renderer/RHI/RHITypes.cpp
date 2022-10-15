@@ -29,7 +29,8 @@ namespace Engine::RHI
 		{
 			{RHITextureType::BasicTexture2D,	"uTexture"},
 			{RHITextureType::Diffuse,			"uMaterial.TextureDiffuse"},
-			{RHITextureType::Specular,			"uMaterial.TextureSpecular"}
+			{RHITextureType::Specular,			"uMaterial.TextureSpecular"},
+			{RHITextureType::Normal,			"uMaterial.TextureNormalMap"}
 		};
 		return RHITextureUniformNames[TextureType];
 	}

@@ -34,8 +34,11 @@ struct Material
 	sampler2D TextureDiffuse;
 	bool UseDiffuseMap;
 	
-	bool UseSpecularMap;
 	sampler2D TextureSpecular;
+	bool UseSpecularMap;
+	
+	sampler2D TextureNormalMap;
+	bool UseNormalMap;
 	
 	vec3 Specular;
 	float Shiness;
@@ -120,8 +123,8 @@ vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewD
 	float diff = max(dot(Normal, lightDir), 0.0);
     
 	// specular // 
-    vec3 reflectDir = reflect(-lightDir, Normal);
-    float spec = pow(max(dot(ViewDir, reflectDir), 0.0), uMaterial.Shiness);
+    vec3 halfwayDir = normalize(lightDir + ViewDir);
+    float spec = pow(max(dot(ViewDir, halfwayDir), 0.0), uMaterial.Shiness);
     
 	// attenuation // 
     float distance    = length(Light.Position - FragPos);
@@ -155,7 +158,17 @@ vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewD
 
 void main()
 {
-	vec3 norm = normalize(Normal);
+	vec3 norm;
+
+	if(uMaterial.UseNormalMap)
+	{
+		norm = texture(uMaterial.TextureNormalMap, TexCoord).rgb;
+		norm = normalize(norm * 2.0 - 1.0);
+	}
+	else
+	{
+		norm = normalize(Normal);
+	}
 	vec3 viewDir = normalize(uCameraPosition - FragWorldPos);
 		
 	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir);
