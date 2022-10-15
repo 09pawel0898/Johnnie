@@ -23,40 +23,40 @@ namespace Engine
 		static std::vector<RHIVertex> boxVertices =
 		{
 			/** Front Face */
-			{glm::vec3(-w, -h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(-w, +h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(+w, +h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(1.0f, 0.0f)},
-			{glm::vec3(+w, -h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(1.0f, 1.0f)},
+			{glm::vec3(-w, -h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f) },
+			{glm::vec3(-w, +h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, +h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, -h, -d),	glm::vec3(0.0f, 0.0f, -1.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
 
 			/** Back Face */
-			{glm::vec3(-w, -h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f)},
-			{glm::vec3(+w, -h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(+w, +h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(-w, +h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 0.0f)},
+			{glm::vec3(-w, -h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, -h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, +h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(-w, +h, +d),	glm::vec3(0.0f, 0.0f, 1.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
 
 			/** Top Face */
-			{glm::vec3(w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(+w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
-			{glm::vec3(+w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
+			{glm::vec3(-w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
+			{glm::vec3(-w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, h, d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
+			{glm::vec3(+w, h, -d),	glm::vec3(0.0f, 1.0f, 0.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(1.0f, 0.0f, 0.0f)},
 
 			/** Bottom Face */
-			{glm::vec3(-w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
-			{glm::vec3(w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(-w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
+			{glm::vec3(-w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(w, -h, -d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
+			{glm::vec3(-w, -h, +d),	glm::vec3(0.0f, -1.0f, 0.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(-1.0f, 0.0f, 0.0f)},
 
 			/** Left Face */
-			{glm::vec3(-w, -h, +d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(-w, +h, +d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(-w, +h, -d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
-			{glm::vec3(-w, -h, -d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 1.0f)},
+			{glm::vec3(-w, -h, +d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f)},
+			{glm::vec3(-w, +h, +d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)},
+			{glm::vec3(-w, +h, -d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)},
+			{glm::vec3(-w, -h, -d),	glm::vec3(-1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, -1.0f)},
 
 			/** Right Face */
-			{glm::vec3(+w, -h, -d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 1.0f)},
-			{glm::vec3(+w, +h, -d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 0.0f)},
-			{glm::vec3(+w, +h, +d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 0.0f)},
-			{glm::vec3(+w, -h, +d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 1.0f)}
+			{glm::vec3(+w, -h, -d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+			{glm::vec3(+w, +h, -d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+			{glm::vec3(+w, +h, +d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)},
+			{glm::vec3(+w, -h, +d),	glm::vec3(1.0f, 0.0f, 0.0f),	glm::vec2(1.0f, 1.0f), glm::vec3(0.0f, 0.0f, 1.0f)}
 		};
 
 		static std::vector<uint32_t> boxIndices =
@@ -133,6 +133,10 @@ namespace Engine
 
 				v.TexUV.x = (float)(theta / std::numbers::pi);
 				v.TexUV.y = (float)(phi / std::numbers::pi);
+
+				v.Tangent.x = -Radius * sinf(phi) * sinf(theta);
+				v.Tangent.y = 0.0f;
+				v.Tangent.z = +Radius * sinf(phi) * cosf(theta);
 
 				sphereVertices.push_back(v);
 			}

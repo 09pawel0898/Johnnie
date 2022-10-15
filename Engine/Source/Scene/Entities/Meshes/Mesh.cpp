@@ -116,10 +116,11 @@ namespace Engine
 		RHIVertexBufferElement aPosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
 		RHIVertexBufferElement aNormal = RHIVertexBufferElement(RHIElementType::Float3, "aNormal");
 		RHIVertexBufferElement aTexUV = RHIVertexBufferElement(RHIElementType::Float2, "aTexUV");
+		RHIVertexBufferElement aTangent = RHIVertexBufferElement(RHIElementType::Float3, "aTangent");
 
 		auto vbo = RHIVertexBuffer::Create(Vertices);
 
-		RHIVertexBufferLayout layout = { aPosition, aNormal, aTexUV };
+		RHIVertexBufferLayout layout = { aPosition, aNormal, aTexUV, aTangent};
 		vbo->SetLayout(std::make_unique< RHIVertexBufferLayout>(std::move(layout)));
 
 		std::unique_ptr<RHIIndexBuffer> ibo = RHIIndexBuffer::Create(Indices);

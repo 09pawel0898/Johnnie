@@ -16,8 +16,8 @@ namespace Engine::RHI
 	{
 		glm::vec3 Position;
 		glm::vec3 Normal;
-		//glm::vec3 Color;
 		glm::vec2 TexUV;
+		glm::vec3 Tangent;
 	};
 
 	enum class RHITextureType : uint8_t

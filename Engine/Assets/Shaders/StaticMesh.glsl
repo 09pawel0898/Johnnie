@@ -4,20 +4,28 @@
 layout (location = 0) in vec3 aPosition;
 layout (location = 1) in vec3 aNormal;
 layout (location = 2) in vec2 aTexUV;
+layout (location = 3) in vec3 aTangent;
 
 out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragWorldPos;
+out mat3 TBN;
 
 uniform mat4 uProjMat;
 uniform mat4 uViewMat;
 uniform mat4 uModelMat;
 uniform mat3 uNormalMat;
 
-
 void main()
 {
 	gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
+	
+	vec3 T = normalize(vec3(uModelMat * vec4(aTangent,   0.0)));
+	vec3 N = normalize(vec3(uModelMat * vec4(aNormal,    0.0)));
+	vec3 B = normalize(vec3(uModelMat * vec4(cross(aNormal,aTangent), 0.0)));
+	
+	TBN = transpose(mat3(T, B, N));
+	
 	Normal = uNormalMat * aNormal;
 	TexCoord = aTexUV;
 	FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
@@ -77,14 +85,24 @@ out vec4 FragColor;
 in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragWorldPos;
+in mat3 TBN; 
 
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
 
 vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir)
 {
-	vec3 lightDir = normalize(-Light.Direction);
-    
+	vec3 lightDir;
+
+	if(uMaterial.UseNormalMap)
+	{
+		lightDir = TBN * normalize(-Light.Direction);
+	}
+	else
+	{
+		lightDir = normalize(-Light.Direction);
+	}
+
 	float diff = max(dot(Normal, lightDir), 0.0);
 
     vec3 halfwayDir = normalize(lightDir + ViewDir);
@@ -117,8 +135,18 @@ vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir
 
 vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewDir)
 {
-	vec3 lightDir = normalize(Light.Position - FragPos);
-    
+	vec3 lightDir;
+	
+	if(uMaterial.UseNormalMap)
+	{
+		lightDir = TBN * normalize(Light.Position - FragPos);
+	}
+	else
+	{
+		lightDir = normalize(Light.Position - FragPos);
+	}
+	
+	
 	// diffuse // 
 	float diff = max(dot(Normal, lightDir), 0.0);
     
@@ -159,18 +187,20 @@ vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewD
 void main()
 {
 	vec3 norm;
+	vec3 viewDir;
 
 	if(uMaterial.UseNormalMap)
 	{
 		norm = texture(uMaterial.TextureNormalMap, TexCoord).rgb;
 		norm = normalize(norm * 2.0 - 1.0);
+		viewDir = TBN * normalize(uCameraPosition - FragWorldPos);
 	}
 	else
 	{
 		norm = normalize(Normal);
+		viewDir = normalize(uCameraPosition - FragWorldPos);	
 	}
-	vec3 viewDir = normalize(uCameraPosition - FragWorldPos);
-		
+	
 	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir);
 	
 	for(int i=0; i < uNumPointLights; i++)

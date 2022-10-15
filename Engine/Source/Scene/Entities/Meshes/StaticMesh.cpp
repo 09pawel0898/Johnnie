@@ -41,6 +41,7 @@ namespace Engine
             aiProcess_Triangulate 
             | aiProcess_OptimizeMeshes 
             | aiProcess_RemoveRedundantMaterials
+            | aiProcess_CalcTangentSpace
             | aiProcess_PreTransformVertices);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
@@ -96,7 +97,12 @@ namespace Engine
                 aiVector3D const& normal = _Mesh->mNormals[i];
                 vertex.Normal = { normal.x, normal.y, normal.z };
             }
-    
+            
+            if (_Mesh->mTangents)
+            {
+                aiVector3D const& tangent = _Mesh->mTangents[i];
+                vertex.Tangent = { tangent.x, tangent.y, tangent.z };
+            }
             /** Check if the mesh contain texture coordinates */
             if (_Mesh->mTextureCoords[0])
             {
@@ -173,6 +179,10 @@ namespace Engine
             materialTextures.insert(materialTextures.end(),
                                     std::make_move_iterator(specularMaps.begin()),
                                     std::make_move_iterator(specularMaps.end()));
+            
+            materialTextures.insert(materialTextures.end(),
+                                    std::make_move_iterator(normalMaps.begin()),
+                                    std::make_move_iterator(normalMaps.end()));
 
             if (materialTextures.size() > 0)
             {
@@ -187,6 +197,10 @@ namespace Engine
                     else if (texture->GetType() == RHITextureType::Specular)
                     {
                         m_Materials[MaterialIdx]->SetSpecularTexture(texture);
+                    } 
+                    else if (texture->GetType() == RHITextureType::Normal)
+                    {
+                        m_Materials[MaterialIdx]->SetNormalTexture(texture);
                     }
                 }
             }
@@ -196,7 +210,7 @@ namespace Engine
     std::vector<std::shared_ptr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
     {
         std::vector<std::shared_ptr<RHITexture2D>> textures;
-    
+        
         for (uint8_t i = 0; i < Material->GetTextureCount(RHITextureTypeToAssimpTextureType(Type)); i++)
         {
             aiString texFileName;
