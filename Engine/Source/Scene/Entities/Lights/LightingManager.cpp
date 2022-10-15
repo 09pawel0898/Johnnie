@@ -54,7 +54,18 @@ namespace Engine
 
     bool LightingManager::IsLightRegistered(OUUID const& LightUUID)
     {
-        return false;
+        return 
+            (m_PointLights.cend() != std::find_if(m_PointLights.cbegin(), m_PointLights.cend(),
+            [&LightUUID](auto const& Element) -> bool
+            {
+                return LightUUID == Element.first;
+            }) 
+                || 
+            (m_DirectionalLights.cend() != std::find_if(m_DirectionalLights.cbegin(), m_DirectionalLights.cend(),
+            [&LightUUID](auto const& Element) -> bool
+            {
+                return LightUUID == Element.first;
+            })));
     }
     
     void LightingManager::CalculateLighting(void)
@@ -80,7 +91,11 @@ namespace Engine
             staticMeshShader->SetFloat("uPointLights[0].Constant", lightData.Constant);
             staticMeshShader->SetFloat("uPointLights[0].Linear", lightData.Linear);
             staticMeshShader->SetFloat("uPointLights[0].Quadratic", lightData.Quadratic);
-
+        }
+        else
+        {
+            staticMeshShader->Bind();
+            staticMeshShader->SetInt("uNumPointLights", 0);
         }
 
         auto directionalLightData = GetDirectionalLightData();

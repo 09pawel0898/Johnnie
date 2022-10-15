@@ -44,10 +44,16 @@ private:
 class WJohnnieSceneWidget final : public ImGuiWidgetBase
 {
 private:
-	/** Point Light */
-	std::shared_ptr<APointLight>	m_ManagedPointLight{ nullptr };
-	ImColor							m_PointLightColor;
+	/** Lighting */
+	std::weak_ptr<APointLight>	m_ManagedPointLight;
+	ImColor						m_PointLightColor;
+	bool m_bPointLightVisible{ false };
+	bool m_bPointLightMeshVisible{ false };
 	
+	std::weak_ptr<ADirectionalLight>	m_ManagedDirectionalLight;
+	ImColor								m_DirectionalLightColor;
+	float m_DirectionalLightAngle{ 0.f };
+
 	/** Static/Skeletal Mesh and Materials */
 	std::optional<std::string> m_MeshSubtabName = std::nullopt;
 	std::vector<MaterialSlotWidget> m_MaterialSlotWidgets;
@@ -62,7 +68,8 @@ public:
 	virtual void OnRenderGui(void) override;
 	virtual void OnTick(double DeltaTime) override;
 
-	void SetManagedPointLight(std::shared_ptr<APointLight> PointLight);
+	void SetManagedPointLight(std::weak_ptr<APointLight> PointLight);
+	void SetManagedDirectionalLight(std::weak_ptr<ADirectionalLight> DirectionalLight);
 
 private:
 	void OnRenderLightingSubtab();

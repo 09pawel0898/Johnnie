@@ -11,18 +11,17 @@
 
 void JohnnieScene::OnAwake(void)
 {
-	InitGui();
-
 	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);	
 	m_PointLight		= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	m_DirectionalLight	= NewActor<ADirectionalLight>();
-
+	m_DirectionalLight	= NewActor<ADirectionalLight>(); // DefaultDirection = { -0.2f,-1.0f,-0.3f }
+	
 	CameraController::Get()->SetViewTarget(m_Camera);
 
 	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
 	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
-
-	m_SceneWidget->SetManagedPointLight(m_PointLight);
+	
+	InitGui();
+	InitLighting();
 }
 
 void JohnnieScene::OnDetach(void)
@@ -57,4 +56,15 @@ void JohnnieScene::InitGui(void)
 		m_Model = NewActor<AStaticMesh>(FileName);
 		m_Model->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
 	});
+}
+
+void JohnnieScene::InitLighting(void)
+{
+	m_PointLight->GetData().Ambient = 0.f;
+	
+	m_PointLight->SetVisibility(false);
+	m_PointLight->SetBoxMeshVisibility(false);
+
+	m_SceneWidget->SetManagedPointLight(m_PointLight);
+	m_SceneWidget->SetManagedDirectionalLight(m_DirectionalLight);
 }

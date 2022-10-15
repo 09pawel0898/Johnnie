@@ -49,4 +49,5 @@ private:
 
 private:
 	void InitGui(void);
+	void InitLighting(void);
 };

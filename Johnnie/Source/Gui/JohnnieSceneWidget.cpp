@@ -6,6 +6,7 @@
 #include <Engine/Debug.hpp>
 
 #include <imgui_internal.h>
+#include <glm/gtx/rotate_vector.hpp>
 
 WJohnnieSceneWidget::WJohnnieSceneWidget()
 {
@@ -37,10 +38,15 @@ void WJohnnieSceneWidget::OnRenderGui(void)
 
 void WJohnnieSceneWidget::OnTick(double DeltaTime)
 {
-	if (m_ManagedPointLight)
+	if (auto pointLight = m_ManagedPointLight.lock())
 	{
 		ImVec4 color = m_PointLightColor.Value;
-		m_ManagedPointLight->SetColor(glm::vec3(color.x, color.y, color.z));
+		pointLight->SetColor(glm::vec3(color.x, color.y, color.z));
+	}
+	if (auto directionalLight = m_ManagedDirectionalLight.lock())
+	{
+		ImVec4 color = m_DirectionalLightColor.Value;
+		directionalLight->SetColor(glm::vec3(color.x, color.y, color.z));
 	}
 
 	for (auto& materialSlotWidget : m_MaterialSlotWidgets)
@@ -49,17 +55,35 @@ void WJohnnieSceneWidget::OnTick(double DeltaTime)
 	}
 }
 
-void WJohnnieSceneWidget::SetManagedPointLight(std::shared_ptr<APointLight> PointLight)
+void WJohnnieSceneWidget::SetManagedPointLight(std::weak_ptr<APointLight> PointLight)
 {
-	if(PointLight)
-	{
-		m_ManagedPointLight = std::move(PointLight);
+	m_ManagedPointLight = std::move(PointLight);
 
+	if(auto pointLight = m_ManagedPointLight.lock())
+	{
 		m_PointLightColor =
 		{
-			m_ManagedPointLight->GetColor().r,
-			m_ManagedPointLight->GetColor().g,
-			m_ManagedPointLight->GetColor().b
+			pointLight->GetColor().r,
+			pointLight->GetColor().g,
+			pointLight->GetColor().b
+		};
+
+		m_bPointLightVisible = false;
+		m_bPointLightMeshVisible = false;
+	}
+}
+
+void WJohnnieSceneWidget::SetManagedDirectionalLight(std::weak_ptr<ADirectionalLight> DirectionalLight)
+{
+	m_ManagedDirectionalLight = std::move(DirectionalLight);
+
+	if (auto directionalLight = m_ManagedDirectionalLight.lock())
+	{
+		m_DirectionalLightColor =
+		{
+			directionalLight->GetColor().r,
+			directionalLight->GetColor().g,
+			directionalLight->GetColor().b
 		};
 	}
 }
@@ -68,23 +92,65 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 {
 	if (ImGui::CollapsingHeader("Lighting"))
 	{
-		if (ImGui::TreeNode("Point Light"))
+		if (ImGui::TreeNode("Directional Light"))
 		{
-			if (m_ManagedPointLight)
+			if (auto directionalLight = m_ManagedDirectionalLight.lock())
 			{
-				auto& lightData = m_ManagedPointLight->GetData();
+				auto& lightData = directionalLight->GetData();
+
+				ImGui::Dummy(ImVec2(0, 5));
+				ImGui::Separator();
+
+				ImGui::Dummy(ImVec2(0, 2));
+				if (ImGui::SliderFloat("Light Angle", &m_DirectionalLightAngle, 0.f, 360.f))
+				{
+					static glm::vec3 v = { -0.2f,-1.0f,-0.3f };
+					directionalLight->SetDirection(glm::rotateY(v, glm::radians(m_DirectionalLightAngle)));
+				}
+				ImGui::Dummy(ImVec2(0, 2));
+
+				ImGui::ColorPicker4("", (float*)&m_DirectionalLightColor,
+					ImGuiColorEditFlags_NoDragDrop |
+					ImGuiColorEditFlags_NoSidePreview |
+					ImGuiColorEditFlags_NoSmallPreview);
+
+				ImGui::Dummy(ImVec2(0.0f, 2.0f));
+				ImGui::SliderFloat("Ambient", &lightData.Ambient, 0.0f, 1.0f);
+
+				ImGui::Dummy(ImVec2(0.0f, 2.0f));
+				ImGui::SliderFloat("Diffuse", &lightData.Diffuse, 0.0f, 1.0f);
+
+				ImGui::Dummy(ImVec2(0.0f, 2.0f));
+				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
 
 				ImGui::Separator();
-				ImGui::Text("Light Parmeters");
-				
+			}
+			ImGui::TreePop();
+		}
+		if (ImGui::TreeNode("Point Light"))
+		{
+			if (auto pointLight = m_ManagedPointLight.lock())
+			{
+				auto& lightData = pointLight->GetData();
+
+				ImGui::Dummy(ImVec2(0, 5));
 				ImGui::Separator();
+				ImGui::Dummy(ImVec2(0, 2));
+
+				if (ImGui::Checkbox("Enabled", &m_bPointLightVisible))
+				{
+					pointLight->SetVisibility(m_bPointLightVisible);
+				}
+
+				if (ImGui::Checkbox("Mesh Visible", &m_bPointLightMeshVisible))
+				{
+					pointLight->SetBoxMeshVisibility(m_bPointLightMeshVisible);
+				}
+				ImGui::Dummy(ImVec2(0, 2));
 				ImGui::ColorPicker4("", (float*)&m_PointLightColor,
 					ImGuiColorEditFlags_NoDragDrop |
 					ImGuiColorEditFlags_NoSidePreview |
 					ImGuiColorEditFlags_NoSmallPreview);
-				
-				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Ambient", &lightData.Ambient, 0.0f, 1.0f);
 				
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
 				ImGui::SliderFloat("Diffuse", &lightData.Diffuse, 0.0f, 1.0f);
