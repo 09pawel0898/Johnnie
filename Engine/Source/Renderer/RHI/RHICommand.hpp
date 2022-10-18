@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
+#include "Resources/RHIFrameBuffer.hpp"
 #include "DynamicRHI.hpp"
 
 namespace Engine::RHI
@@ -23,6 +24,11 @@ namespace Engine::RHI
 		static void Shutdown(void);
 
 		/** RHI Methods */
+
+		static void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
+		static std::unique_ptr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		static void BindFramebuffer(std::string_view FramebufferName);
+		static void BindDefaultFramebuffer(void);
 
 		static void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height);
 
@@ -51,6 +57,26 @@ namespace Engine::RHI
 	FORCEINLINE void RHICommand::SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height)
 	{
 		s_DynamicRHI->SetViewport(X, Y, Width, Height);
+	}
+
+	FORCEINLINE void RHICommand::InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification)
+	{
+		s_DynamicRHI->InitializeFramebuffer(FramebufferName, FramebufferSpecification);
+	}
+
+	FORCEINLINE std::unique_ptr<RHIFrameBuffer>& RHICommand::GetFramebuffer(std::string_view FramebufferName)
+	{
+		return s_DynamicRHI->GetFramebuffer(FramebufferName);
+	}
+
+	FORCEINLINE void RHICommand::BindFramebuffer(std::string_view FramebufferName)
+	{
+		s_DynamicRHI->BindFramebuffer(FramebufferName);
+	}
+
+	FORCEINLINE void RHICommand::BindDefaultFramebuffer(void)
+	{
+		s_DynamicRHI->BindDefaultFramebuffer();
 	}
 
 	FORCEINLINE void RHICommand::SetClearColor(const glm::vec4& Color)

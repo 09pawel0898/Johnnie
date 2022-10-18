@@ -138,4 +138,12 @@ namespace Engine::RHI
 		uint32_t count = IndexCount ? IndexCount : VertexArray->GetIndexBuffer()->GetCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
+
+	void OpenGLRHI::BindDefaultFramebuffer(void)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+		glEnable(GL_DEPTH_TEST);
+	}
 }

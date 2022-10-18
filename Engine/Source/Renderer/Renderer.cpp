@@ -5,6 +5,7 @@
 
 #include "RHI/Resources/RHIShader.hpp"
 #include "RHI/RHICommand.hpp"
+#include "RHI/Resources/RHIFrameBuffer.hpp"
 
 #include "Core/Debug/ProfileMacros.hpp"
 
@@ -15,6 +16,8 @@ namespace Engine
 		Construct();
 
 		RHICommand::Initialize(RenderingAPI);
+
+
 	}
 	
 	void Renderer::Shutdown(void)
@@ -38,6 +41,29 @@ namespace Engine
 
 		RHICommand::SetClearColor(defaultClearColor);
 		RHICommand::SetViewport(ViewportBounds.x, ViewportBounds.y, ViewportBounds.z, ViewportBounds.w);
+	}
+
+	void Renderer::InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification)
+	{
+		static glm::vec4 defaultClearColor = glm::vec4(0.101f, 0.105f, 0.109f, 1.00f);
+
+		RHICommand::SetClearColor(defaultClearColor);
+		RHICommand::InitializeFramebuffer(FramebufferName, FramebufferSpecification);
+	}
+
+	std::unique_ptr<RHIFrameBuffer>& Renderer::GetFramebuffer(std::string_view FramebufferName)
+	{
+		return RHICommand::GetFramebuffer(FramebufferName);
+	}
+
+	void Renderer::BindFramebuffer(std::string_view FramebufferName)
+	{
+		RHICommand::BindFramebuffer(FramebufferName);
+	}
+
+	void Renderer::BindDefaultFramebuffer(void)
+	{
+		RHICommand::BindDefaultFramebuffer();
 	}
 
 	void Renderer::Clear(void)
@@ -65,6 +91,8 @@ namespace Engine
 		s_RendererStats.MeshesCount = 0;
 		s_RendererStats.DrawCalls = 0;
 		s_RendererStats.TotalTrisCount = 0;
+
+
 	}
 
 	void Renderer::OnEndRenderingFrame(void)

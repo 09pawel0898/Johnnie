@@ -6,7 +6,12 @@
 
 namespace Engine::RHI
 {
-	std::unique_ptr<RHIFrameBuffer> RHIFrameBuffer::Create(RHIFrameBufferSpecification&& Specification)
+	namespace Utility
+	{
+
+	}
+
+	std::unique_ptr<RHIFrameBuffer> RHIFrameBuffer::Create(RHIFrameBufferSpecification const& Specification)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
@@ -17,18 +22,25 @@ namespace Engine::RHI
 	
 	uint32_t RHIFrameBufferSpecification::GetAttachmentsCountByType(RHIFrameBufferAttachmentType Type)
 	{
-		return std::count_if(Attachments.cbegin(), Attachments.cend(), 
+		return (uint32_t)std::count_if(AttachmentsSpecification.cbegin(), AttachmentsSpecification.cend(),
 			[Type](FramebufferAttachmentSpecification const& Specification)
 			{
 				return Specification.Type == Type;
 			});
 	}
-	std::vector<FramebufferAttachmentSpecification> RHIFrameBufferSpecification::GetColorAttachmentsSpecifications(void) const
+
+	std::vector<FramebufferAttachmentSpecification> RHIFrameBufferSpecification::GetAttachmentsSpecificationByType(RHIFrameBufferAttachmentType Type) const
 	{
-		return std::vector<FramebufferAttachmentSpecification>();
-	}
-	FramebufferAttachmentSpecification RHIFrameBufferSpecification::GetDepthStencilAttachmentsSpecification(void) const
-	{
-		return FramebufferAttachmentSpecification();
+		std::vector<FramebufferAttachmentSpecification> result;
+
+		std::for_each(AttachmentsSpecification.cbegin(), AttachmentsSpecification.cend(),
+			[&result, Type](FramebufferAttachmentSpecification const& Specification)
+			{
+				if (Specification.Type == Type)
+				{
+					result.emplace_back(Specification);
+				}
+			});
+		return result;
 	}
 }

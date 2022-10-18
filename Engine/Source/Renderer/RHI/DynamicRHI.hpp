@@ -3,6 +3,7 @@
 #include "Core/CoreMinimal.hpp"
 #include "Resources/RHIVertexArray.hpp"
 #include "Resources/RHIResourceManager.hpp"
+#include "Resources/RHIFrameBuffer.hpp"
 
 #include <glm/glm.hpp>
 
@@ -53,6 +54,8 @@ namespace Engine::RHI
 		RHIShaderManager	m_ShaderManager;
 		MaterialManager		m_MaterialManager;
 
+		std::vector<std::pair<std::string_view,std::unique_ptr<RHIFrameBuffer>>> m_Framebuffers;
+	
 	public:
 		RHITexture2DManager&	GetTexture2DManager(void);
 		RHIShaderManager&		GetShaderManager(void);
@@ -68,6 +71,12 @@ namespace Engine::RHI
 		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
 		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
 		
+		void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
+		std::unique_ptr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		void BindFramebuffer(std::string_view FramebufferName);
+		virtual void BindDefaultFramebuffer(void) = 0;
+
+
 		bool IsWireframeMode(void) const
 		{
 			return m_bWireframeMode;

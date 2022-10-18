@@ -7,6 +7,7 @@
 #include "Gui/JohnnieStatisticsWidget.hpp"
 #include "Gui/JohnnieCameraWidget.hpp"
 #include "Gui/JohnnieSceneWidget.hpp"
+#include "Gui/JohnnieViewportWidget.hpp"
 #include "JohnnieDelegates.hpp"
 
 void JohnnieScene::OnAwake(void)
@@ -48,6 +49,7 @@ void JohnnieScene::InitGui(void)
 	m_LoggerWidget		= NewWidget<WJohnnieLoggerWidget>();
 	m_CameraDataWidget	= NewWidget<WJohnnieCameraWidget>();
 	m_SceneWidget		= NewWidget<WJohnnieSceneWidget>();
+	m_ViewportWidget	= NewWidget<WJohnnieViewportWidget>();
 
     /** Init widgets actions */
 

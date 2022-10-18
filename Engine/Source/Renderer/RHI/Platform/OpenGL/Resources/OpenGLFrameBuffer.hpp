@@ -13,12 +13,19 @@ namespace Engine::RHI
 		uint32_t				m_DepthStencilAttachment;
 
 	public:
-		OpenGLFrameBuffer(RHIFrameBufferSpecification&& Specification);
+		OpenGLFrameBuffer(RHIFrameBufferSpecification const& Specification);
 		~OpenGLFrameBuffer();
 
 		virtual void Bind(void) override;
 		virtual void Unbind(void) override;
 
 		virtual void Invalidate(void) override;
+
+
+		virtual uint32_t GetRendererID(void) const override
+		{
+			Check(m_ColorAttachments.size() == 1);
+			return m_ColorAttachments[0];
+		}
 	};
 }

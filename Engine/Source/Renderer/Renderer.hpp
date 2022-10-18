@@ -1,6 +1,7 @@
 #pragma once
 
 #include "RHI/DynamicRHI.hpp"
+#include "RHI/Resources/RHIFrameBuffer.hpp"
 
 #include "Utilities/Singleton.hpp"
 #include "RendererStatistics.hpp"
@@ -30,6 +31,10 @@ namespace Engine
 
 	public:
 		void InitializeViewport(glm::i32vec4 ViewportBounds);
+		void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
+		std::unique_ptr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		void BindFramebuffer(std::string_view FramebufferName);
+		virtual void BindDefaultFramebuffer(void);
 
 		void Clear(void);
 		void Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);

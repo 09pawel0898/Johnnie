@@ -65,6 +65,13 @@ namespace Engine::Core
         Utility::TimePoint tFrameStart, tLastUpdate = Utility::Time::now();
 
         Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
+       
+        Renderer::Get()->InitializeFramebuffer("RenderWorld", 
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1, 
+                { 
+                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8},
+                    {RHIFrameBufferAttachmentType::DepthStencil,RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8}
+                }));
 
         while (m_bRunning)
         {
@@ -87,6 +94,7 @@ namespace Engine::Core
     void Application::UpdateFrame(void)
     {
         PROFILE_SCOPE("RendererStats_FrameDuration");
+
         {
             PROFILE_SCOPE("RendererStats_TickDuration");
             for (auto& layer : *m_LayerManager)
@@ -94,11 +102,14 @@ namespace Engine::Core
                 layer->OnTick(m_DeltaTime);
             }
         }
+
         Renderer::Get()->OnBeginRenderingFrame();
         {
             PROFILE_SCOPE("RendererStats_RenderDuration");
             {
                 PROFILE_SCOPE("RendererStats_RenderWorldDuration");
+
+                Renderer::Get()->BindFramebuffer("RenderWorld");
                 for (auto& layer : *m_LayerManager)
                 {
                     layer->OnRender();
@@ -107,6 +118,8 @@ namespace Engine::Core
 
             {
                 PROFILE_SCOPE("RendererStats_RenderGUIDuration");
+
+                Renderer::Get()->BindDefaultFramebuffer();
                 m_ImGuiLayer->BeginFrame();
                 for (auto& layer : *m_LayerManager)
                 {
@@ -117,7 +130,7 @@ namespace Engine::Core
 
             {
                 m_Window->OnTick();
-                Renderer::Get()->Clear();
+                //Renderer::Get()->Clear();
             }
         }
         Renderer::Get()->OnEndRenderingFrame();

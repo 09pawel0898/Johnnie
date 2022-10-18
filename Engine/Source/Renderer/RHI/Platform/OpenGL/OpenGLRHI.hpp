@@ -29,5 +29,7 @@ namespace Engine::RHI
 		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) override;
 
 		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) override;
+
+		virtual void BindDefaultFramebuffer(void) override;
 	};
 }

@@ -26,7 +26,7 @@ namespace Engine::RHI
 	class RHIFrameBufferSpecification
 	{
 	private:
-		std::vector<FramebufferAttachmentSpecification>  Attachments;
+		std::vector<FramebufferAttachmentSpecification>  AttachmentsSpecification;
 
 	public:
 		uint32_t Samples{ 1 };
@@ -36,14 +36,13 @@ namespace Engine::RHI
 	public:
 		RHIFrameBufferSpecification() = default;
 
-		RHIFrameBufferSpecification(uint32_t Width, uint32_t Height, uint32_t Samples, std::vector<FramebufferAttachmentSpecification> const& Specification)
-			:	Samples(Samples), Width(Width), Height(Height), Attachments(Attachments)
+		RHIFrameBufferSpecification(uint32_t Width, uint32_t Height, uint32_t Samples, std::vector<FramebufferAttachmentSpecification> const& AttachmentsSpecification)
+			:	Samples(Samples), Width(Width), Height(Height), AttachmentsSpecification(AttachmentsSpecification)
 		{}
 
 		uint32_t GetAttachmentsCountByType(RHIFrameBufferAttachmentType Type);
 
-		std::vector<FramebufferAttachmentSpecification> GetColorAttachmentsSpecifications(void) const;
-		FramebufferAttachmentSpecification GetDepthStencilAttachmentsSpecification(void) const;
+		std::vector<FramebufferAttachmentSpecification> GetAttachmentsSpecificationByType(RHIFrameBufferAttachmentType Type) const;
 	};
 
 	class RHIFrameBuffer : public RHIResource
@@ -54,18 +53,20 @@ namespace Engine::RHI
 	public:
 		RHIFrameBuffer() = delete;
 
-		explicit RHIFrameBuffer(RHIFrameBufferSpecification&& Specification)
-			:	m_Specification(std::move(Specification))
+		explicit RHIFrameBuffer(RHIFrameBufferSpecification const& Specification)
+			:	m_Specification(Specification)
 		{}
 
 		virtual ~RHIFrameBuffer() = default;
 
-		static std::unique_ptr<RHIFrameBuffer> Create(RHIFrameBufferSpecification&& Specification);
+		static std::unique_ptr<RHIFrameBuffer> Create(RHIFrameBufferSpecification const& Specification);
 
 	public:
 		virtual void Bind(void) = 0;
 		virtual void Unbind(void) = 0;
 
 		virtual void Invalidate(void) = 0;
+
+		virtual uint32_t GetRendererID(void) const = 0;
 	};
 }
