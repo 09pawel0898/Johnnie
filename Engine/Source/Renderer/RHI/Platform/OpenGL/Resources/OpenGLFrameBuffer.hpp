@@ -21,11 +21,6 @@ namespace Engine::RHI
 
 		virtual void Invalidate(void) override;
 
-
-		virtual uint32_t GetRendererID(void) const override
-		{
-			Check(m_ColorAttachments.size() == 1);
-			return m_ColorAttachments[0];
-		}
+		virtual uint32_t GetRendererID(void) const override;
 	};
 }

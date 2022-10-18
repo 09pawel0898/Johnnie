@@ -47,6 +47,7 @@ namespace Engine
 
 		bool IsCameraPossessed(void) const;
 		void SetCameraPossessed(bool Possessed);
+		void SetAspectRatio(float AspectRatio);
 
 		virtual void OnTick(double DeltaTime) override;
 		virtual void OnEvent(Event& Event) override {}
@@ -104,5 +105,11 @@ namespace Engine
 	FORCEINLINE void ACamera::SetCameraPossessed(bool Possessed)
 	{
 		m_bIsCameraPossessed = Possessed;
+	}
+
+	FORCEINLINE void ACamera::SetAspectRatio(float AspectRatio)
+	{
+		m_AspectRatio = AspectRatio;
+		UpdateProjection();
 	}
 }

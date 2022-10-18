@@ -18,7 +18,8 @@ namespace Engine::Events
 		MouseMoved,
 		
 		// Window Events
-		WindowClosed
+		WindowClosed,
+		WindowResized
 	};
 
 	enum EventCategory : uint8_t

@@ -1,20 +1,21 @@
 #include "EnginePCH.hpp"
 #include "Camera.hpp"
+#include "Core/Application/Application.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
-//#include <glm/gtx/vector_angle.hpp>
 
 namespace Engine
 {
 	ACamera::ACamera(float FieldOfView, float AspectRatio, float NearClip, float FarClip, glm::vec3 SpawnLocation)
-		: m_FielfOfView(FieldOfView),
-		m_AspectRatio(AspectRatio),
-		m_NearClip(NearClip),
-		m_FarClip(FarClip)
+		:	m_FielfOfView(FieldOfView),
+			m_AspectRatio(AspectRatio),
+			m_NearClip(NearClip),
+			m_FarClip(FarClip)
 	{
 		SetLocation(SpawnLocation);
 		SetRotation(glm::vec3(0.0f, 0.0f, 90.0f));
+
+		m_AspectRatio = (float)(Core::Application::Get()->GetWindow()->GetWidth()) / (float)(Core::Application::Get()->GetWindow()->GetHeight());
 
 		UpdateProjection();
 		UpdateView();
@@ -35,7 +36,6 @@ namespace Engine
 
 	void ACamera::UpdateProjection(void)
 	{
-		m_AspectRatio = 1280.0f / 720.0f;
 		m_ProjectionMat = glm::perspective(glm::radians(m_FielfOfView), m_AspectRatio, m_NearClip, m_FarClip);
 	}
 

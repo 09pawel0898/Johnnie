@@ -106,4 +106,10 @@ namespace Engine::RHI
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+
+	uint32_t OpenGLFrameBuffer::GetRendererID(void) const
+	{
+		Check(m_ColorAttachments.size() == 1);
+		return m_ColorAttachments[0];
+	}
 }

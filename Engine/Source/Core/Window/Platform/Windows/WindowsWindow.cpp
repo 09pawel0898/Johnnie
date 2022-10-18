@@ -7,7 +7,7 @@
 #include "Events/MouseEvent.hpp"
 #include "Core/Exceptions/InitializationException.hpp"
 #include "Log/Log.hpp"
-
+#include "Core/Application/ApplicationDelegates.hpp"
 #include "../CoreGLFW.hpp"
 #include "imgui.h"
 
@@ -127,6 +127,20 @@ namespace Engine::Core
 			Events::MouseMovedEvent mouseMovedEvent(NewX, NewY);
 			properties->EventCallback(mouseMovedEvent);
 		});
+
+		glfwSetWindowSizeCallback(m_WindowHandle, [](GLFWwindow* Window, int Width, int Height)
+		{
+			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
+			Check(properties);
+
+			properties->Width = Width;
+			properties->Height = Height;
+			
+			Events::WindowResizedEvent windowResizedEvent(Width, Height);
+			properties->EventCallback(windowResizedEvent);
+
+			ApplicationDelegates::Get()->OnWindowResized.Broadcast((int32_t)Width, (int32_t)Height);
+		});
 	}
 
 	bool WindowsWindow::InitNativeWindow(WindowProperties const& Properties)
@@ -136,7 +150,7 @@ namespace Engine::Core
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, GLFW::CONTEXT_VERSION_MINOR);
 
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW::WINDOW_RESIZEABLE);
+		glfwWindowHint(GLFW_RESIZABLE,GLFW_TRUE);
 
 #ifndef NDEBUG
 		glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);

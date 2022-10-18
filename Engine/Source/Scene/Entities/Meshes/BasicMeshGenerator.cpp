@@ -134,9 +134,9 @@ namespace Engine
 				v.TexUV.x = (float)(theta / std::numbers::pi);
 				v.TexUV.y = (float)(phi / std::numbers::pi);
 
-				v.Tangent.x = -Radius * sinf(phi) * sinf(theta);
+				v.Tangent.x = -Radius * sinf((float)phi) * sinf((float)theta);
 				v.Tangent.y = 0.0f;
-				v.Tangent.z = +Radius * sinf(phi) * cosf(theta);
+				v.Tangent.z = +Radius * sinf((float)phi) * cosf((float)theta);
 
 				sphereVertices.push_back(v);
 			}

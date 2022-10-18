@@ -12,9 +12,9 @@
 
 void JohnnieScene::OnAwake(void)
 {
-	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f);	
+	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f, glm::vec3( 0.f,1.5f,-6.f ));
 	m_PointLight		= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
-	m_DirectionalLight	= NewActor<ADirectionalLight>(); // DefaultDirection = { -0.2f,-1.0f,-0.3f }
+	m_DirectionalLight	= NewActor<ADirectionalLight>();
 	
 	CameraController::Get()->SetViewTarget(m_Camera);
 
@@ -63,7 +63,7 @@ void JohnnieScene::InitGui(void)
 void JohnnieScene::InitLighting(void)
 {
 	m_PointLight->GetData().Ambient = 0.f;
-	
+
 	m_PointLight->SetVisibility(false);
 	m_PointLight->SetBoxMeshVisibility(false);
 

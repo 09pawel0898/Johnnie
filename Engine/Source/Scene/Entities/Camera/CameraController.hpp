@@ -29,6 +29,7 @@ namespace Engine
 		void OnTick(double DeltaTime);
 
 		void SetViewTarget(std::shared_ptr<ACamera> Camera);
+		void SetCameraAspectRatio(float AspectRatio);
 
 	public:
 		std::shared_ptr<ACamera> const& GetCamera(void) const
@@ -50,4 +51,13 @@ namespace Engine
 			m_ControlledCamera->SetTickEnabled(true);
 		}
 	}
+
+	FORCEINLINE void CameraController::SetCameraAspectRatio(float AspectRatio)
+	{
+		if (m_ControlledCamera)
+		{
+			m_ControlledCamera->SetAspectRatio(AspectRatio);
+		}
+	}
+
 }

@@ -11,13 +11,13 @@ public:
 		:	Core::Application(Core::WindowProperties("Johnnie", 1280, 720))
 	{
 		SetFPSLimit(60);
-		SceneManager::Get()->SetScene(std::make_unique<JohnnieScene>());
 	}
 
 	virtual void PostInitApplication(void) override
 	{
 		Super::PostInitApplication();
 
+		SceneManager::Get()->SetScene(std::make_unique<JohnnieScene>());
 		GetGuiProperties().EnableDocking();
 	}
 
