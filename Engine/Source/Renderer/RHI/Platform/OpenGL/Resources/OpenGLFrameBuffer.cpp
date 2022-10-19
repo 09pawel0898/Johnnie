@@ -40,11 +40,17 @@ namespace Engine::RHI
 		{
 			glDeleteFramebuffers(1, &m_ID);
 			glDeleteTextures((GLsizei)m_ColorAttachments.size(), m_ColorAttachments.data());
+			if (m_DepthStencilAttachment != 0)
+			{
+				glDeleteTextures(1, &m_DepthStencilAttachment);
+			}
 			m_ColorAttachments.clear();
 		}
 
 		glGenFramebuffers(1, &m_ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
+
+		bool isMultiSample = m_Specification.Samples > 1;
 
 		if (!m_Specification.GetAttachmentsSpecificationByType(RHIFrameBufferAttachmentType::Color).empty())
 		{
@@ -55,22 +61,32 @@ namespace Engine::RHI
 			for (int8_t idx = 0; idx < colorAttachmentsSize; idx++)
 			{
 				glGenTextures(1, &m_ColorAttachments[idx]);
-				glBindTexture(GL_TEXTURE_2D, m_ColorAttachments[idx]);
+				glBindTexture(isMultiSample? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_ColorAttachments[idx]);
 
 				if(m_Specification.GetAttachmentsSpecificationByType(RHIFrameBufferAttachmentType::Color)[idx].Format == RHIFrameBufferAttachmentTextureFormat::RGBA8)
 				{
-					glTexImage2D(	GL_TEXTURE_2D, 0, GL_RGB, 
-									m_Specification.Width, m_Specification.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+					if (!isMultiSample)
+					{
+						glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8,
+							m_Specification.Width, m_Specification.Height, 0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+					
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+						glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+					}
+					else
+					{
+						glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Specification.Samples, GL_RGBA8, m_Specification.Width, m_Specification.Height, GL_FALSE);
+					}
 				}
 				else
 				{
 					Check(false);
 				}
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ColorAttachments[idx], 0);
+				glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + idx, isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_ColorAttachments[idx], 0);
 			}
 		}
 
@@ -82,22 +98,29 @@ namespace Engine::RHI
 			FramebufferAttachmentSpecification depthStencilSpecification = specifications[0];
 			
 			glGenTextures(1, &m_DepthStencilAttachment);
-			glBindTexture(GL_TEXTURE_2D, m_DepthStencilAttachment);
+			glBindTexture(isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_DepthStencilAttachment);
 
 			if (depthStencilSpecification.Format == RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8)
 			{
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8,
-					m_Specification.Width, m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+				if (!isMultiSample)
+				{
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8,
+						m_Specification.Width, m_Specification.Height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, nullptr);
+					
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				}
+				else
+				{
+					glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Specification.Samples, GL_DEPTH24_STENCIL8, m_Specification.Width, m_Specification.Height, GL_FALSE);
+				}
 			}
 			else
 			{
 				Check(false);
 			}
 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, m_DepthStencilAttachment, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_DepthStencilAttachment, 0);
 		}
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -109,7 +132,36 @@ namespace Engine::RHI
 
 	uint32_t OpenGLFrameBuffer::GetRendererID(void) const
 	{
-		Check(m_ColorAttachments.size() == 1);
-		return m_ColorAttachments[0];
+		return m_ID;
+	}
+
+	void OpenGLFrameBuffer::ResolveToScreen(void)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_ID);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+		glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	}
+
+	void OpenGLFrameBuffer::ResolveToFramebuffer(std::unique_ptr<RHIFrameBuffer> const& FrameBuffer)
+	{
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_ID);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FrameBuffer->GetRendererID());
+
+		glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+	}
+
+	uint32_t OpenGLFrameBuffer::GetColorAttachmentID(int32_t Index)
+	{
+		CheckMsg(m_ColorAttachments.size() > Index, "Color attachment of requested index is not available.");
+		
+		return m_ColorAttachments[Index];
+	}
+
+	uint32_t OpenGLFrameBuffer::GetDepthStencilAttachmentID(void)
+	{
+		CheckMsg(m_DepthStencilAttachment != 0, "DepthStencil attachment is not available.");
+
+		return m_DepthStencilAttachment;
 	}
 }

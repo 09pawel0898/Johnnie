@@ -18,7 +18,7 @@ void JohnnieScene::OnAwake(void)
 	
 	CameraController::Get()->SetViewTarget(m_Camera);
 
-	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 200, 200);
+	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 100, 100);
 	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
 	
 	InitGui();

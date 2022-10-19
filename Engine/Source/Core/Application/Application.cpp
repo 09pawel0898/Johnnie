@@ -67,10 +67,16 @@ namespace Engine::Core
         Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
        
         Renderer::Get()->InitializeFramebuffer("RenderWorld", 
-            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1, 
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 8, 
                 { 
                     {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8},
                     {RHIFrameBufferAttachmentType::DepthStencil,RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8}
+                }));
+
+        Renderer::Get()->InitializeFramebuffer("RenderWorldSingleSample", 
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1, 
+                { 
+                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
                 }));
 
         while (m_bRunning)
@@ -115,6 +121,8 @@ namespace Engine::Core
                     layer->OnRender();
                 }
             }
+            Renderer::Get()->GetFramebuffer("RenderWorld")->ResolveToFramebuffer(
+                Renderer::Get()->GetFramebuffer("RenderWorldSingleSample"));
 
             {
                 PROFILE_SCOPE("RendererStats_RenderGUIDuration");

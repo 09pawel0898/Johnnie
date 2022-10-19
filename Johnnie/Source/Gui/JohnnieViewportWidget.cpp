@@ -24,7 +24,7 @@ void WJohnnieViewportWidget::OnRenderGui(void)
     }
     m_PrevFrameViewportSize = m_ViewportSize;
     
-    ImGui::GetWindowDrawList()->AddImage(   (void*)(intptr_t)Renderer::Get()->GetFramebuffer("RenderWorld")->GetRendererID(),
+    ImGui::GetWindowDrawList()->AddImage(   (void*)(intptr_t)Renderer::Get()->GetFramebuffer("RenderWorldSingleSample")->GetColorAttachmentID(0),
                                             ImVec2(ImGui::GetCursorScreenPos()),
                                             ImVec2(ImGui::GetCursorScreenPos().x + m_ViewportSize.x,ImGui::GetCursorScreenPos().y + m_ViewportSize.y), 
                                             ImVec2(0, 1), 

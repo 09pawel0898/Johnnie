@@ -68,5 +68,11 @@ namespace Engine::RHI
 		virtual void Invalidate(void) = 0;
 
 		virtual uint32_t GetRendererID(void) const = 0;
+
+		virtual void ResolveToScreen(void) = 0;
+		virtual void ResolveToFramebuffer(std::unique_ptr<RHIFrameBuffer> const& FrameBuffer) = 0;
+
+		virtual uint32_t GetColorAttachmentID(int32_t Index) = 0;
+		virtual uint32_t GetDepthStencilAttachmentID(void) = 0;
 	};
 }
