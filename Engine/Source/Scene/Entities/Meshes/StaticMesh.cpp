@@ -327,7 +327,7 @@ namespace Engine
 
     void AStaticMesh::SetMaterialForSlot(uint8_t SlotIndex, std::shared_ptr<Material> Material)
     {
-        if (SlotIndex > m_Materials.size() - 1)
+        if (SlotIndex > m_Materials.size() - 1 || m_Materials.size() == 0)
         {
             LOG(Materials, Warning, "Bad index. Tried to set new material in slot of index {0}. Available slots for this static mesh : [0-{1}]",
                 SlotIndex, m_Materials.size()-1);

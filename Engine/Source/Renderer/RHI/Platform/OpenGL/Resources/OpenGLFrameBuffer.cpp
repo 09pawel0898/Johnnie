@@ -23,9 +23,40 @@ namespace Engine::RHI
 
 	void OpenGLFrameBuffer::Bind(void)
 	{
+		glViewport(0, 0, m_Specification.Width, m_Specification.Height);
+
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
 		
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // we're not using the stencil buffer now
+		if (m_Specification.FaceCullingType == RHIFaceCullingType::None)
+		{
+			glDisable(GL_CULL_FACE);
+		}
+		else if (m_Specification.FaceCullingType == RHIFaceCullingType::Front)
+		{
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_FRONT);
+		}
+		else if (m_Specification.FaceCullingType == RHIFaceCullingType::Back)
+		{
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+		}
+
+		GLuint flags = 0x0;
+		if (m_ColorAttachments.size() != 0)
+		{
+			flags |= GL_COLOR_BUFFER_BIT;
+		}
+		if (m_DepthStencilAttachment)
+		{
+			flags |= GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT;
+		}
+		if (m_DepthAttachment)
+		{
+			flags |= GL_DEPTH_BUFFER_BIT;
+		}
+
+		glClear(flags); // we're not using the stencil buffer now
 		glEnable(GL_DEPTH_TEST);
 	}
 
@@ -166,6 +197,7 @@ namespace Engine::RHI
 
 		if (m_ColorAttachments.size() == 0)
 		{
+			glReadBuffer(GL_NONE);
 			glDrawBuffer(GL_NONE);
 		}
 

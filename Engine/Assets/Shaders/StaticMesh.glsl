@@ -211,9 +211,25 @@ void main()
 	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir);
 	
 	float visibility = 1.0;
-	if(texture(uTextureShadowMap,ShadowCoord.xy).z < ShadowCoord.z)
+	float temp = clamp(dot(norm,uDirectionalLight.Direction),0.0,1.0);
+	
+	float bias = 0.005 * tan(acos(temp));
+	bias = clamp(bias,0.0,0.01);
+	
+	vec2 poissonDisk[4] = vec2[](
+		vec2( -0.94201624, -0.39906216 ),
+		vec2( 0.94558609, -0.76890725 ),
+		vec2( -0.094184101, -0.92938870 ),
+		vec2( 0.34495938, 0.29387760 )
+	);
+
+	for (int i=0;i<4;i++)
 	{
-		visibility = 0.5;
+		
+		if ( texture( uTextureShadowMap, ShadowCoord.xy + poissonDisk[i]/700.0 ).x  <  ShadowCoord.z-bias )
+		{
+			visibility-=0.2;
+		}
 	}
 	result *= visibility;
 	

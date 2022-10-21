@@ -25,6 +25,13 @@ namespace Engine::RHI
 		RHIFrameBufferAttachmentTextureFormat Format;
 	};
 
+	enum class RHIFaceCullingType : uint8_t
+	{
+		None = 0,
+		Front,
+		Back
+	};
+
 	class RHIFrameBufferSpecification
 	{
 	private:
@@ -34,12 +41,13 @@ namespace Engine::RHI
 		uint32_t Samples{ 1 };
 		uint32_t Width{ 0 };
 		uint32_t Height{ 0 };
+		RHIFaceCullingType FaceCullingType;
 
 	public:
 		RHIFrameBufferSpecification() = default;
 
-		RHIFrameBufferSpecification(uint32_t Width, uint32_t Height, uint32_t Samples, std::vector<FramebufferAttachmentSpecification> const& AttachmentsSpecification)
-			:	Samples(Samples), Width(Width), Height(Height), AttachmentsSpecification(AttachmentsSpecification)
+		RHIFrameBufferSpecification(uint32_t Width, uint32_t Height, uint32_t Samples, std::vector<FramebufferAttachmentSpecification> const& AttachmentsSpecification, RHIFaceCullingType FaceCullingType = RHIFaceCullingType::None)
+			:	Samples(Samples), Width(Width), Height(Height), AttachmentsSpecification(AttachmentsSpecification), FaceCullingType(FaceCullingType)
 		{}
 
 		uint32_t GetAttachmentsCountByType(RHIFrameBufferAttachmentType Type);

@@ -85,10 +85,16 @@ namespace Engine
 
 			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
 			{
-				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
-				Shader->SetMat4("uDepthBiasMVP", depthVP * ModelMat);
-			}
+				glm::mat4 biasMatrix(
+					0.5, 0.0, 0.0, 0.0,
+					0.0, 0.5, 0.0, 0.0,
+					0.0, 0.0, 0.5, 0.0,
+					0.5, 0.5, 0.5, 1.0
+				);
 
+				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
+				Shader->SetMat4("uDepthBiasMVP", biasMatrix * depthVP * ModelMat);
+			}
 		}
 		else
 		{

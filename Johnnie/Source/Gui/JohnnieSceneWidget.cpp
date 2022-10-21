@@ -104,7 +104,7 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				ImGui::Dummy(ImVec2(0, 2));
 				if (ImGui::SliderFloat("Light Angle", &m_DirectionalLightAngle, 0.f, 360.f))
 				{
-					static glm::vec3 v = { -0.2f,-1.0f,-0.3f };
+					static glm::vec3 v = { -0.8f,-1.0f,-0.8f };
 					directionalLight->SetDirection(glm::rotateY(v, glm::radians(m_DirectionalLightAngle)));
 				}
 				ImGui::Dummy(ImVec2(0, 2));

@@ -15,14 +15,30 @@ void JohnnieScene::OnAwake(void)
 	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f, glm::vec3( 0.f,1.5f,-6.f ));
 	m_PointLight		= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
 	m_DirectionalLight	= NewActor<ADirectionalLight>();
-	
+
+	m_DirectionalLight->SetDirection({ -0.8f,-1.0f,-0.8f });
+
 	CameraController::Get()->SetViewTarget(m_Camera);
-	m_Platform = NewActor<AStaticMesh>("Assets/Models/3d-model.fbx");
-	m_Platform->SetScale(glm::vec3(0.001f, 0.001f, 0.001f));
-	m_Platform->SetLocation(glm::vec3(5.f,-1.f,0.f));
-	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 100, 100);
-	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
+
+	m_Platform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
+	//m_Platform->SetScale(glm::vec3(0.001f, 0.001f, 0.001f));
+	m_Platform->SetLocation(glm::vec3(0.f,-0.1f,0.f));
+	m_Platform->SetScale(glm::vec3(12.f,1.f,12.f));
 	
+	//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 25, 25);
+	//m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
+	
+
+	
+	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda([this](AStaticMesh* s) 
+	{
+			m_Platform->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
+			auto mat = m_Platform->GetMaterialInSlot(0);
+			if (mat.has_value())
+			{
+				mat->get()->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
+			}
+	});
 	InitGui();
 	InitLighting();
 }

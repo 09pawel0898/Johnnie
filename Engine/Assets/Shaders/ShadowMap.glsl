@@ -1,4 +1,4 @@
-#shader vertex
+ #shader vertex
 
 #version 460 core
 
@@ -15,9 +15,6 @@ void main()
 
 #version 460 core
 
-layout(location = 0) out float fragDepth;
-
 void main()
 {
-    fragDepth = gl_FragCoord.z;
 }

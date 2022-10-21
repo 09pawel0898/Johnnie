@@ -71,19 +71,21 @@ namespace Engine::Core
                 { 
                     {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8},
                     {RHIFrameBufferAttachmentType::DepthStencil,RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8}
-                }));
+                },RHIFaceCullingType::Back));
 
-        Renderer::Get()->InitializeFramebuffer("RenderWorldSingleSample", 
-            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1, 
-                { 
+        Renderer::Get()->InitializeFramebuffer("RenderWorldSingleSample",
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1,
+                {
                     {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
-                }));  
+                }));
         
         Renderer::Get()->InitializeFramebuffer("ShadowMap", 
-            RHIFrameBufferSpecification(1024, 1024, 1,
+            RHIFrameBufferSpecification(2048, 2048, 1,
                 { 
                     {RHIFrameBufferAttachmentType::Depth,RHIFrameBufferAttachmentTextureFormat::DEPTH16}
-                }));
+                },RHIFaceCullingType::Front));
+
+        Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/DepthTexture.png");
 
         while (m_bRunning)
         {

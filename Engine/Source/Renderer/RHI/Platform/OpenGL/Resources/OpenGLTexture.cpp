@@ -62,17 +62,25 @@ namespace Engine::RHI
 
 		if (bytes)
 		{
-			GLenum dataFormat = 0;
+
+			GLenum internalFormat = 0, format = 0;
 
 			if (numColChannels == 4)
 			{
-				dataFormat = GL_RGBA;
+				internalFormat = GL_RGBA;
+				format = GL_RGBA;
 			}
 			else if (numColChannels == 3)
 			{
-				dataFormat = GL_RGB;
+				internalFormat = GL_RGB;
+				format = GL_RGB;
 			}
-
+			else if (numColChannels == 1)
+			{ 
+				internalFormat = GL_RED;
+				format = GL_RED_INTEGER;
+			}
+				
 			glGenTextures(1, &m_ID);
 			glBindTexture(GL_TEXTURE_2D, m_ID);
 
@@ -82,7 +90,7 @@ namespace Engine::RHI
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			glTexImage2D(GL_TEXTURE_2D, 0, dataFormat, m_Width, m_Height, 0, dataFormat, GL_UNSIGNED_BYTE, bytes);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, m_Width, m_Height, 0, internalFormat, GL_UNSIGNED_BYTE, bytes);
 			glGenerateMipmap(GL_TEXTURE_2D);
 
 			stbi_image_free(bytes);

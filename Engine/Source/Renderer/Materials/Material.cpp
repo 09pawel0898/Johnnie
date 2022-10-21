@@ -122,6 +122,7 @@ namespace Engine
 			}
 			
 			OpenGLTexture2D::BindOpenGLTexture(Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), 3);
+			//Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/DepthTexture.png")->Bind(3);
 			Shader->SetInt("uTextureShadowMap", 3);
 		}
 	}
