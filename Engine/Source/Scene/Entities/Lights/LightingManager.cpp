@@ -40,9 +40,22 @@ namespace Engine
         {
             return std::nullopt;
         }
-        if (auto pointLight = m_DirectionalLights[0].second.lock())
+        if (auto directionalLight = m_DirectionalLights[0].second.lock())
         {
-            return pointLight->GetData();
+            return directionalLight->GetData();
+        }
+        return std::nullopt;
+    }
+
+    std::optional<glm::mat4> LightingManager::GetDirectionalLightDepthVP(void) const
+    {
+        if (m_DirectionalLights.size() != 1)
+        {
+            return std::nullopt;
+        }
+        if (auto directionalLight = m_DirectionalLights[0].second.lock())
+        {
+            return directionalLight->GetDepthVP();
         }
         return std::nullopt;
     }

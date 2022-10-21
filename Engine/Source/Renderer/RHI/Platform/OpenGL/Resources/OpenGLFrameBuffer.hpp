@@ -11,6 +11,7 @@ namespace Engine::RHI
 
 		std::vector<uint32_t>	m_ColorAttachments;
 		uint32_t				m_DepthStencilAttachment;
+		uint32_t				m_DepthAttachment;
 
 	public:
 		OpenGLFrameBuffer(RHIFrameBufferSpecification const& Specification);
@@ -27,5 +28,6 @@ namespace Engine::RHI
 
 		virtual uint32_t GetColorAttachmentID(int32_t Index) override;
 		virtual uint32_t GetDepthStencilAttachmentID(void) override;
+		virtual uint32_t GetDepthAttachmentID(void) override;
 	};
 }

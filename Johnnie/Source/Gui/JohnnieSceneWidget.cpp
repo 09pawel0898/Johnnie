@@ -124,6 +124,8 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
 
 				ImGui::Separator();
+
+				ImGui::Image((void*)(intptr_t)Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), ImVec2(256, 256));
 			}
 			ImGui::TreePop();
 		}

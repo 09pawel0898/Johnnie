@@ -77,6 +77,12 @@ namespace Engine::Core
             RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1, 
                 { 
                     {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
+                }));  
+        
+        Renderer::Get()->InitializeFramebuffer("ShadowMap", 
+            RHIFrameBufferSpecification(1024, 1024, 1,
+                { 
+                    {RHIFrameBufferAttachmentType::Depth,RHIFrameBufferAttachmentTextureFormat::DEPTH16}
                 }));
 
         while (m_bRunning)
@@ -108,6 +114,24 @@ namespace Engine::Core
                 layer->OnTick(m_DeltaTime);
             }
         }
+
+
+        // Render ShadowMap //
+
+        {
+            Renderer::Get()->bIsRenderingShadowMap = true;
+            PROFILE_SCOPE("RendererStats_RenderShadowMap");
+
+            Renderer::Get()->BindFramebuffer("ShadowMap");
+            for (auto& layer : *m_LayerManager)
+            {
+                layer->OnRender();
+            }
+
+            Renderer::Get()->bIsRenderingShadowMap = false;
+        }
+
+        // //
 
         Renderer::Get()->OnBeginRenderingFrame();
         {

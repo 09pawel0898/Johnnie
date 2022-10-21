@@ -48,6 +48,8 @@ namespace Engine
 		DirectionalLightData const& GetData(void) const;
 		DirectionalLightData& GetData(void);
 
+		glm::mat4 GetDepthVP(void);
+
 		void SetVisibility(bool Visible);
 
 	private:

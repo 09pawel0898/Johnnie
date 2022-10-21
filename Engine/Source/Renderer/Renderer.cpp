@@ -2,7 +2,7 @@
 
 #include "Renderer.hpp"
 #include "Scene/Entities/Camera/CameraController.hpp"
-
+#include "Scene/SceneManager.hpp"
 #include "RHI/Resources/RHIShader.hpp"
 #include "RHI/RHICommand.hpp"
 #include "RHI/Resources/RHIFrameBuffer.hpp"
@@ -73,14 +73,32 @@ namespace Engine
 
 	void Renderer::Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
 	{
-		auto const& camera = CameraController::Get()->GetCamera();
-		Shader->Bind();
-		Shader->SetFloat3("uCameraPosition", camera->GetLocation());
-		Shader->SetMat4("uViewMat", camera->GetViewMat());
-		Shader->SetMat4("uProjMat", camera->GetProjectionMat());
-		Shader->SetMat4("uModelMat", ModelMat);
-		Shader->SetMat3("uNormalMat", glm::mat3(glm::transpose(glm::inverse(ModelMat))));
-		
+		if(!bIsRenderingShadowMap)
+		{
+			auto const& camera = CameraController::Get()->GetCamera();
+			Shader->Bind();
+			Shader->SetFloat3("uCameraPosition", camera->GetLocation());
+			Shader->SetMat4("uViewMat", camera->GetViewMat());
+			Shader->SetMat4("uProjMat", camera->GetProjectionMat());
+			Shader->SetMat4("uModelMat", ModelMat);
+			Shader->SetMat3("uNormalMat", glm::mat3(glm::transpose(glm::inverse(ModelMat))));
+
+			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
+			{
+				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
+				Shader->SetMat4("uDepthBiasMVP", depthVP * ModelMat);
+			}
+
+		}
+		else
+		{
+			Shader->Bind();
+			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
+			{
+				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
+				Shader->SetMat4("uDepthMVP", depthVP * ModelMat);
+			}
+		}
 		RHICommand::DrawIndexed(VertexArray);
 
 		s_RendererStats.DrawCalls++;

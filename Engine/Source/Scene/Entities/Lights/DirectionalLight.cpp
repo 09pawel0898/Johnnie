@@ -54,4 +54,12 @@ namespace Engine
 			UnRegisterLight();
 		}
 	}
+	
+	glm::mat4 ADirectionalLight::GetDepthVP(void)
+	{	
+		glm::mat4 depthProjectionMatrix = glm::ortho<float>(-10, 10, -10, 10, -10, 20);
+		glm::mat4 depthViewMatrix = glm::lookAt(glm::vec3(-10, 10, 10), m_LightData.Direction, glm::vec3(0, 1, 0));
+		glm::mat4 depthMVP = depthProjectionMatrix * depthViewMatrix;
+		return depthMVP;
+	}
 }

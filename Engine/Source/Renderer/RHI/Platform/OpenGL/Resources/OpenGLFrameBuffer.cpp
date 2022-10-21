@@ -109,6 +109,10 @@ namespace Engine::RHI
 					
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 				}
 				else
 				{
@@ -121,6 +125,48 @@ namespace Engine::RHI
 			}
 
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_DepthStencilAttachment, 0);
+		}
+		
+		if (m_Specification.GetAttachmentsCountByType(RHIFrameBufferAttachmentType::Depth) == 1)
+		{
+			auto specifications = m_Specification.GetAttachmentsSpecificationByType(RHIFrameBufferAttachmentType::Depth);
+			Check(specifications.size() == 1);
+
+			FramebufferAttachmentSpecification depthSpecification = specifications[0];
+			
+			glGenTextures(1, &m_DepthAttachment);
+			glBindTexture(isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_DepthAttachment);
+
+			if (depthSpecification.Format == RHIFrameBufferAttachmentTextureFormat::DEPTH16)
+			{
+				if (!isMultiSample)
+				{
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT16,
+						m_Specification.Width, m_Specification.Height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
+					
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				}
+				else
+				{
+					glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, m_Specification.Samples, GL_DEPTH_COMPONENT16, m_Specification.Width, m_Specification.Height, GL_FALSE);
+				}
+			}
+			else
+			{
+				Check(false);
+			}
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, isMultiSample ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D, m_DepthAttachment, 0);
+		}
+
+		if (m_ColorAttachments.size() == 0)
+		{
+			glDrawBuffer(GL_NONE);
 		}
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
@@ -163,5 +209,12 @@ namespace Engine::RHI
 		CheckMsg(m_DepthStencilAttachment != 0, "DepthStencil attachment is not available.");
 
 		return m_DepthStencilAttachment;
+	}
+
+	uint32_t OpenGLFrameBuffer::GetDepthAttachmentID(void)
+	{
+		CheckMsg(m_DepthAttachment != 0, "DepthStencil attachment is not available.");
+
+		return m_DepthAttachment;
 	}
 }

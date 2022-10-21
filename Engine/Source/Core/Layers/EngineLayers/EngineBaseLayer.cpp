@@ -67,5 +67,6 @@ namespace Engine
 		shaderManager.LoadResource("Shader_StaticMesh",		"Assets/Shaders/StaticMesh.glsl");
 		shaderManager.LoadResource("Shader_EmissiveMesh",	"Assets/Shaders/EmissiveMesh.glsl");
 		shaderManager.LoadResource("Shader_Wireframe",		"Assets/Shaders/Wireframe.glsl");
+		shaderManager.LoadResource("Shader_ShadowMap",		"Assets/Shaders/ShadowMap.glsl");
 	}
 }

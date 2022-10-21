@@ -47,6 +47,10 @@ namespace Engine
 	{
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
 
+		if (Renderer::Get()->bIsRenderingShadowMap)
+		{
+			return shaderManager.GetResource("Shader_ShadowMap");
+		}
 		if (IsMaterialEmmissive)
 		{
 			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
@@ -68,8 +72,10 @@ namespace Engine
 		{
 			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
-			Material->Bind(meshShader);
-
+			if(!Renderer::Get()->bIsRenderingShadowMap)
+			{
+				Material->Bind(meshShader);
+			}
 			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
 		};
 
@@ -87,8 +93,11 @@ namespace Engine
 		else
 		{
 			auto& meshShader = GetShaderForMesh(false);
-			DefaultMaterials::BasicWhite->Bind(meshShader);
 
+			if (!Renderer::Get()->bIsRenderingShadowMap)
+			{
+				DefaultMaterials::BasicWhite->Bind(meshShader);
+			}
 			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
 		}
 

@@ -8,13 +8,15 @@ namespace Engine::RHI
 		None = 0,
 
 		RGBA8,
-		DEPTH24STENCIL8
+		DEPTH24STENCIL8,
+		DEPTH16,
 	};
 
 	enum class RHIFrameBufferAttachmentType : uint8_t
 	{
 		Color = 0,
-		DepthStencil
+		DepthStencil,
+		Depth
 	};
 
 	struct FramebufferAttachmentSpecification
@@ -74,5 +76,6 @@ namespace Engine::RHI
 
 		virtual uint32_t GetColorAttachmentID(int32_t Index) = 0;
 		virtual uint32_t GetDepthStencilAttachmentID(void) = 0;
+		virtual uint32_t GetDepthAttachmentID(void) = 0;
 	};
 }

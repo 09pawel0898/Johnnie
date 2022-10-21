@@ -3,6 +3,8 @@
 #include "Material.hpp"
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
+#include "Renderer/RHI/Platform/OpenGL/Resources/OpenGLTexture.hpp"
+#include "Renderer/Renderer.hpp"
 
 namespace Engine
 {
@@ -118,6 +120,9 @@ namespace Engine
 				std::string texName = GetUniformNameByTextureType(m_MaterialTextures.NormalTexture->GetType());
 				Shader->SetInt(texName.c_str(), 2);
 			}
+			
+			OpenGLTexture2D::BindOpenGLTexture(Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), 3);
+			Shader->SetInt("uTextureShadowMap", 3);
 		}
 	}
 }

@@ -17,7 +17,9 @@ void JohnnieScene::OnAwake(void)
 	m_DirectionalLight	= NewActor<ADirectionalLight>();
 	
 	CameraController::Get()->SetViewTarget(m_Camera);
-
+	m_Platform = NewActor<AStaticMesh>("Assets/Models/3d-model.fbx");
+	m_Platform->SetScale(glm::vec3(0.001f, 0.001f, 0.001f));
+	m_Platform->SetLocation(glm::vec3(5.f,-1.f,0.f));
 	m_Model = BasicMeshGenerator::CreateSphere(1.5f, 100, 100);
 	m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
 	

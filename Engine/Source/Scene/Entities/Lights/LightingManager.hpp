@@ -33,6 +33,8 @@ namespace Engine
 		void UnregisterDirectionalLight(OUUID const& LightID);
 		std::optional<DirectionalLightData> GetDirectionalLightData(void) const;
 
+		std::optional<glm::mat4> GetDirectionalLightDepthVP(void) const;
+
 	private:
 		template <typename TLightsContainer>
 		void UnregisterLight_Internal(OUUID const& LightID, TLightsContainer& LightsContainer);

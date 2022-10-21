@@ -10,11 +10,13 @@ out vec2 TexCoord;
 out vec3 Normal;
 out vec3 FragWorldPos;
 out mat3 TBN;
+out vec4 ShadowCoord;
 
 uniform mat4 uProjMat;
 uniform mat4 uViewMat;
 uniform mat4 uModelMat;
 uniform mat3 uNormalMat;
+uniform mat4 uDepthBiasMVP;
 
 void main()
 {
@@ -31,6 +33,7 @@ void main()
 	Normal = uNormalMat * aNormal;
 	TexCoord = aTexUV;
 	FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
+	ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
 }
 
 #shader fragment
@@ -88,9 +91,11 @@ in vec2 TexCoord;
 in vec3 Normal;
 in vec3 FragWorldPos;
 in mat3 TBN; 
+in vec4 ShadowCoord;
 
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
+uniform sampler2D uTextureShadowMap;
 
 vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir)
 {
@@ -205,9 +210,17 @@ void main()
 	
 	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir);
 	
+	float visibility = 1.0;
+	if(texture(uTextureShadowMap,ShadowCoord.xy).z < ShadowCoord.z)
+	{
+		visibility = 0.5;
+	}
+	result *= visibility;
+	
 	for(int i=0; i < uNumPointLights; i++)
 	{
 		result += CalculatePointLight(uPointLights[i],norm,FragWorldPos,viewDir);
 	}
+	
 	FragColor = vec4(result,1.0);
 }

@@ -18,7 +18,11 @@ namespace Engine::RHI
 		virtual uint32_t GetRendererID(void) const override;
 		virtual bool operator==(RHITexture const& rhs) const override;
 	
+		// Temp Utility
+		static void BindOpenGLTexture(uint32_t RendererID, uint32_t Slot);
 	private:
-		bool LoadTextureFromFile(void);
+		bool LoadTextureFromFile(void);	
 	};
+
+	
 }
