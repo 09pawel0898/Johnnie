@@ -386,9 +386,9 @@ void MaterialSlotWidget::OnRenderGui(void)
 
 	// Shininess //
 	ImGui::Dummy(ImVec2(0.f, 5.f));
-	if (ImGui::SliderInt("Shininess", &m_Shininess,1,8))
+	if (ImGui::SliderInt("Shininess", &m_Shininess,1,6))
 	{
-		m_MaterialRef->SetShiness((float)pow(2.0, (double)m_Shininess));
+		m_MaterialRef->SetShiness((float)pow(2.0, (double)(m_Shininess)));
 	}
 	ImGui::Dummy(ImVec2(0.f, 5.f));
 

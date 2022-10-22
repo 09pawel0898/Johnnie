@@ -79,11 +79,11 @@ namespace Engine::Core
                     {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
                 }));
         
-        Renderer::Get()->InitializeFramebuffer("ShadowMap", 
+        Renderer::Get()->InitializeFramebuffer("ShadowMap",
             RHIFrameBufferSpecification(2048, 2048, 1,
-                { 
+                {
                     {RHIFrameBufferAttachmentType::Depth,RHIFrameBufferAttachmentTextureFormat::DEPTH16}
-                },RHIFaceCullingType::Front));
+                }, RHIFaceCullingType::None));
 
         Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/DepthTexture.png");
 

@@ -97,7 +97,7 @@ uniform Material uMaterial;
 uniform vec3 uCameraPosition;
 uniform sampler2D uTextureShadowMap;
 
-vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir)
+vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir, float Shadow)
 {
 	vec3 lightDir;
 
@@ -113,7 +113,7 @@ vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir
 	float diff = max(dot(Normal, lightDir), 0.0);
 
     vec3 halfwayDir = normalize(lightDir + ViewDir);
-	float spec = pow(max(dot(ViewDir, halfwayDir), 0.0), uMaterial.Shiness);
+	float spec = pow(max(dot(Normal, halfwayDir), 0.0), uMaterial.Shiness);
     
 	vec3 diffuse,ambient,specular;
 	
@@ -136,11 +136,11 @@ vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir
 	{
 		specular = uMaterial.Specular * spec * Light.Specular;
 	}
-	return (ambient + diffuse + specular);
+	return (ambient + (1.0-Shadow) * (diffuse + specular));
 }
 
 
-vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewDir)
+vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewDir, float Shadow)
 {
 	vec3 lightDir;
 	
@@ -188,7 +188,50 @@ vec3 CalculatePointLight(PointLight Light, vec3 Normal, vec3 FragPos, vec3 ViewD
 		specular = uMaterial.Specular * spec * Light.Specular * attenuation;
 	}
 	
-    return (ambient + diffuse + specular);
+    return (ambient + (1.0-Shadow)*(diffuse + specular));
+}
+
+float ShadowCalculation(vec4 FragPosLightSpace, vec3 Normal)
+{
+	if(FragPosLightSpace.z > 1.0)
+	{	
+		return 0.0;
+	}	
+	
+	float temp = clamp(dot(Normal,uDirectionalLight.Direction),0.0,1.0);
+	
+	float bias = 0.005 * tan(acos(temp));
+	bias = clamp(bias,0.0,0.01);
+	
+	float currentDepth = FragPosLightSpace.z;
+	
+	//float closestDepth = texture(uTextureShadowMap, FragPosLightSpace.xy).x; 
+    
+    //float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+	
+	vec2 poissonDisk[8] = vec2[]
+	(
+		vec2( -0.94201624, -0.39906216 ),
+		vec2( 0.94558609, -0.76890725 ),
+		vec2( -0.094184101, -0.92938870 ),
+		vec2( 0.34495938, 0.29387760 ),
+		vec2( 0.2, 0.3 ),
+		vec2( 0.6, 0.65 ),
+		vec2( -0.4, 0.85 ),
+		vec2( -0.8, 0.33 )
+	);
+	
+	float shadow = 0.0;
+	
+	for (int i=0;i<8;i++)
+	{
+		float closestDepth = texture(uTextureShadowMap, FragPosLightSpace.xy + poissonDisk[i]/700.0).x; 
+		if(currentDepth - bias > closestDepth)
+		{
+			shadow += 0.125;
+		}
+	}
+    return shadow;
 }
 
 void main()
@@ -196,6 +239,7 @@ void main()
 	vec3 norm;
 	vec3 viewDir;
 
+	
 	if(uMaterial.UseNormalMap)
 	{
 		norm = texture(uMaterial.TextureNormalMap, TexCoord).rgb;
@@ -208,34 +252,36 @@ void main()
 		viewDir = normalize(uCameraPosition - FragWorldPos);	
 	}
 	
-	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir);
+	float shadow = ShadowCalculation(ShadowCoord, norm);  
 	
-	float visibility = 1.0;
-	float temp = clamp(dot(norm,uDirectionalLight.Direction),0.0,1.0);
+	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir,shadow);
 	
-	float bias = 0.005 * tan(acos(temp));
-	bias = clamp(bias,0.0,0.01);
-	
-	vec2 poissonDisk[4] = vec2[](
-		vec2( -0.94201624, -0.39906216 ),
-		vec2( 0.94558609, -0.76890725 ),
-		vec2( -0.094184101, -0.92938870 ),
-		vec2( 0.34495938, 0.29387760 )
-	);
-
-	for (int i=0;i<4;i++)
-	{
-		
-		if ( texture( uTextureShadowMap, ShadowCoord.xy + poissonDisk[i]/700.0 ).x  <  ShadowCoord.z-bias )
-		{
-			visibility-=0.2;
-		}
-	}
-	result *= visibility;
+	//float visibility = 1.0;
+	//float temp = clamp(dot(norm,uDirectionalLight.Direction),0.0,1.0);
+	//
+	//float bias = 0.005 * tan(acos(temp));
+	//bias = clamp(bias,0.0,0.01);
+	//
+	//vec2 poissonDisk[4] = vec2[](
+	//	vec2( -0.94201624, -0.39906216 ),
+	//	vec2( 0.94558609, -0.76890725 ),
+	//	vec2( -0.094184101, -0.92938870 ),
+	//	vec2( 0.34495938, 0.29387760 )
+	//);
+	//
+	//for (int i=0;i<4;i++)
+	//{
+	//	
+	//	if ( texture( uTextureShadowMap, ShadowCoord.xy + poissonDisk[i]/700.0 ).x  <  ShadowCoord.z-bias )
+	//	{
+	//		visibility-=0.2;
+	//	}
+	//}
+	//result *= visibility;
 	
 	for(int i=0; i < uNumPointLights; i++)
 	{
-		result += CalculatePointLight(uPointLights[i],norm,FragWorldPos,viewDir);
+		result += CalculatePointLight(uPointLights[i],norm,FragWorldPos,viewDir,shadow);
 	}
 	
 	FragColor = vec4(result,1.0);

@@ -18,7 +18,7 @@ namespace Engine
 		glm::vec3 BaseColor{ 0.47f,0.47f,0.47f };
 		bool UseDiffuseMap = false;
 
-		glm::vec3 Specular{ 0.6f, 0.6f, 0.6f };
+		glm::vec3 Specular{ 0.08f, 0.08f, 0.08f };
 		bool UseSpecularMap = false;
 
 		bool UseNormalMap = false;

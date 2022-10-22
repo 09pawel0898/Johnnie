@@ -12,9 +12,11 @@
 
 void JohnnieScene::OnAwake(void)
 {
-	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f, glm::vec3( 0.f,1.5f,-6.f ));
+	m_Camera			= NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f, glm::vec3( -3.550f,2.431f,3.814f ));
 	m_PointLight		= NewActor<APointLight>(glm::vec3(0.f, 3.f, 0.f));
 	m_DirectionalLight	= NewActor<ADirectionalLight>();
+
+	m_Camera->SetRotation(glm::vec3(0.f,-7.49f,670.62f));
 
 	m_DirectionalLight->SetDirection({ -0.8f,-1.0f,-0.8f });
 
@@ -37,6 +39,8 @@ void JohnnieScene::OnAwake(void)
 			if (mat.has_value())
 			{
 				mat->get()->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
+				mat->get()->SetSpecular(glm::vec3(0.f));
+
 			}
 	});
 	InitGui();
