@@ -24,7 +24,7 @@ namespace Engine::RHI
 
 		virtual uint32_t GetRendererID(void) const override;
 		virtual void ResolveToScreen(void) override;
-		virtual void ResolveToFramebuffer(std::unique_ptr<RHIFrameBuffer> const& FrameBuffer) override;
+		virtual void ResolveToFramebuffer(TUniquePtr<RHIFrameBuffer> const& FrameBuffer) override;
 
 		virtual uint32_t GetColorAttachmentID(int32_t Index) override;
 		virtual uint32_t GetDepthStencilAttachmentID(void) override;

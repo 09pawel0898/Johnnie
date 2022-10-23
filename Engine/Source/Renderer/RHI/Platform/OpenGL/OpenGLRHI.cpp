@@ -129,13 +129,13 @@ namespace Engine::RHI
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLRHI::DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount)
+	void OpenGLRHI::DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount)
 	{
 		VertexArray->Bind();
 		glDrawArrays(GL_LINES, 0, VertexCount);
 	}
 
-	void OpenGLRHI::DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount)
+	void OpenGLRHI::DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount)
 	{
 		VertexArray->Bind();
 		uint32_t count = IndexCount ? IndexCount : VertexArray->GetIndexBuffer()->GetCount();

@@ -28,7 +28,7 @@ namespace Engine::Core
 		virtual ~IWindow() = default;
 
 		[[nodiscard]]
-		static std::unique_ptr<IWindow> Create(WindowProperties const& Properties = WindowProperties());
+		static TUniquePtr<IWindow> Create(WindowProperties const& Properties = WindowProperties());
 
 	public:
 		/** Native Window Handle */

@@ -7,7 +7,7 @@
 
 namespace Engine
 {
-	void MemoryStatistics::Log(void) const
+	void MemoryStatistics::LogManager(void) const
 	{
 		LOG(Core, Trace, "----------------------------Memory Statistics----------------------------");
 		

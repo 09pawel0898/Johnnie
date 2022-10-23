@@ -21,11 +21,11 @@ namespace Engine
         m_bScheduleModelLoadOnConstruct = true;
     }
 
-    AStaticMesh::AStaticMesh(std::vector<std::shared_ptr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
+    AStaticMesh::AStaticMesh(std::vector<TSharedPtr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation)
     {
         m_bIsModelLoaded = true;
-        m_SubMeshes = std::move(SubMeshes);
+        m_SubMeshes = MoveTemp(SubMeshes);
 
         InitSingleMaterialSlot();
     }
@@ -66,11 +66,11 @@ namespace Engine
         {    
             aiMesh* mesh = Scene->mMeshes[Node->mMeshes[i]];
 
-            std::shared_ptr<Mesh> subMesh = ProcessMesh(mesh, Scene);
+            TSharedPtr<Mesh> subMesh = ProcessMesh(mesh, Scene);
             subMesh->SetStaticMeshOwner(shared_from_this());
             subMesh->GetMeshStatistics().TrisCount = mesh->mNumFaces;
 
-            m_SubMeshes.emplace_back(std::move(subMesh));
+            m_SubMeshes.emplace_back(MoveTemp(subMesh));
         }
     
         for (uint8_t i = 0; i < Node->mNumChildren; i++)
@@ -79,7 +79,7 @@ namespace Engine
         }
     }
     
-    std::shared_ptr<Mesh> AStaticMesh::ProcessMesh(aiMesh* _Mesh, const aiScene* Scene)
+    TSharedPtr<Mesh> AStaticMesh::ProcessMesh(aiMesh* _Mesh, const aiScene* Scene)
     {
         std::vector<RHIVertex> vertices;
         std::vector<uint32_t> indices;
@@ -113,7 +113,7 @@ namespace Engine
             {
                 vertex.TexUV = { 0.f, 0.f };
             }
-            vertices.emplace_back(std::move(vertex));
+            vertices.emplace_back(MoveTemp(vertex));
         }
     
         /** Process indices */
@@ -126,8 +126,8 @@ namespace Engine
             }
         }
         
-        std::shared_ptr<Mesh> subMesh = std::make_shared<Mesh>( std::move(vertices),
-                                                                std::move(indices),
+        TSharedPtr<Mesh> subMesh = MakeShared<Mesh>( MoveTemp(vertices),
+                                                                MoveTemp(indices),
                                                                 true);
 
         /** Process materials */
@@ -166,11 +166,11 @@ namespace Engine
         /* If this material hasn't been processed yet */
         if (m_Materials[MaterialIdx] == nullptr)
         {
-            std::vector<std::shared_ptr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
-            std::vector<std::shared_ptr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
-            std::vector<std::shared_ptr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
+            std::vector<TSharedPtr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
+            std::vector<TSharedPtr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
+            std::vector<TSharedPtr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
             
-            std::vector<std::shared_ptr<RHITexture2D>> materialTextures;
+            std::vector<TSharedPtr<RHITexture2D>> materialTextures;
 
             materialTextures.insert(materialTextures.end(),
                                     std::make_move_iterator(diffuseMaps.begin()),
@@ -186,7 +186,7 @@ namespace Engine
 
             if (materialTextures.size() > 0)
             {
-                m_Materials[MaterialIdx] = std::make_shared<Material>();
+                m_Materials[MaterialIdx] = MakeShared<Material>();
 
                 for (auto& texture : materialTextures)
                 {
@@ -207,9 +207,9 @@ namespace Engine
         }
     }
     
-    std::vector<std::shared_ptr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
+    std::vector<TSharedPtr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
     {
-        std::vector<std::shared_ptr<RHITexture2D>> textures;
+        std::vector<TSharedPtr<RHITexture2D>> textures;
         
         for (uint8_t i = 0; i < Material->GetTextureCount(RHITextureTypeToAssimpTextureType(Type)); i++)
         {
@@ -291,11 +291,11 @@ namespace Engine
         }
     }
 
-    std::shared_ptr<AStaticMesh> AStaticMesh::Clone(void)
+    TSharedPtr<AStaticMesh> AStaticMesh::Clone(void)
     {
-        std::vector<std::shared_ptr<Mesh>> meshes = m_SubMeshes;
+        std::vector<TSharedPtr<Mesh>> meshes = m_SubMeshes;
 
-        std::shared_ptr<AStaticMesh> clone = NewActor<AStaticMesh>(std::move(meshes),GetLocation());
+        TSharedPtr<AStaticMesh> clone = NewActor<AStaticMesh>(MoveTemp(meshes),GetLocation());
 
         clone->m_Materials = m_Materials;
         clone->m_NumMaterials = m_NumMaterials;
@@ -311,7 +311,7 @@ namespace Engine
         return m_Materials.size();
     }
 
-    std::optional<std::reference_wrapper<std::shared_ptr<Material>>> AStaticMesh::GetMaterialInSlot(uint8_t SlotIndex)
+    std::optional<std::reference_wrapper<TSharedPtr<Material>>> AStaticMesh::GetMaterialInSlot(uint8_t SlotIndex)
     {
         if (SlotIndex > m_Materials.size() - 1)
         {
@@ -325,7 +325,7 @@ namespace Engine
         }
     }
 
-    void AStaticMesh::SetMaterialForSlot(uint8_t SlotIndex, std::shared_ptr<Material> Material)
+    void AStaticMesh::SetMaterialForSlot(uint8_t SlotIndex, TSharedPtr<Material> Material)
     {
         if (SlotIndex > m_Materials.size() - 1 || m_Materials.size() == 0)
         {

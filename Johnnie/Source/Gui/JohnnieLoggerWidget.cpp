@@ -1,6 +1,6 @@
 #include "JohnnieLoggerWidget.hpp"
 
-#include "Log/OutputLogSink.hpp"
+#include "Log/Log.hpp"
 #include <regex>
 
 void WJohnnieLoggerWidget::OnRenderGui(void)
@@ -82,12 +82,15 @@ WJohnnieLoggerWidget::WJohnnieLoggerWidget(void)
 void WJohnnieLoggerWidget::InitLoggerSink(void)
 {
     std::shared_ptr<OutputLogSink_mt> outputLogSink = std::make_shared<OutputLogSink_mt>();
-    outputLogSink->BindCustomLoggerFunction(std::bind(&WJohnnieLoggerWidget::AddLog,this,std::placeholders::_1));
+
+    OnCustomOutputLoggerSink cusatomOutputLoggerSinkDelegate;
+    cusatomOutputLoggerSinkDelegate.BindRaw(this, &WJohnnieLoggerWidget::AddLog);
+    outputLogSink->BindCustomLoggerFunction(MoveTemp(cusatomOutputLoggerSinkDelegate));
     
     DEFINE_OUTPUT_LOG_SINK(std::move(outputLogSink));
 }
 
-static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
+static LogManager::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
 {
     auto tryReplaceVerbosity = [&LogMsg](std::string_view ToReplace, std::string_view ReplaceWith) -> bool
     {
@@ -104,31 +107,31 @@ static Log::Verbosity GetVerbosityAndReplace(std::string& LogMsg)
 
     if (tryReplaceVerbosity("[trace]:", "[Trace]:"))
     {
-        return Log::Verbosity::Trace;
+        return LogManager::Verbosity::Trace;
     }
     else if(tryReplaceVerbosity("[info]:", "[Info]:"))
     {
-        return Log::Verbosity::Info;
+        return LogManager::Verbosity::Info;
     } 
     else if(tryReplaceVerbosity("[warning]:", "[Warning]:"))
     {
-        return Log::Verbosity::Warning;
+        return LogManager::Verbosity::Warning;
     }
     else if(tryReplaceVerbosity("[error]:", "[Error]: "))
     {
-        return Log::Verbosity::Error;
+        return LogManager::Verbosity::Error;
     }
-    return Log::Verbosity::Trace;
+    return LogManager::Verbosity::Trace;
 }
 
 void WJohnnieLoggerWidget::AddLog(std::string const& LogMsg)
 {
-    static std::unordered_map<Log::Verbosity, ImVec4> colors =
+    static std::unordered_map<LogManager::Verbosity, ImVec4> colors =
     {
-        {Log::Verbosity::Trace,     ImVec4(255,255,255,255)},
-        {Log::Verbosity::Info,      ImVec4(0,255,0, 255)},
-        {Log::Verbosity::Warning,   ImVec4(255,255,0, 255)},
-        {Log::Verbosity::Error,     ImVec4(255,0,0,255)}
+        {LogManager::Verbosity::Trace,     ImVec4(255,255,255,255)},
+        {LogManager::Verbosity::Info,      ImVec4(0,255,0, 255)},
+        {LogManager::Verbosity::Warning,   ImVec4(255,255,0, 255)},
+        {LogManager::Verbosity::Error,     ImVec4(255,0,0,255)}
     };
 
     std::string fmtLogMsg = LogMsg;

@@ -9,22 +9,23 @@ namespace Engine
 		uint64_t TotalAllocations;
 		uint64_t CurrentlyAllocated;
 
-		void Log(void) const;
+		void LogManager(void) const;
 	};
 
-	class MemoryManager
+	class MemoryManager final
 	{
+		friend class Allocator;
+
 	private:
 		MemoryStatistics m_MemoryStats {};
-
-	public:
-		MemoryManager() 
-		{}
 
 		MemoryStatistics& GetMutableMemoryStats(void)
 		{
 			return m_MemoryStats;
 		}
+
+	public:
+		MemoryManager() = default;
 
 		MemoryStatistics const& GetMemoryStats(void) const
 		{

@@ -87,7 +87,7 @@ namespace Engine
         MaterialUniform sphereMatUniform;
         sphereMatUniform.BaseColor = m_LightData.Color;
 
-        m_SphereEmissiveMaterial = std::make_shared<Material>(std::move(sphereMatUniform));
+        m_SphereEmissiveMaterial = MakeShared<Material>(MoveTemp(sphereMatUniform));
         m_SphereEmissiveMaterial->SetMaterialEmissive(true);
 
         m_SphereMesh->SetHardMaterialReference(m_SphereEmissiveMaterial);

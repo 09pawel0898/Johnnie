@@ -41,7 +41,7 @@ namespace Engine::RHI
 		virtual void SetData(const void* Data, uint32_t Size) override;
 		virtual const void* GetData(void) const override;
 
-		virtual std::unique_ptr<RHIVertexBufferLayout> const& GetLayout() const override;
-		virtual void SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout) override;
+		virtual TUniquePtr<RHIVertexBufferLayout> const& GetLayout() const override;
+		virtual void SetLayout(TUniquePtr<RHIVertexBufferLayout> Layout) override;
 	};
 }

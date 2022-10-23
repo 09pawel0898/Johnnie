@@ -12,8 +12,8 @@ namespace Engine
 	class LightingManager
 	{
 	private:
-		std::vector<std::pair<OUUID,std::weak_ptr<APointLight>>> m_PointLights;
-		std::vector<std::pair<OUUID,std::weak_ptr<ADirectionalLight>>> m_DirectionalLights;
+		std::vector<std::pair<OUUID,TWeakPtr<APointLight>>> m_PointLights;
+		std::vector<std::pair<OUUID,TWeakPtr<ADirectionalLight>>> m_DirectionalLights;
 
 	public:
 		LightingManager() = default;
@@ -25,11 +25,11 @@ namespace Engine
 		LightingManager& operator=(LightingManager&&) = delete;
 
 	public:
-		void RegisterPointLight(std::shared_ptr<APointLight> const& PointLight);
+		void RegisterPointLight(TSharedPtr<APointLight> const& PointLight);
 		void UnregisterPointLight(OUUID const& LightID);
 		std::optional<PointLightData> GetPointLightData(void) const;
 		
-		void RegisterDirectionalLight(std::shared_ptr<ADirectionalLight> const& DirectionalLight);
+		void RegisterDirectionalLight(TSharedPtr<ADirectionalLight> const& DirectionalLight);
 		void UnregisterDirectionalLight(OUUID const& LightID);
 		std::optional<DirectionalLightData> GetDirectionalLightData(void) const;
 
@@ -76,6 +76,6 @@ namespace Engine
 			}));
 
 		LightsContainer.emplace_back(
-			std::make_pair(LightSPtr->GetUUID(), std::weak_ptr<std::remove_reference_t<decltype(*std::declval<TLightSPtr>())>>(LightSPtr)));
+			std::make_pair(LightSPtr->GetUUID(), TWeakPtr<std::remove_reference_t<decltype(*std::declval<TLightSPtr>())>>(LightSPtr)));
 	}
 }

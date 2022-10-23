@@ -4,12 +4,12 @@
 
 namespace Engine
 {
-	bool TickableManager::RegisterTickable(std::shared_ptr<Object> const& TickableObject)
+	bool TickableManager::RegisterTickable(TSharedPtr<Object> const& TickableObject)
 	{
 		if (!TickableObject->m_bTickableRegistered)
 		{
 			m_RegisteredTickables.emplace_back(std::make_pair(	TickableObject->GetUUID(),
-																std::weak_ptr<Tickable>(TickableObject)));
+																TWeakPtr<Tickable>(TickableObject)));
 
 			TickableObject->m_LastUpdate = Utility::Time::now();
 			TickableObject->m_bTickableRegistered = true;
@@ -60,7 +60,7 @@ namespace Engine
 	void TickableManager::UnRegisterTickable(OUUID const& ExpiredTickableUUID)
 	{
 		auto const& foundElement = std::find_if(m_RegisteredTickables.cbegin(), m_RegisteredTickables.cend(),
-			[&ExpiredTickableUUID](std::pair<OUUID, std::weak_ptr<Tickable>> const& Element)
+			[&ExpiredTickableUUID](std::pair<OUUID, TWeakPtr<Tickable>> const& Element)
 			{
 				return Element.first == ExpiredTickableUUID;
 			});

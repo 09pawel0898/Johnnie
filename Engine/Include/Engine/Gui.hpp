@@ -6,6 +6,9 @@
 #include "imgui_filebrowser.h"
 
 #include "Scene/Entities/CoreWidget.hpp"
+#include "ImGui/ImGuiWidgetBase.hpp"
+
+using namespace Engine;
 
 namespace Gui = ImGui;
 

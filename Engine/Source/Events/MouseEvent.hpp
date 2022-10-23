@@ -20,13 +20,13 @@ namespace Engine::Events
 	}
 	using namespace Mouse;
 
-	class MouseMovedEvent final : public Event
+	class MouseMoveTempdEvent final : public Event
 	{
 	private:
 		double m_MouseX, m_MouseY;
 
 	public:
-		MouseMovedEvent(double X, double Y)
+		MouseMoveTempdEvent(double X, double Y)
 			:	m_MouseX(X),
 				m_MouseY(Y)
 		{}
@@ -34,7 +34,7 @@ namespace Engine::Events
 		double GetX(void) const { return m_MouseX; }
 		double GetY(void) const { return m_MouseY; }
 
-		DECLARE_EVENT_CLASS_TYPE(MouseMoved)
+		DECLARE_EVENT_CLASS_TYPE(MouseMoveTempd)
 		DECLARE_EVENT_CATEGORY(EventCategory_Input | EventCategory_Mouse)
 	};
 

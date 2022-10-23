@@ -13,14 +13,14 @@ namespace Engine::RHI
 	class RHIResourceManager
 	{
 	private:
-		std::unordered_map<ResourceID, std::shared_ptr<ResourceType>> m_Resources;
+		std::unordered_map<ResourceID, TSharedPtr<ResourceType>> m_Resources;
 
 	public:
 		template <typename... Args> 
 		bool LoadResource(ResourceID const& ResourceID, Args&&... _Args);
 
-		std::shared_ptr<ResourceType>& GetResource(ResourceID ResourceID);
-		const std::shared_ptr<ResourceType>& GetResource(ResourceID ResourceID) const;
+		TSharedPtr<ResourceType>& GetResource(ResourceID ResourceID);
+		const TSharedPtr<ResourceType>& GetResource(ResourceID ResourceID) const;
 
 	private:
 		template <typename Resource>

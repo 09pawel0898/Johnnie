@@ -15,7 +15,7 @@ namespace Engine
 	class CameraController : public IEventListener, public Singleton<CameraController>
 	{
 	private:
-		std::shared_ptr<ACamera> m_ControlledCamera;
+		TSharedPtr<ACamera> m_ControlledCamera;
 		bool m_bCursorCaputred = false;
 
 		glm::vec2 m_PrevFrameMousePos;
@@ -28,26 +28,26 @@ namespace Engine
 
 		void OnTick(double DeltaTime);
 
-		void SetViewTarget(std::shared_ptr<ACamera> Camera);
+		void SetViewTarget(TSharedPtr<ACamera> Camera);
 		void SetCameraAspectRatio(float AspectRatio);
 
 	public:
-		std::shared_ptr<ACamera> const& GetCamera(void) const
+		TSharedPtr<ACamera> const& GetCamera(void) const
 		{
 			return m_ControlledCamera;
 		}
 		
-		std::shared_ptr<ACamera>& GetCamera(void)
+		TSharedPtr<ACamera>& GetCamera(void)
 		{
 			return m_ControlledCamera;
 		}
 	};
 
-	FORCEINLINE void CameraController::SetViewTarget(std::shared_ptr<ACamera> Camera)
+	FORCEINLINE void CameraController::SetViewTarget(TSharedPtr<ACamera> Camera)
 	{
 		if(Camera)
 		{
-			m_ControlledCamera = std::move(Camera);
+			m_ControlledCamera = MoveTemp(Camera);
 			m_ControlledCamera->SetTickEnabled(true);
 		}
 	}

@@ -5,6 +5,8 @@
 #include <variant>
 #include <memory>
 
+#include "Core/CoreMinimal.hpp"
+
 template <typename Signature>
 class CallableWrapper;
 
@@ -21,7 +23,7 @@ template <typename Signature>
 class CallableStaticFunctionWrapper;
 
 template <typename TRetVal, typename... Args>
-class CallableStaticFunctionWrapper<TRetVal(Args...)> : public CallableWrapper<TRetVal(Args...)>
+class CallableStaticFunctionWrapper<TRetVal(Args...)> final : public CallableWrapper<TRetVal(Args...)>
 {
 private:
     TRetVal(*m_StaticFuncPtr)(Args...) { nullptr };
@@ -35,7 +37,7 @@ public:
     {
         if (m_StaticFuncPtr)
         {
-            m_StaticFuncPtr(std::forward<Args>(Args_)...);
+            m_StaticFuncPtr(Forward<Args>(Args_)...);
         }
     }
 };
@@ -44,7 +46,7 @@ template <bool IsConst, typename TClass, typename Signature>
 class CallableMethodWrapper;
 
 template <bool IsConst, typename TClass, typename TRetVal, typename... Args>
-class CallableMethodWrapper<IsConst, TClass, TRetVal(Args...)> : public CallableWrapper<TRetVal(Args...)>
+class CallableMethodWrapper<IsConst, TClass, TRetVal(Args...)> final : public CallableWrapper<TRetVal(Args...)>
 {
 private:
     template<bool Const>
@@ -66,16 +68,16 @@ private:
     ClassMemberFunction m_ClassMemFuncPtr { nullptr };
 
 public:
-    CallableMethodWrapper(TClass* Instance, ClassMemberFunction ClassMemFuncPtr)
+    CallableMethodWrapper(TClass* Instance, ClassMemberFunction ClassMemFuncPtr) noexcept
         :   m_Instance(Instance),  
             m_ClassMemFuncPtr(ClassMemFuncPtr) 
     {}
 
-    virtual void Execute(Args&&... Args_) override final
+    virtual void Execute(Args&&... Args_) override
     { 
         if (m_Instance != nullptr)
         {
-            (m_Instance->*m_ClassMemFuncPtr)(std::forward<Args>(Args_)...);
+            (m_Instance->*m_ClassMemFuncPtr)(Forward<Args>(Args_)...);
         }
     }
 };
@@ -84,21 +86,21 @@ template <typename TLambda, typename Signature>
 class CallableLambdaWrapper;
 
 template <typename TLambda, typename TRetVal, typename... Args>
-class CallableLambdaWrapper<TLambda, TRetVal(Args...)> : public CallableWrapper<TRetVal(Args...)>
+class CallableLambdaWrapper<TLambda, TRetVal(Args...)> final : public CallableWrapper<TRetVal(Args...)>
 {
 private:
     TLambda m_LambdaObject;
 
 public:
     explicit CallableLambdaWrapper(TLambda&& FunctorObject) noexcept
-        : m_LambdaObject(std::forward<TLambda>(FunctorObject))
+        : m_LambdaObject(Forward<TLambda>(FunctorObject))
     {
         static_assert(std::is_invocable_v<TLambda,Args...>);
     }
 
-    virtual TRetVal Execute(Args&&... Args_) override final
+    virtual TRetVal Execute(Args&&... Args_) override
     { 
-        return m_LambdaObject(std::forward<Args>(Args_)...);
+        return m_LambdaObject(Forward<Args>(Args_)...);
     }
 };
 
@@ -109,7 +111,7 @@ template <typename TRetVal, typename... Args>
 class Delegate<TRetVal(Args...)>
 {
 private:
-    std::unique_ptr<CallableWrapper<TRetVal(Args...)>> m_CallableWrapper {nullptr};
+    TUniquePtr<CallableWrapper<TRetVal(Args...)>> m_CallableWrapper {nullptr};
 
 public:
     Delegate() = default;
@@ -118,38 +120,38 @@ public:
     Delegate(Delegate const& Rhs) = delete;
 
     Delegate(Delegate&& Rhs) noexcept
-        :   m_CallableWrapper(std::move(Rhs.m_CallableWrapper))
+        :   m_CallableWrapper(MoveTemp(Rhs.m_CallableWrapper))
     {}
 
     Delegate& operator=(Delegate const& Rhs) = delete;
 
     Delegate& operator=(Delegate&& Rhs) noexcept
     {
-        m_CallableWrapper = std::move(Rhs.m_CallableWrapper);
+        m_CallableWrapper = MoveTemp(Rhs.m_CallableWrapper);
         return *this;
     }
 
     void BindStatic(TRetVal(*StaticFuncPtr)(Args...))
     {
-        m_CallableWrapper = std::make_unique<CallableStaticFunctionWrapper<TRetVal(Args...)>>(StaticFuncPtr);
+        m_CallableWrapper = MakeUnique<CallableStaticFunctionWrapper<TRetVal(Args...)>>(StaticFuncPtr);
     }
 
     template <typename TClass>
     void BindRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncPtr)(Args...))
     {
-        m_CallableWrapper = std::make_unique<CallableMethodWrapper<false, TClass, TRetVal(Args...)>>(Instance, ClassMemFuncPtr);
+        m_CallableWrapper = MakeUnique<CallableMethodWrapper<false, TClass, TRetVal(Args...)>>(Instance, ClassMemFuncPtr);
     }
 
     template <typename TClass>
     void BindRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncConstPtr)(Args...) const)
     {
-        m_CallableWrapper = std::make_unique<CallableMethodWrapper<true, TClass, TRetVal(Args...)>>(Instance, ClassMemFuncConstPtr);
+        m_CallableWrapper = MakeUnique<CallableMethodWrapper<true, TClass, TRetVal(Args...)>>(Instance, ClassMemFuncConstPtr);
     }
 
     template <typename TLambda>
     void BindLambda(TLambda&& LambdaObject)
     {
-        m_CallableWrapper = std::make_unique<CallableLambdaWrapper<std::decay_t<TLambda>, TRetVal(Args...)>>(std::forward<TLambda>(LambdaObject));
+        m_CallableWrapper = MakeUnique<CallableLambdaWrapper<std::decay_t<TLambda>, TRetVal(Args...)>>(Forward<TLambda>(LambdaObject));
     }
 
     explicit operator bool() const 
@@ -161,7 +163,7 @@ public:
     {
         if (m_CallableWrapper)
         {
-            m_CallableWrapper->Execute(std::forward<Args>(Args_)...);
+            m_CallableWrapper->Execute(Forward<Args>(Args_)...);
         }
     }
 };
@@ -181,7 +183,7 @@ public:
         Delegate<TRetVal(Args...)> delegate_;
         delegate_.BindStatic(StaticFuncPtr);
 
-        m_Delegates.emplace_back(std::move(delegate_));
+        m_Delegates.emplace_back(MoveTemp(delegate_));
     }
 
     template <typename TClass>
@@ -190,7 +192,7 @@ public:
         Delegate<TRetVal(Args...)> delegate_;
         delegate_.BindRaw(Instance, ClassMemFuncPtr);
 
-        m_Delegates.emplace_back(std::move(delegate_));
+        m_Delegates.emplace_back(MoveTemp(delegate_));
     }
 
     template <typename TClass>
@@ -199,16 +201,16 @@ public:
         Delegate<TRetVal(Args...)> delegate_;
         delegate_.BindRaw(Instance, ClassMemFuncConstPtr);
 
-        m_Delegates.emplace_back(std::move(delegate_));
+        m_Delegates.emplace_back(MoveTemp(delegate_));
     }
 
     template <typename TLambda>
     void AddLambda(TLambda&& LambdaObject)
     {
         Delegate<TRetVal(Args...)> delegate_;
-        delegate_.BindLambda(std::forward<TLambda>(LambdaObject));
+        delegate_.BindLambda(Forward<TLambda>(LambdaObject));
 
-        m_Delegates.emplace_back(std::move(delegate_));
+        m_Delegates.emplace_back(MoveTemp(delegate_));
     }
 
     explicit operator bool() const
@@ -221,7 +223,7 @@ public:
     {
         for (auto& delegate_ : m_Delegates)
         {
-            delegate_.ExecuteIfBound(std::forward<Args>(Args_)...);
+            delegate_.ExecuteIfBound(Forward<Args>(Args_)...);
         }
     }
 };

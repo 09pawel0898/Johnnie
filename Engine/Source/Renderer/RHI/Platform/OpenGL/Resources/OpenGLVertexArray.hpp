@@ -18,8 +18,8 @@ namespace Engine::RHI
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
 
-		virtual void SetIndexBuffer(std::shared_ptr<RHIIndexBuffer> IndexBuffer) override;
+		virtual void SetIndexBuffer(TSharedPtr<RHIIndexBuffer> IndexBuffer) override;
 		
-		virtual void AddVertexBuffer(std::shared_ptr<RHIVertexBuffer> VertexBuffer) override;
+		virtual void AddVertexBuffer(TSharedPtr<RHIVertexBuffer> VertexBuffer) override;
 	};
 }

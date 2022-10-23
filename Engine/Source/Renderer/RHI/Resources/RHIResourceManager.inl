@@ -1,4 +1,6 @@
 
+#include "Log/Log.hpp"
+
 namespace Engine::RHI
 {
 	template <typename ResourceType, typename ResourceID>
@@ -12,10 +14,10 @@ namespace Engine::RHI
 			return false;
 		}
 
-		std::shared_ptr<ResourceType> newResource =
-			std::make_shared<ResourceType>(ResourceID, std::forward<Args>(_Args)...);
+		TSharedPtr<ResourceType> newResource =
+			MakeShared<ResourceType>(ResourceID, Forward<Args>(_Args)...);
 
-		return InsertResource(ResourceID, std::move(newResource));
+		return InsertResource(ResourceID, MoveTemp(newResource));
 	}
 
 	template <>
@@ -28,9 +30,9 @@ namespace Engine::RHI
 			return false;
 		}
 		
-		std::shared_ptr<RHITexture2D> newResource = RHITexture2D::Create(FilePath, std::forward<Args>(_Args)...);
+		TSharedPtr<RHITexture2D> newResource = RHITexture2D::Create(FilePath, Forward<Args>(_Args)...);
 
-		return InsertResource(FilePath, std::move(newResource));
+		return InsertResource(FilePath, MoveTemp(newResource));
 	}
 
 	template <>
@@ -42,9 +44,9 @@ namespace Engine::RHI
 			LOG(RHI, Warning, "Attempting to load shader that is already loaded.");
 			return false;
 		}
-		std::shared_ptr<RHIShader> newResource = RHIShader::Create(ShaderName, std::forward<Args>(_Args)...);
+		TSharedPtr<RHIShader> newResource = RHIShader::Create(ShaderName, Forward<Args>(_Args)...);
 
-		return InsertResource(ShaderName, std::move(newResource));
+		return InsertResource(ShaderName, MoveTemp(newResource));
 	}
 
 	template <typename ResourceType, typename ResourceID>
@@ -53,14 +55,14 @@ namespace Engine::RHI
 	bool RHIResourceManager<ResourceType, ResourceID>::InsertResource(ResourceID ResourceID, Resource&& _Resource)
 	{
 		auto newResource = m_Resources.insert(std::make_pair(	ResourceID, 
-																std::forward<Resource>(_Resource)));
+																Forward<Resource>(_Resource)));
 		Check(newResource.second);
 		return true;
 	}
 
 	template <typename ResourceType, typename ResourceID>
 		requires std::is_base_of_v<RHIResource, ResourceType>
-	std::shared_ptr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID)
+	TSharedPtr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID)
 	{
 		auto foundResource = m_Resources.find(ResourceID);
 		assert(foundResource != m_Resources.end());
@@ -70,7 +72,7 @@ namespace Engine::RHI
 
 	template <typename ResourceType, typename ResourceID>
 		requires std::is_base_of_v<RHIResource, ResourceType>
-	const std::shared_ptr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID) const
+	const TSharedPtr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID) const
 	{
 		auto foundResource = m_Resources.find(ResourceID);
 		assert(foundResource != m_Resources.end());

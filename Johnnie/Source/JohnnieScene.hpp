@@ -25,23 +25,23 @@ public:
 
 private:
 	/** UI Widgets */
-	std::shared_ptr<WJohnnieMainMenuBarWidget>	m_MainMenuBarWidget;
-	std::shared_ptr<WJohnnieLoggerWidget>		m_LoggerWidget;
-	std::shared_ptr<WJohnnieStatisticsWidget>	m_StatisticsWidget;
-	std::shared_ptr<WJohnnieCameraWidget>		m_CameraDataWidget;
-	std::shared_ptr<WJohnnieSceneWidget>		m_SceneWidget;
-	std::shared_ptr<WJohnnieViewportWidget>		m_ViewportWidget;
+	TSharedPtr<WJohnnieMainMenuBarWidget>	m_MainMenuBarWidget;
+	TSharedPtr<WJohnnieLoggerWidget>		m_LoggerWidget;
+	TSharedPtr<WJohnnieStatisticsWidget>	m_StatisticsWidget;
+	TSharedPtr<WJohnnieCameraWidget>		m_CameraDataWidget;
+	TSharedPtr<WJohnnieSceneWidget>			m_SceneWidget;
+	TSharedPtr<WJohnnieViewportWidget>		m_ViewportWidget;
 
 	/** Floating Camera */
-	std::shared_ptr<AFloatingCamera>					m_Camera;
+	TSharedPtr<AFloatingCamera>				m_Camera;
 
 	/** Entities */
-	std::shared_ptr<AStaticMesh>						m_Model = nullptr;
-	std::shared_ptr<AStaticMesh>						m_Platform = nullptr;
+	TSharedPtr<AStaticMesh>					m_Model = nullptr;
+	TSharedPtr<AStaticMesh>					m_Platform = nullptr;
 
-	std::shared_ptr<AStaticMesh>						m_Sphere			= nullptr;
-	std::shared_ptr<APointLight>						m_PointLight		= nullptr;
-	std::shared_ptr<ADirectionalLight>					m_DirectionalLight	= nullptr;
+	TSharedPtr<AStaticMesh>					m_Sphere			= nullptr;
+	TSharedPtr<APointLight>					m_PointLight		= nullptr;
+	TSharedPtr<ADirectionalLight>			m_DirectionalLight	= nullptr;
 
 private:
 	/** Layer Interface Impl*/

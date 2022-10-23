@@ -15,22 +15,22 @@ namespace Engine::RHI
 
 	namespace Utility
 	{
-		static FORCEINLINE auto FindFramebufferByName(std::string_view FramebufferName, std::vector<std::pair<std::string_view, std::unique_ptr<RHIFrameBuffer>>>& FramebuffersContainer)
+		static FORCEINLINE auto FindFramebufferByName(std::string_view FramebufferName, std::vector<std::pair<std::string_view, TUniquePtr<RHIFrameBuffer>>>& FramebuffersContainer)
 		{
 			return std::find_if(FramebuffersContainer.begin(), FramebuffersContainer.end(),
-				[FramebufferName](std::pair<std::string_view, std::unique_ptr<RHIFrameBuffer>> const& Pair)
+				[FramebufferName](std::pair<std::string_view, TUniquePtr<RHIFrameBuffer>> const& Pair)
 				{
 					return Pair.first == FramebufferName;
 				});
 		}
 	}
 
-	std::unique_ptr<DynamicRHI> DynamicRHI::Create(RenderingAPI RenderingAPI)
+	TUniquePtr<DynamicRHI> DynamicRHI::Create(RenderingAPI RenderingAPI)
 	{
 		switch (RenderingAPI)
 		{
 			case RenderingAPI::OpenGL:
-				return std::make_unique<OpenGLRHI>(); 
+				return MakeUnique<OpenGLRHI>(); 
 			break;
 			case RenderingAPI::D3D11:	
 				LOG(RHI, Error, "D3D11RHI is not supported.");
@@ -52,8 +52,8 @@ namespace Engine::RHI
 	{
 		if (m_Framebuffers.end() == Utility::FindFramebufferByName(FramebufferName,m_Framebuffers))
 		{
-			std::unique_ptr<RHIFrameBuffer> newFrameBuffer = RHIFrameBuffer::Create(FramebufferSpecification);
-			m_Framebuffers.emplace_back(std::make_pair(FramebufferName,std::move(newFrameBuffer)));
+			TUniquePtr<RHIFrameBuffer> newFrameBuffer = RHIFrameBuffer::Create(FramebufferSpecification);
+			m_Framebuffers.emplace_back(std::make_pair(FramebufferName,MoveTemp(newFrameBuffer)));
 		}
 		else
 		{
@@ -61,7 +61,7 @@ namespace Engine::RHI
 		}
 	}
 
-	std::unique_ptr<RHIFrameBuffer>& DynamicRHI::GetFramebuffer(std::string_view FramebufferName)
+	TUniquePtr<RHIFrameBuffer>& DynamicRHI::GetFramebuffer(std::string_view FramebufferName)
 	{
 		auto foundFramebuffer = Utility::FindFramebufferByName(FramebufferName, m_Framebuffers);
 	

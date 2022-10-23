@@ -4,7 +4,7 @@
 
 namespace Engine
 {
-	using LayerPointer = std::shared_ptr<Layer>;
+	using LayerPointer = TSharedPtr<Layer>;
 
 	class LayerManager final
 	{
@@ -30,8 +30,8 @@ namespace Engine
 	public:	
 		void PushLayer		(LayerPointer Layer);
 		void PushOverlay	(LayerPointer Layer);
-		void RemoveLayer	(std::string_view LayerName);
-		void RemoveOverlay	(std::string_view LayerName);
+		void ReMoveTempLayer	(std::string_view LayerName);
+		void ReMoveTempOverlay	(std::string_view LayerName);
 
 		bool IsEmpty(void) const
 		{

@@ -7,14 +7,14 @@
 template <typename T>
 class Singleton
 {
-    static inline std::unique_ptr<T> s_Instance;
+    static inline TUniquePtr<T> s_Instance;
 
 public:
-    static std::unique_ptr<T>& Get()
+    static TUniquePtr<T>& Get()
     {
         if(s_Instance == nullptr)
         {
-            s_Instance = std::make_unique<T>();
+            s_Instance = MakeUnique<T>();
         }
         return s_Instance;
     }
@@ -35,17 +35,17 @@ protected:
 template <typename T>
 class MSingleton
 {
-    static inline std::unique_ptr<T> s_Instance;
+    static inline TUniquePtr<T> s_Instance;
 
 protected:
     template <typename... Args>
     static void Construct(Args...)
     {
-        s_Instance = std::make_unique<T>(std::forward(Args)...);
+        s_Instance = MakeUnique<T>(Forward(Args)...);
     }
 
 public:
-    static std::unique_ptr<T>& Get()
+    static TUniquePtr<T>& Get()
     {
         Check(s_Instance != nullptr);
         return s_Instance;

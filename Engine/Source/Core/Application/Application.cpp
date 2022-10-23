@@ -10,7 +10,7 @@
 
 namespace Engine::Core
 {
-    std::shared_ptr<Application> Application::s_Instance = nullptr;
+    TSharedPtr<Application> Application::s_Instance = nullptr;
 
     Application::Application(const WindowProperties& WindowProperties)
     {
@@ -43,18 +43,18 @@ namespace Engine::Core
 
     void Application::InitLayerManager()
     {
-        m_LayerManager = std::make_unique<LayerManager>();
+        m_LayerManager = MakeUnique<LayerManager>();
     }
 
     void Application::InitImGuiLayer(void)
     {
-        m_ImGuiLayer = std::make_shared<ImGuiLayer>("ImGuiLayer");
+        m_ImGuiLayer = MakeShared<ImGuiLayer>("ImGuiLayer");
         m_LayerManager->PushOverlay(m_ImGuiLayer);
     }
 
     void Application::InitEngineLayer(void)
     {
-        m_EngineBaseLayer = std::make_shared<EngineBaseLayer>("EngineBaseLayer");
+        m_EngineBaseLayer = MakeShared<EngineBaseLayer>("EngineBaseLayer");
         m_LayerManager->PushLayer(m_EngineBaseLayer);
     }
     
@@ -174,7 +174,7 @@ namespace Engine::Core
     {
         Check(s_Instance == nullptr);
 
-        Log::RegisterEngineLoggers();
+        LogManager::RegisterEngineLoggers();
 
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_FUNCTION(OnEvent));

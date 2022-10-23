@@ -1,30 +1,33 @@
 #pragma once
 
+#include "Core/CoreMinimal.hpp"
+#include "Utilities/Delegates.hpp"
+
 #include "spdlog/sinks/base_sink.h"
+
+DECLARE_DELEGATE(OnCustomOutputLoggerSink,std::string const&);
 
 template<typename Mutex>
 class OutputLogSink : public spdlog::sinks::base_sink<Mutex>
 {
 private:
-    using CustomOutputLoggerFunc = std::function<void(std::string const&)>;
-
-    CustomOutputLoggerFunc m_CustomOutputLogFunc;
+    OnCustomOutputLoggerSink m_OnCustomOutputLoggerSink;
 
 protected:
     void sink_it_(const spdlog::details::log_msg& Msg) override
     {
         spdlog::memory_buf_t formatted;
         spdlog::sinks::base_sink<Mutex>::formatter_->format(Msg, formatted);
-        m_CustomOutputLogFunc(fmt::to_string(formatted));
+        m_OnCustomOutputLoggerSink.ExecuteIfBound(fmt::to_string(formatted));
     }
 
     void flush_() override
     {}
 
 public:
-    void BindCustomLoggerFunction(CustomOutputLoggerFunc CustomOutputLoggerFunc)
+    void BindCustomLoggerFunction(OnCustomOutputLoggerSink OnCustomOutputLoggerSink)
     {
-        m_CustomOutputLogFunc = std::move(CustomOutputLoggerFunc);
+        m_OnCustomOutputLoggerSink = MoveTemp(OnCustomOutputLoggerSink);
     }
 };
 

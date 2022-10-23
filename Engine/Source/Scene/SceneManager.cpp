@@ -4,13 +4,13 @@
 
 namespace Engine
 {
-	void SceneManager::SetScene(std::unique_ptr<Scene>&& Scene)
+	void SceneManager::SetScene(TUniquePtr<Scene>&& Scene)
 	{
 		if (m_ActiveScene)
 		{
 			m_ActiveScene->OnDetach();
 		}
-		m_ActiveScene = std::move(Scene);
+		m_ActiveScene = MoveTemp(Scene);
 		m_ActiveScene->OnAwake();
 	}
 }

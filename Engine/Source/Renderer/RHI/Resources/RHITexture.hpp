@@ -50,6 +50,6 @@ namespace Engine::RHI
 
 	public:
 		[[nodiscard]]
-		static std::unique_ptr<RHITexture2D> Create(std::string_view FilePath, RHITextureType TextureType = RHITextureType::BasicTexture2D);
+		static TUniquePtr<RHITexture2D> Create(std::string_view FilePath, RHITextureType TextureType = RHITextureType::BasicTexture2D);
 	};
 }

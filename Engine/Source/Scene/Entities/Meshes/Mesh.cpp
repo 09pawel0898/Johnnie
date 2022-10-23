@@ -35,15 +35,15 @@ namespace Engine
 		}
 		else
 		{
-			m_LazyVertices	= std::move(Vertices);
-			m_LazyIndices	= std::move(Indices);
+			m_LazyVertices	= MoveTemp(Vertices);
+			m_LazyIndices	= MoveTemp(Indices);
 		}
 	}
 
 	Mesh::~Mesh()
 	{}
 
-	static std::shared_ptr<RHIShader>& GetShaderForMesh(bool IsMaterialEmmissive)
+	static TSharedPtr<RHIShader>& GetShaderForMesh(bool IsMaterialEmmissive)
 	{
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
 
@@ -68,7 +68,7 @@ namespace Engine
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
 
 		auto renderWithAssignedMaterial = 
-		[this,&shaderManager, &ModelMat](std::shared_ptr<Material>& Material)
+		[this,&shaderManager, &ModelMat](TSharedPtr<Material>& Material)
 		{
 			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
@@ -130,15 +130,15 @@ namespace Engine
 		auto vbo = RHIVertexBuffer::Create(Vertices);
 
 		RHIVertexBufferLayout layout = { aPosition, aNormal, aTexUV, aTangent};
-		vbo->SetLayout(std::make_unique< RHIVertexBufferLayout>(std::move(layout)));
+		vbo->SetLayout(MakeUnique< RHIVertexBufferLayout>(MoveTemp(layout)));
 
-		std::unique_ptr<RHIIndexBuffer> ibo = RHIIndexBuffer::Create(Indices);
+		TUniquePtr<RHIIndexBuffer> ibo = RHIIndexBuffer::Create(Indices);
 
-		m_VAO->SetIndexBuffer(std::move(ibo));
-		m_VAO->AddVertexBuffer(std::move(vbo));
+		m_VAO->SetIndexBuffer(MoveTemp(ibo));
+		m_VAO->AddVertexBuffer(MoveTemp(vbo));
 	}
 
-	std::shared_ptr<Material> Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
+	TSharedPtr<Material> Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
 	{
 		if (auto staticMeshOwner = m_StaticMeshOwner.lock())
 		{
@@ -152,9 +152,9 @@ namespace Engine
 		return nullptr;
 	}
 
-	void Mesh::SetHardMaterialReference(std::weak_ptr<Material> Material)
+	void Mesh::SetHardMaterialReference(TWeakPtr<Material> Material)
 	{
 		m_bUseHardMaterialReference = true;
-		m_HardMaterialReference = std::move(Material);
+		m_HardMaterialReference = MoveTemp(Material);
 	}
 }

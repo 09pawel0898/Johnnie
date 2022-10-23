@@ -28,7 +28,7 @@ namespace Engine::RHI
 		glBindVertexArray(0);
 	}
 
-	void OpenGLVertexArray::AddVertexBuffer(std::shared_ptr<RHIVertexBuffer> VertexBuffer)
+	void OpenGLVertexArray::AddVertexBuffer(TSharedPtr<RHIVertexBuffer> VertexBuffer)
 	{
 		Check(VertexBuffer->GetLayout()->GetElements().size() > 0);
 		
@@ -62,14 +62,14 @@ namespace Engine::RHI
 			}
 		}
 		
-		m_VertexBuffers.emplace_back(std::move(VertexBuffer));
+		m_VertexBuffers.emplace_back(MoveTemp(VertexBuffer));
 	}
 
-	void OpenGLVertexArray::SetIndexBuffer(std::shared_ptr<RHIIndexBuffer> IndexBuffer)
+	void OpenGLVertexArray::SetIndexBuffer(TSharedPtr<RHIIndexBuffer> IndexBuffer)
 	{
 		Check(IndexBuffer->GetCount() > 0);
 
-		m_IndexBuffer = std::move(IndexBuffer);
+		m_IndexBuffer = MoveTemp(IndexBuffer);
 
 		Bind();
 		m_IndexBuffer->Bind();

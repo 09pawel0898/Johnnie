@@ -4,5 +4,5 @@
 
 namespace Engine::RHI
 {
-	std::unique_ptr<DynamicRHI> RHICommand::s_DynamicRHI = nullptr;
+	TUniquePtr<DynamicRHI> RHICommand::s_DynamicRHI = nullptr;
 }

@@ -32,7 +32,7 @@ namespace Engine::RHI
 		virtual ~DynamicRHI() = default;
 
 		[[nodiscard]]
-		static std::unique_ptr<DynamicRHI> Create(RenderingAPI RenderingAPI);
+		static TUniquePtr<DynamicRHI> Create(RenderingAPI RenderingAPI);
 
 	protected:
 		RenderingAPI m_RHIType;
@@ -54,7 +54,7 @@ namespace Engine::RHI
 		RHIShaderManager	m_ShaderManager;
 		MaterialManager		m_MaterialManager;
 
-		std::vector<std::pair<std::string_view,std::unique_ptr<RHIFrameBuffer>>> m_Framebuffers;
+		std::vector<std::pair<std::string_view,TUniquePtr<RHIFrameBuffer>>> m_Framebuffers;
 	
 	public:
 		RHITexture2DManager&	GetTexture2DManager(void);
@@ -68,11 +68,11 @@ namespace Engine::RHI
 		virtual void SetClearColor(const glm::vec4& Color) = 0;
 		virtual void Clear(void) = 0;
 
-		virtual void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
-		virtual void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
+		virtual void DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
+		virtual void DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
 		
 		void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
-		std::unique_ptr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		TUniquePtr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
 		void BindFramebuffer(std::string_view FramebufferName);
 		virtual void BindDefaultFramebuffer(void) = 0;
 

@@ -1,9 +1,12 @@
 #pragma once
 
 #include "PlatformCheck.hpp"
-
 #include "Debug/Asserts.hpp"
-#include "Log/Log.hpp"
+//#include "Debug/Asserts.hpp"
+//#include "Log/Log.hpp"
+
+#include <memory.h>
+#include <iostream>
 
 #define BIND_FUNCTION(Func)\
         [this](auto&&... Args) -> decltype(auto) { return this->Func(std::forward<decltype(Args)>(Args)...); }
@@ -42,6 +45,39 @@ namespace Engine
     };
 }
 
+template <typename TObject>
+using TUniquePtr = std::unique_ptr<TObject>;
+
+template <typename TObject>
+using TSharedPtr = std::shared_ptr<TObject>;
+
+template <typename TObject>
+using TWeakPtr = std::weak_ptr<TObject>;
+
+template <typename... Args>
+FORCEINLINE decltype(auto) MoveTemp(Args&&... Args_)
+{
+    return std::move(std::forward<Args>(Args_)...);
+}
+
+template <typename TForwardType, typename... Args>
+FORCEINLINE decltype(auto) Forward(Args&&... Args_)
+{
+    return std::forward<TForwardType>(std::forward<Args>(Args_)...);
+}
+
+template <typename TObject, typename... Args>
+FORCEINLINE TUniquePtr<TObject> MakeUnique(Args&&... Args_)
+{
+    return std::make_unique<TObject>(std::forward<Args>(Args_)...);
+}
+
+template <typename TObject, typename... Args>
+FORCEINLINE TSharedPtr<TObject> MakeShared(Args&&... Args_)
+{
+    return std::make_shared<TObject>(std::forward<Args>(Args_)...);
+}
+
 template <typename TClass>
 using SharedFromThis = std::enable_shared_from_this<TClass>;
 
@@ -73,7 +109,7 @@ FORCEINLINE constexpr To* Cast(From const* Ptr)
 
 template <typename T>
 concept SmartPtr =
-requires(T t) 
+requires(T t)
 {
     { t.get() };
 };

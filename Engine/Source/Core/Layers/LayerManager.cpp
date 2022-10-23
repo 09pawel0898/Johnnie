@@ -15,16 +15,16 @@ namespace Engine
 	void LayerManager::PushLayer(LayerPointer Layer)
 	{
 		Layer->OnAwake();
-		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, std::move(Layer));
+		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, MoveTemp(Layer));
 	}
 
 	void LayerManager::PushOverlay(LayerPointer Layer)
 	{
 		Layer->OnAwake();
-		m_Layers.emplace_back(std::move(Layer));
+		m_Layers.emplace_back(MoveTemp(Layer));
 	}
 
-	void LayerManager::RemoveLayer(std::string_view LayerName)
+	void LayerManager::ReMoveTempLayer(std::string_view LayerName)
 	{
 		auto iter = std::find_if(m_Layers.begin(), m_Layers.begin(), 
 		[LayerName](LayerPointer const& LayerPointer)
@@ -40,7 +40,7 @@ namespace Engine
 		}
 	}
 
-	void LayerManager::RemoveOverlay(std::string_view LayerName)
+	void LayerManager::ReMoveTempOverlay(std::string_view LayerName)
 	{
 		auto iter = std::find_if(m_Layers.begin() + m_InsertIndex, m_Layers.begin(), 
 		[LayerName](LayerPointer const& LayerPointer)

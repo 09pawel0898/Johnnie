@@ -30,47 +30,47 @@ namespace Engine::RHI
 		CalculateOffsetAndStride();
 	}
 
-	std::unique_ptr<RHIIndexBuffer> RHIIndexBuffer::Create(uint32_t* Indices, uint32_t Count)
+	TUniquePtr<RHIIndexBuffer> RHIIndexBuffer::Create(uint32_t* Indices, uint32_t Count)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLIndexBuffer>(Indices, Count); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLIndexBuffer>(Indices, Count); break;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIIndexBuffer> RHIIndexBuffer::Create(std::vector<uint32_t> const& Indices)
+	TUniquePtr<RHIIndexBuffer> RHIIndexBuffer::Create(std::vector<uint32_t> const& Indices)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLIndexBuffer>(Indices); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLIndexBuffer>(Indices); break;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(uint32_t Size)
+	TUniquePtr<RHIVertexBuffer> RHIVertexBuffer::Create(uint32_t Size)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexBuffer>(Size); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLVertexBuffer>(Size); break;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(const void* Vertices, uint32_t Size)
+	TUniquePtr<RHIVertexBuffer> RHIVertexBuffer::Create(const void* Vertices, uint32_t Size)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexBuffer>(Vertices, Size); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLVertexBuffer>(Vertices, Size); break;
 		}
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIVertexBuffer> RHIVertexBuffer::Create(std::vector<RHIVertex> const& Vertices)
+	TUniquePtr<RHIVertexBuffer> RHIVertexBuffer::Create(std::vector<RHIVertex> const& Vertices)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexBuffer>(Vertices); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLVertexBuffer>(Vertices); break;
 		}
 		return nullptr;
 	}

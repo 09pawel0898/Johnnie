@@ -25,7 +25,7 @@ namespace Engine
 		RHICommand::Shutdown();
 	}
 	
-	std::unique_ptr<DynamicRHI>& Renderer::GetRHI(void)
+	TUniquePtr<DynamicRHI>& Renderer::GetRHI(void)
 	{
 		return RHICommand::GetRHI();
 	}
@@ -51,7 +51,7 @@ namespace Engine
 		RHICommand::InitializeFramebuffer(FramebufferName, FramebufferSpecification);
 	}
 
-	std::unique_ptr<RHIFrameBuffer>& Renderer::GetFramebuffer(std::string_view FramebufferName)
+	TUniquePtr<RHIFrameBuffer>& Renderer::GetFramebuffer(std::string_view FramebufferName)
 	{
 		return RHICommand::GetFramebuffer(FramebufferName);
 	}
@@ -71,7 +71,7 @@ namespace Engine
 		RHICommand::Clear();
 	}
 
-	void Renderer::Draw(std::shared_ptr<RHIShader> const& Shader, std::shared_ptr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
+	void Renderer::Draw(TSharedPtr<RHIShader> const& Shader, TSharedPtr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
 	{
 		if(!bIsRenderingShadowMap)
 		{

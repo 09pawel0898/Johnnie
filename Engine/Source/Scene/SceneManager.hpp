@@ -8,18 +8,18 @@ namespace Engine
 	class SceneManager final : public Singleton<SceneManager>
 	{
 	private:
-		std::unique_ptr<Scene> m_ActiveScene = nullptr;
+		TUniquePtr<Scene> m_ActiveScene = nullptr;
 		
 	public:
 		SceneManager() = default;
 	
 	public:
-		void SetScene(std::unique_ptr<Scene>&& Scene);
+		void SetScene(TUniquePtr<Scene>&& Scene);
 
-		std::unique_ptr<Scene>& GetActiveScene(void);
+		TUniquePtr<Scene>& GetActiveScene(void);
 	};
 
-	FORCEINLINE std::unique_ptr<Scene>& SceneManager::GetActiveScene(void)
+	FORCEINLINE TUniquePtr<Scene>& SceneManager::GetActiveScene(void)
 	{
 		return m_ActiveScene;
 	}

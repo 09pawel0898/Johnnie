@@ -93,13 +93,13 @@ namespace Engine::RHI
 		return nullptr;
 	}
 
-	std::unique_ptr<RHIVertexBufferLayout> const& OpenGLVertexBuffer::GetLayout() const
+	TUniquePtr<RHIVertexBufferLayout> const& OpenGLVertexBuffer::GetLayout() const
 	{
 		return m_VertexBufferLayout;
 	}
 
-	void OpenGLVertexBuffer::SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout)
+	void OpenGLVertexBuffer::SetLayout(TUniquePtr<RHIVertexBufferLayout> Layout)
 	{
-		m_VertexBufferLayout = std::move(Layout);
+		m_VertexBufferLayout = MoveTemp(Layout);
 	}
 }

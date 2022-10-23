@@ -15,13 +15,13 @@ namespace Engine::Utility
             return std::nullopt;
         }
 
-        std::stringstream shaderSource;
+        std::stringstream ssBuffer;
         std::string line;
 
         while (getline(file, line))
         {
-            shaderSource << line << '\n';
+            ssBuffer << line << '\n';
         }
-        return shaderSource.str();
+        return ssBuffer.str();
     };
 }

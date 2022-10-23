@@ -14,21 +14,21 @@ namespace Engine
 		m_MaterialUniform.UseDiffuseMap = false;
 	}
 
-	void Material::SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture)
+	void Material::SetDiffuseTexture(TSharedPtr<RHITexture2D> DiffuseTexture)
 	{
-		m_MaterialTextures.DiffuseTexture = std::move(DiffuseTexture);
+		m_MaterialTextures.DiffuseTexture = MoveTemp(DiffuseTexture);
 		m_MaterialUniform.UseDiffuseMap = true;
 	}
 
-	void Material::SetSpecularTexture(std::shared_ptr<RHITexture2D> SpecularTexture)
+	void Material::SetSpecularTexture(TSharedPtr<RHITexture2D> SpecularTexture)
 	{
-		m_MaterialTextures.SpecularTexture = std::move(SpecularTexture);
+		m_MaterialTextures.SpecularTexture = MoveTemp(SpecularTexture);
 		m_MaterialUniform.UseSpecularMap = true;
 	}
 
-	void Material::SetNormalTexture(std::shared_ptr<RHITexture2D> NormalTexture)
+	void Material::SetNormalTexture(TSharedPtr<RHITexture2D> NormalTexture)
 	{
-		m_MaterialTextures.NormalTexture = std::move(NormalTexture);
+		m_MaterialTextures.NormalTexture = MoveTemp(NormalTexture);
 		m_MaterialUniform.UseNormalMap = true;
 	}
 
@@ -86,7 +86,7 @@ namespace Engine
 		return m_bIsMaterialEmissive;
 	}
 
-	void Material::Bind(std::shared_ptr<RHIShader>& Shader) const
+	void Material::Bind(TSharedPtr<RHIShader>& Shader) const
 	{
 		Shader->Bind();
 

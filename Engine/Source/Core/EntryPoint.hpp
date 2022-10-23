@@ -7,7 +7,7 @@
 
 using namespace Engine;
 
-extern std::shared_ptr<Core::Application> Core::CreateApplication(void);
+extern TSharedPtr<Core::Application> Core::CreateApplication(void);
 
 auto main(void) -> int
 {

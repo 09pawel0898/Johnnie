@@ -38,7 +38,7 @@ namespace Engine
 	private:
 		PointLightData m_LightData;
 
-		std::shared_ptr<Mesh>	m_SphereMesh;
+		TSharedPtr<Mesh>	m_SphereMesh;
 		bool m_bIsMeshVisible{ true };
 
 	public:	
@@ -64,7 +64,7 @@ namespace Engine
 		PointLightData& GetData(void);
 
 	private:
-		std::shared_ptr<Material> m_SphereEmissiveMaterial;
+		TSharedPtr<Material> m_SphereEmissiveMaterial;
 		void InitializeMaterial(void);
 
 		void RegisterLight(void);

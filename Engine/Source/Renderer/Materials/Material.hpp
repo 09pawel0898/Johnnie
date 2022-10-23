@@ -4,6 +4,8 @@
 #include "glm/glm.hpp"
 #include "../RHI/Resources/RHIResource.hpp"
 
+#include <vector>
+
 namespace Engine
 {
 	namespace RHI
@@ -33,11 +35,11 @@ namespace Engine
 
 	struct MaterialTextures
 	{
-		std::shared_ptr<RHITexture2D> DiffuseTexture{ nullptr };
-		std::shared_ptr<RHITexture2D> SpecularTexture{ nullptr };
-		std::shared_ptr<RHITexture2D> NormalTexture{ nullptr };
+		TSharedPtr<RHITexture2D> DiffuseTexture{ nullptr };
+		TSharedPtr<RHITexture2D> SpecularTexture{ nullptr };
+		TSharedPtr<RHITexture2D> NormalTexture{ nullptr };
 
-		std::vector<std::reference_wrapper<std::shared_ptr<RHITexture2D>>> GetTextures(void)
+		std::vector<std::reference_wrapper<TSharedPtr<RHITexture2D>>> GetTextures(void)
 		{
 			return {	std::ref(DiffuseTexture),
 						std::ref(SpecularTexture),
@@ -60,15 +62,15 @@ namespace Engine
 		template <typename TUniform>
 		requires std::is_base_of_v<MaterialUniform, TUniform>
 			Material(TUniform&& Uniform)
-			: m_MaterialUniform(std::forward<TUniform>(Uniform))
+			: m_MaterialUniform(Forward<TUniform>(Uniform))
 		{}
 
 	public:
 		void SetBaseColor(glm::vec3 BaseColor);
 
-		void SetDiffuseTexture(std::shared_ptr<RHITexture2D> DiffuseTexture);
-		void SetSpecularTexture(std::shared_ptr<RHITexture2D> SpecularTexture);
-		void SetNormalTexture(std::shared_ptr<RHITexture2D> NormalTexture);
+		void SetDiffuseTexture(TSharedPtr<RHITexture2D> DiffuseTexture);
+		void SetSpecularTexture(TSharedPtr<RHITexture2D> SpecularTexture);
+		void SetNormalTexture(TSharedPtr<RHITexture2D> NormalTexture);
 		
 		bool SetUseDiffuseTexture(bool Use);
 		bool SetUseSpecularTexture(bool Use);
@@ -85,7 +87,7 @@ namespace Engine
 		MaterialTextures& GetMaterialTextures(void);
 
 	public:
-		void Bind(std::shared_ptr<RHIShader>& Shader) const;
+		void Bind(TSharedPtr<RHIShader>& Shader) const;
 	};
 
 	FORCEINLINE MaterialUniform const& Material::GetMaterialUniform(void) const
@@ -100,9 +102,9 @@ namespace Engine
 
 	namespace DefaultMaterials
 	{
-		extern const std::shared_ptr<Material> BasicWhite;
-		extern const std::shared_ptr<Material> Emerald;
-		extern const std::shared_ptr<Material> Gold;
-		extern const std::shared_ptr<Material> Silver;
+		extern const TSharedPtr<Material> BasicWhite;
+		extern const TSharedPtr<Material> Emerald;
+		extern const TSharedPtr<Material> Gold;
+		extern const TSharedPtr<Material> Silver;
 	}
 }

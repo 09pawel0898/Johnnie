@@ -70,9 +70,9 @@ namespace Engine::RHI
 		{}
 
 		[[nodiscard]]
-		static  std::unique_ptr<RHIIndexBuffer> Create(uint32_t* Indices, uint32_t Count);
+		static  TUniquePtr<RHIIndexBuffer> Create(uint32_t* Indices, uint32_t Count);
 		[[nodiscard]]
-		static  std::unique_ptr<RHIIndexBuffer> Create(std::vector<uint32_t> const& Indices);
+		static  TUniquePtr<RHIIndexBuffer> Create(std::vector<uint32_t> const& Indices);
 
 	public:
 		virtual void Bind() const = 0;
@@ -87,18 +87,18 @@ namespace Engine::RHI
 	class RHIVertexBuffer : public RHIResource
 	{
 	protected:
-		std::unique_ptr<RHIVertexBufferLayout> m_VertexBufferLayout;
+		TUniquePtr<RHIVertexBufferLayout> m_VertexBufferLayout;
 		uint32_t m_VerticesCount = 0;
 
 	public:
 		virtual ~RHIVertexBuffer() = default;
 
 		[[nodiscard]]
-		static std::unique_ptr<RHIVertexBuffer> Create(uint32_t Size);
+		static TUniquePtr<RHIVertexBuffer> Create(uint32_t Size);
 		[[nodiscard]]
-		static std::unique_ptr<RHIVertexBuffer> Create(const void* Vertices, uint32_t Size);
+		static TUniquePtr<RHIVertexBuffer> Create(const void* Vertices, uint32_t Size);
 		[[nodiscard]]
-		static std::unique_ptr<RHIVertexBuffer> Create(std::vector<RHIVertex> const& Vertices);
+		static TUniquePtr<RHIVertexBuffer> Create(std::vector<RHIVertex> const& Vertices);
 
 	public:
 		virtual void Bind(void) const = 0;
@@ -107,8 +107,8 @@ namespace Engine::RHI
 		virtual void SetData(const void* Data, uint32_t Size) = 0;
 		virtual void const* GetData(void) const = 0;
 
-		virtual std::unique_ptr<RHIVertexBufferLayout> const& GetLayout() const = 0;
-		virtual void SetLayout(std::unique_ptr<RHIVertexBufferLayout> Layout) = 0;
+		virtual TUniquePtr<RHIVertexBufferLayout> const& GetLayout() const = 0;
+		virtual void SetLayout(TUniquePtr<RHIVertexBufferLayout> Layout) = 0;
 
 		uint32_t GetVerticesCount(void) const;
 	};

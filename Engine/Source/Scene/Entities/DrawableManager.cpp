@@ -4,34 +4,34 @@
 
 namespace Engine
 {
-    void DrawableManager::RegisterActor(std::shared_ptr<Actor> const& DrawableActor)
+    void DrawableManager::RegisterActor(TSharedPtr<Actor> const& DrawableActor)
     {
         Check(  m_DrawableObjects.cend() == 
                 std::find_if(m_DrawableObjects.cbegin(), m_DrawableObjects.cend(),
-                [&DrawableActor](std::pair<OUUID, std::weak_ptr<IDrawable>> const& Element) -> bool 
+                [&DrawableActor](std::pair<OUUID, TWeakPtr<IDrawable>> const& Element) -> bool 
                 {
                     return DrawableActor->GetUUID() == Element.first; 
                 }));
 
         m_DrawableObjects.emplace_back(
-            std::make_pair(DrawableActor->GetUUID(), std::weak_ptr<IDrawable>(DrawableActor)));
+            std::make_pair(DrawableActor->GetUUID(), TWeakPtr<IDrawable>(DrawableActor)));
     }
 
-    void DrawableManager::RegisterWidget(std::shared_ptr<ImGuiWidgetBase> const& DrawableWidget)
+    void DrawableManager::RegisterWidget(TSharedPtr<ImGuiWidgetBase> const& DrawableWidget)
     {
         Check(m_DrawableWidgets.cend() ==
             std::find_if(m_DrawableWidgets.cbegin(), m_DrawableWidgets.cend(),
-                [&DrawableWidget](std::pair<OUUID, std::weak_ptr<IDrawableWidget>> const& Element) -> bool
+                [&DrawableWidget](std::pair<OUUID, TWeakPtr<IDrawableWidget>> const& Element) -> bool
                 {
                     return DrawableWidget->GetUUID() == Element.first;
                 }));
 
         m_DrawableWidgets.emplace_back(
-            std::make_pair(DrawableWidget->GetUUID(), std::weak_ptr<IDrawableWidget>(DrawableWidget)));
+            std::make_pair(DrawableWidget->GetUUID(), TWeakPtr<IDrawableWidget>(DrawableWidget)));
     }
 
     template <typename TDrawable>
-    static void Draw_Internal(std::vector<std::pair<OUUID,std::weak_ptr<TDrawable>>> const& DrawableObjects, std::vector<OUUID>& OutPendingToUnregister)
+    static void Draw_Internal(std::vector<std::pair<OUUID,TWeakPtr<TDrawable>>> const& DrawableObjects, std::vector<OUUID>& OutPendingToUnregister)
     {
         int i = 0;
         for (auto const& [uuid, drawablePtr] : DrawableObjects)
@@ -82,10 +82,10 @@ namespace Engine
     void DrawableManager::UnRegisterDrawables(DrawableType Type, std::vector<OUUID> const& PendingIDsToUnregister)
     {
         auto eraseFromContainerByID = 
-        []<typename TDrawable>(OUUID const& UUID, std::vector<std::pair<OUUID, std::weak_ptr<TDrawable>>>& DrawableObjects)
+        []<typename TDrawable>(OUUID const& UUID, std::vector<std::pair<OUUID, TWeakPtr<TDrawable>>>& DrawableObjects)
         {
             auto const& foundElement = std::find_if(DrawableObjects.cbegin(), DrawableObjects.cend(),
-                [&UUID](std::pair<OUUID, std::weak_ptr<TDrawable>> const& Element)
+                [&UUID](std::pair<OUUID, TWeakPtr<TDrawable>> const& Element)
                 {
                     return Element.first == UUID;
                 });

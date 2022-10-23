@@ -5,7 +5,7 @@
 
 namespace Engine
 {
-	std::unique_ptr<ProfilingManager> ProfilingManager::s_Instance = nullptr;
+	TUniquePtr<ProfilingManager> ProfilingManager::s_Instance = nullptr;
 
 	void ProfilingManager::BeginScopeProfile(std::string_view Name)
 	{

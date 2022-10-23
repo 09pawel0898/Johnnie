@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ImGui/ImGuiWidgetBase.hpp"
+#include <Engine/Gui.hpp>
 #include <glm/glm.hpp>
 
 class WJohnnieCameraWidget final : public ImGuiWidgetBase

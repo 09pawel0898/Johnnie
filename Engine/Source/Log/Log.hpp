@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Core/CoreMinimal.hpp"
+
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 
@@ -7,8 +9,15 @@
 
 namespace Engine
 {
-	class Log
+	namespace Core
 	{
+		class Application;
+	}
+
+	class LogManager
+	{
+		friend class Core::Application;
+
 	public:
 		enum class Verbosity : uint8_t
 		{
@@ -18,39 +27,39 @@ namespace Engine
 	private:
 		using Logger = spdlog::logger;
 
-		static inline const char* s_InitialPattern = "%^[%T][%n][%l]:  %v%$";
+		static inline const char* s_DefaultPattern = "%^[%T][%n][%l]:  %v%$";
 
 		static std::unordered_map<	std::string_view, 
-									std::shared_ptr<Logger>> s_Loggers;
+									TSharedPtr<Logger>> s_Loggers;
 
 	public:
-		static const char* GetDefaultPattern(void) 
-		{ 
-			return s_InitialPattern; 
-		}
-
 		static void RegisterLogger(std::string_view const& CategoryName, std::shared_ptr<Logger> Logger);
 
-		static void RegisterOutputLogSink_mt(std::shared_ptr<OutputLogSink_mt> OutputLogSink_mt);
+		static TSharedPtr<Logger>& GetLogger(std::string_view const& CategoryName);
 
-		static std::shared_ptr<Logger>& GetLogger(std::string_view const& CategoryName);
+		static void RegisterOutputLogSink_mt(TSharedPtr<OutputLogSink_mt> OutputLogSink_mt);
+		
+		static const char* GetDefaultPattern(void)
+		{
+			return s_DefaultPattern;
+		}
 
-	public:
+	private:
 		static void RegisterEngineLoggers(void);
 	};
 	
 	#define DEFINE_LOG_CATEGORY(LogCategory)\
-		Log::RegisterLogger(#LogCategory,spdlog::stdout_color_mt(#LogCategory))
+		LogManager::RegisterLogger(#LogCategory,spdlog::stdout_color_mt(#LogCategory))
 
 	#define DEFINE_OUTPUT_LOG_SINK(_OutputLogSink)\
-		Log::RegisterOutputLogSink_mt(_OutputLogSink)
+		LogManager::RegisterOutputLogSink_mt(_OutputLogSink)
 
 	#define LOG(LogCategory,LogVerbosity,...) \
-		switch(Log::Verbosity::##LogVerbosity) \
+		switch(LogManager::Verbosity::##LogVerbosity) \
 		{\
-			case Log::Verbosity::Trace:		Log::GetLogger(#LogCategory)->trace(__VA_ARGS__);	break; \
-			case Log::Verbosity::Info:		Log::GetLogger(#LogCategory)->info(__VA_ARGS__);	break; \
-			case Log::Verbosity::Warning:	Log::GetLogger(#LogCategory)->warn(__VA_ARGS__);	break; \
-			case Log::Verbosity::Error:		Log::GetLogger(#LogCategory)->error(__VA_ARGS__);	break; \
+			case LogManager::Verbosity::Trace:		LogManager::GetLogger(#LogCategory)->trace(__VA_ARGS__);	break; \
+			case LogManager::Verbosity::Info:		LogManager::GetLogger(#LogCategory)->info(__VA_ARGS__);	break; \
+			case LogManager::Verbosity::Warning:	LogManager::GetLogger(#LogCategory)->warn(__VA_ARGS__);	break; \
+			case LogManager::Verbosity::Error:		LogManager::GetLogger(#LogCategory)->error(__VA_ARGS__);	break; \
 		}
 }

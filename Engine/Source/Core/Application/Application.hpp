@@ -23,10 +23,10 @@ namespace Engine::Core
 
 	private:
 		friend int ::main(void);
-		static std::shared_ptr<Application> s_Instance;
+		static TSharedPtr<Application> s_Instance;
 
 	public:
-		static std::shared_ptr<Application>& Get(void)
+		static TSharedPtr<Application>& Get(void)
 		{ 
 			return s_Instance; 
 		};
@@ -42,7 +42,7 @@ namespace Engine::Core
 
 		/** Window */
 	private:		
-		using WindowPointer	= std::shared_ptr<IWindow>;
+		using WindowPointer	= TSharedPtr<IWindow>;
 		WindowPointer m_Window;
 
 	public:
@@ -50,13 +50,13 @@ namespace Engine::Core
 
 		/** Layers */
 	private:
-		std::unique_ptr<LayerManager>	m_LayerManager;
+		TUniquePtr<LayerManager>	m_LayerManager;
 		void InitLayerManager(void);
 		
-		std::shared_ptr<ImGuiLayer>		m_ImGuiLayer;
+		TSharedPtr<ImGuiLayer>		m_ImGuiLayer;
 		void InitImGuiLayer(void);
 
-		std::shared_ptr<EngineBaseLayer> m_EngineBaseLayer;
+		TSharedPtr<EngineBaseLayer> m_EngineBaseLayer;
 		void InitEngineLayer(void);
 
 	public:
@@ -90,5 +90,5 @@ namespace Engine::Core
 		bool OnWindowClosed(Events::WindowClosedEvent& Event);
 	};
 
-	[[nodiscard]] std::shared_ptr<Application> CreateApplication();
+	[[nodiscard]] TSharedPtr<Application> CreateApplication();
 }

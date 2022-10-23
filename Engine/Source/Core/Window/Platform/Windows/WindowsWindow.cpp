@@ -124,8 +124,8 @@ namespace Engine::Core
 		{
 			auto properties = static_cast<WindowProperties*>(glfwGetWindowUserPointer(Window));
 			Check(properties);
-			Events::MouseMovedEvent mouseMovedEvent(NewX, NewY);
-			properties->EventCallback(mouseMovedEvent);
+			Events::MouseMoveTempdEvent mouseMoveTempdEvent(NewX, NewY);
+			properties->EventCallback(mouseMoveTempdEvent);
 		});
 
 		glfwSetWindowSizeCallback(m_WindowHandle, [](GLFWwindow* Window, int Width, int Height)

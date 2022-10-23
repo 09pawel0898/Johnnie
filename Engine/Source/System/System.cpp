@@ -7,7 +7,7 @@
 
 #include "Core/PlatformCheck.hpp"
 
-/** TO BE REMOVED (no explicit glad includes despite RHI) */
+/** TO BE REMoveTempD (no explicit glad includes despite RHI) */
 #include <glad/glad.h>
 #include "Renderer/RHI/Platform/OpenGL/Extensions/OpenGLExtensionCheck.hpp"
 //
@@ -156,7 +156,7 @@ namespace Engine
 		}
 	}
 
-	void SystemMemoryInfo::Log(void) const
+	void SystemMemoryInfo::LogManager(void) const
 	{
 		LOG(Core, Trace, "-------------------------------Memory Info-------------------------------");
 
@@ -171,7 +171,7 @@ namespace Engine
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}
 
-	void SystemVideoBrandingInfo::Log(void) const
+	void SystemVideoBrandingInfo::LogManager(void) const
 	{
 		LOG(Core, Trace, "------------------------------Graphics Card------------------------------");
 
@@ -181,7 +181,7 @@ namespace Engine
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}
 
-	void SystemNvidiaVideoMemoryInfo::Log(void) const
+	void SystemNvidiaVideoMemoryInfo::LogManager(void) const
 	{
 		LOG(Core, Trace, "------------------------------Video Memory-------------------------------");
 
@@ -194,7 +194,7 @@ namespace Engine
 		LOG(Core, Trace, "-------------------------------------------------------------------------");
 	}
 
-	void SystemAMDVideoMemoryInfo::Log(void) const
+	void SystemAMDVideoMemoryInfo::LogManager(void) const
 	{
 		LOG(Core, Trace, "------------------------------Video Memory-------------------------------");
 

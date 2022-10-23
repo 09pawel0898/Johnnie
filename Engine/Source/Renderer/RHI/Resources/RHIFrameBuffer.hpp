@@ -69,7 +69,7 @@ namespace Engine::RHI
 
 		virtual ~RHIFrameBuffer() = default;
 
-		static std::unique_ptr<RHIFrameBuffer> Create(RHIFrameBufferSpecification const& Specification);
+		static TUniquePtr<RHIFrameBuffer> Create(RHIFrameBufferSpecification const& Specification);
 
 	public:
 		virtual void Bind(void) = 0;
@@ -80,7 +80,7 @@ namespace Engine::RHI
 		virtual uint32_t GetRendererID(void) const = 0;
 
 		virtual void ResolveToScreen(void) = 0;
-		virtual void ResolveToFramebuffer(std::unique_ptr<RHIFrameBuffer> const& FrameBuffer) = 0;
+		virtual void ResolveToFramebuffer(TUniquePtr<RHIFrameBuffer> const& FrameBuffer) = 0;
 
 		virtual uint32_t GetColorAttachmentID(int32_t Index) = 0;
 		virtual uint32_t GetDepthStencilAttachmentID(void) = 0;

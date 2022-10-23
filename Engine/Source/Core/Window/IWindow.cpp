@@ -9,18 +9,18 @@
 namespace Engine::Core
 {
 	WindowProperties::WindowProperties(std::string Title, unsigned Width, unsigned Height)
-		:	Title(std::move(Title)),
+		:	Title(MoveTemp(Title)),
 			Width(Width),
 			Height(Height),
 			bEnableVSync(false),
 			EventCallback(nullptr)
 	{}
 
-	std::unique_ptr<IWindow> IWindow::Create(WindowProperties const& Properties)
+	TUniquePtr<IWindow> IWindow::Create(WindowProperties const& Properties)
 	{
 #ifdef PLATFORM_WINDOWS
 
-		return std::make_unique<WindowsWindow>(Properties);
+		return MakeUnique<WindowsWindow>(Properties);
 #else
 		CheckMsg(false, "Can't create window, unknown platform!");
 		return nullptr;

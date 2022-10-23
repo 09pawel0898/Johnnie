@@ -3,6 +3,8 @@
 #include "EventsIdentifiers.hpp"
 #include "../Utilities/FlagOperators.hpp"
 
+#include <functional>
+
 namespace Engine::Events
 {
 	#define DECLARE_EVENT_CLASS_TYPE(Type)\

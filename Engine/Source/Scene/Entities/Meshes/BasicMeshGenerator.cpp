@@ -5,16 +5,16 @@
 
 namespace Engine
 {
-	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreateBox(glm::vec3 Size)
+	TSharedPtr<AStaticMesh> BasicMeshGenerator::CreateBox(glm::vec3 Size)
 	{
-		static std::vector<std::shared_ptr<Mesh>> meshes =
+		static std::vector<TSharedPtr<Mesh>> meshes =
 		{ 
 			CreateBoxMesh(Size)
 		};
-		return NewActor<AStaticMesh>(std::move(meshes));
+		return NewActor<AStaticMesh>(MoveTemp(meshes));
 	}
 
-	std::unique_ptr<Mesh> BasicMeshGenerator::CreateBoxMesh(glm::vec3 Size)
+	TUniquePtr<Mesh> BasicMeshGenerator::CreateBoxMesh(glm::vec3 Size)
 	{
 		float w = 0.5f * Size.x;
 		float h = 0.5f * Size.y;
@@ -86,24 +86,24 @@ namespace Engine
 			20, 22, 23,
 		};
 
-		return std::make_unique<Mesh>(boxVertices, boxIndices);
+		return MakeUnique<Mesh>(boxVertices, boxIndices);
 	}
 
-	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreatePlane(float Width, float Depth)
+	TSharedPtr<AStaticMesh> BasicMeshGenerator::CreatePlane(float Width, float Depth)
 	{
-		return std::unique_ptr<AStaticMesh>();
+		return TUniquePtr<AStaticMesh>();
 	}
 
-	std::shared_ptr<AStaticMesh> BasicMeshGenerator::CreateSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
+	TSharedPtr<AStaticMesh> BasicMeshGenerator::CreateSphere(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
-		std::vector<std::shared_ptr<Mesh>> meshes =
+		std::vector<TSharedPtr<Mesh>> meshes =
 		{
 			CreateSphereMesh(Radius, SliceCount, StackCount)
 		};
-		return NewActor<AStaticMesh>(std::move(meshes));
+		return NewActor<AStaticMesh>(MoveTemp(meshes));
 	}
 
-	std::unique_ptr<Mesh> BasicMeshGenerator::CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount)
+	TUniquePtr<Mesh> BasicMeshGenerator::CreateSphereMesh(float Radius, uint32_t SliceCount, uint32_t StackCount)
 	{
 		std::vector<RHIVertex> sphereVertices;
 		std::vector<uint32_t> sphereIndices;
@@ -178,6 +178,6 @@ namespace Engine
 			sphereIndices.push_back(baseIndex + i + 1);
 		}
 
-		return std::make_unique<Mesh>(sphereVertices, sphereIndices);
+		return MakeUnique<Mesh>(sphereVertices, sphereIndices);
 	}
 }

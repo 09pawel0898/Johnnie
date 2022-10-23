@@ -65,8 +65,8 @@ namespace Engine::Utility
 	{
 		auto startTimepoint = std::chrono::high_resolution_clock::now();
 
-		std::forward<decltype(Func)>(Func)(
-			std::forward<decltype(Params)>(Params)...);
+		Forward<decltype(Func)>(Func)(
+			Forward<decltype(Params)>(Params)...);
 
 		auto endTimepoint = std::chrono::high_resolution_clock::now();
 		auto duration = std::chrono::time_point_cast<TimeUnit>(endTimepoint).time_since_epoch() -

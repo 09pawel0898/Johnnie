@@ -21,7 +21,7 @@ namespace Engine
 
 	struct SystemInfo
 	{
-		virtual void Log(void) const = 0;
+		virtual void LogManager(void) const = 0;
 	};
 
 	struct SystemMemoryInfo final : public SystemInfo
@@ -37,7 +37,7 @@ namespace Engine
 			:	AvailablePhysMemory(AvailablePhysMemory), TotalPhysMemory(TotalPhysMemory), AvailableVirtualMemory(AvailableVirtualMemory), TotalVirtualMemory(TotalVirtualMemory)
 		{}
 
-		void Log(void) const override;
+		void LogManager(void) const override;
 	};
 	
 	struct SystemVideoBrandingInfo final : public SystemInfo
@@ -47,7 +47,7 @@ namespace Engine
 		std::string Vendor	= "none";
 		std::string Renderer= "none";
 
-		void Log(void) const override;
+		void LogManager(void) const override;
 	};
 
 	/** Parsed from GL_NVX_gpu_memory_info */
@@ -60,7 +60,7 @@ namespace Engine
 		int64_t EvictedCount	= None;				// Count of total evictions seen by system
 		int64_t EvictedSize		= None;				// Size of total video memory evicted (in kb)
 
-		void Log(void) const override;
+		void LogManager(void) const override;
 	};
 
 	/** Parsed from GL_ATI_meminfo */
@@ -71,7 +71,7 @@ namespace Engine
 		int64_t TotalAux		= None;				// Total auxiliary memory free
 		int64_t LargestAux		= None;				// Largest auxiliary free block
 
-		void Log(void) const override;
+		void LogManager(void) const override;
 	};
 
 	struct SystemVideoMemoryInfo
@@ -90,7 +90,7 @@ namespace Engine
 
 		template <typename BrandVideoMemoryInfoType>
 		explicit SystemVideoMemoryInfo(BrandVideoMemoryInfoType&& VideoMemoryInfo) noexcept
-			:	Info(std::forward<BrandVideoMemoryInfoType>(VideoMemoryInfo))
+			:	Info(Forward<BrandVideoMemoryInfoType>(VideoMemoryInfo))
 		{}
 
 		bool IsValid(void) const

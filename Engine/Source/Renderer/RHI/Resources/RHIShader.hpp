@@ -40,8 +40,8 @@ namespace Engine::RHI
 		virtual ~RHIShader() = default;
 	
 	public:
-		[[nodiscard]] static std::unique_ptr<RHIShader> Create(std::string_view Name, std::string_view FilePath);
-		[[nodiscard]] static std::unique_ptr<RHIShader> Create(std::string_view Name, std::string_view VertShaderFilePath, std::string_view FragShaderFilePath);
+		[[nodiscard]] static TUniquePtr<RHIShader> Create(std::string_view Name, std::string_view FilePath);
+		[[nodiscard]] static TUniquePtr<RHIShader> Create(std::string_view Name, std::string_view VertShaderFilePath, std::string_view FragShaderFilePath);
 
 		virtual void Bind(void) const = 0;
 		virtual void Unbind(void) const = 0;

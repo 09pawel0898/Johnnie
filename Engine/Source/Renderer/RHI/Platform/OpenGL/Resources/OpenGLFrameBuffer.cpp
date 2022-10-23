@@ -221,7 +221,7 @@ namespace Engine::RHI
 		glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 
-	void OpenGLFrameBuffer::ResolveToFramebuffer(std::unique_ptr<RHIFrameBuffer> const& FrameBuffer)
+	void OpenGLFrameBuffer::ResolveToFramebuffer(TUniquePtr<RHIFrameBuffer> const& FrameBuffer)
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_ID);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FrameBuffer->GetRendererID());

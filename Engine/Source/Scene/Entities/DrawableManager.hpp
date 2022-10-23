@@ -20,11 +20,11 @@ namespace Engine
 	{
 	private:
 		std::vector<
-			std::pair<OUUID, std::weak_ptr<IDrawable>>
+			std::pair<OUUID, TWeakPtr<IDrawable>>
 		> m_DrawableObjects;
 	
 		std::vector<
-			std::pair<OUUID, std::weak_ptr<IDrawableWidget>>
+			std::pair<OUUID, TWeakPtr<IDrawableWidget>>
 		> m_DrawableWidgets;
 	
 	public:
@@ -37,9 +37,9 @@ namespace Engine
 		DrawableManager& operator=(DrawableManager&&) = delete;
 
 	public:
-		void RegisterActor(std::shared_ptr<Actor> const& DrawableActor);
+		void RegisterActor(TSharedPtr<Actor> const& DrawableActor);
 
-		void RegisterWidget(std::shared_ptr<ImGuiWidgetBase> const& DrawableWidget);
+		void RegisterWidget(TSharedPtr<ImGuiWidgetBase> const& DrawableWidget);
 
 		void DrawActors(void);
 		void DrawWidgets(void);

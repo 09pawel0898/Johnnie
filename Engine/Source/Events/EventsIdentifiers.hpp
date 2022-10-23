@@ -15,7 +15,7 @@ namespace Engine::Events
 		// Mouse Events
 		MouseButtonPressed,
 		MouseButtonReleased,
-		MouseMoved,
+		MouseMoveTempd,
 		
 		// Window Events
 		WindowClosed,

@@ -1,5 +1,10 @@
 #pragma once
 
+#include "Core/CoreMinimal.hpp"
+#include <chrono>
+#include <thread>
+#include <unordered_map>
+
 namespace Engine
 {
 	struct ProfileResult
@@ -12,14 +17,14 @@ namespace Engine
 	class ProfilingManager final
 	{
 	private:
-		static std::unique_ptr<ProfilingManager> s_Instance;
+		static TUniquePtr<ProfilingManager> s_Instance;
 
 	public:
-		static std::unique_ptr<ProfilingManager>& Get(void)
+		static TUniquePtr<ProfilingManager>& Get(void)
 		{
 			if (!s_Instance)
 			{
-				s_Instance = std::make_unique<ProfilingManager>();
+				s_Instance = MakeUnique<ProfilingManager>();
 			}
 			return s_Instance;
 		}

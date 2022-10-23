@@ -1,9 +1,7 @@
 #pragma once
 
 #include "GLFW/glfw3.h"
-
-#include <cstdint>
-#include <iostream>
+#include "Log/Log.hpp"
 
 namespace Engine::Core
 {

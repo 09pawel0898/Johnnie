@@ -8,11 +8,11 @@
 
 namespace Engine::RHI
 {
-	std::unique_ptr<RHIVertexArray> RHIVertexArray::Create(void)
+	TUniquePtr<RHIVertexArray> RHIVertexArray::Create(void)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLVertexArray>(); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLVertexArray>(); break;
 		}
 		return nullptr;
 	}

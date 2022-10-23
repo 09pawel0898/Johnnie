@@ -10,7 +10,7 @@ namespace Engine
 	{
 	private:
 		
-		std::vector<std::pair<OUUID, std::weak_ptr<Tickable>>> m_RegisteredTickables;
+		std::vector<std::pair<OUUID, TWeakPtr<Tickable>>> m_RegisteredTickables;
 
 	public:
 		TickableManager() = default;
@@ -22,7 +22,7 @@ namespace Engine
 		TickableManager& operator=(TickableManager&&) = delete;
 
 	public:
-		bool RegisterTickable(std::shared_ptr<Object> const& TickableObject);
+		bool RegisterTickable(TSharedPtr<Object> const& TickableObject);
 
 		void UdateTickableEntities(double DeltaTime);
 

@@ -24,7 +24,7 @@ namespace Engine
         return std::nullopt;
     }
 
-    void LightingManager::RegisterDirectionalLight(std::shared_ptr<ADirectionalLight> const& DirectionalLight)
+    void LightingManager::RegisterDirectionalLight(TSharedPtr<ADirectionalLight> const& DirectionalLight)
     {
         RegisterLight_Internal(DirectionalLight, m_DirectionalLights);
     }
@@ -60,7 +60,7 @@ namespace Engine
         return std::nullopt;
     }
     
-    void LightingManager::RegisterPointLight(std::shared_ptr<APointLight> const& PointLight)
+    void LightingManager::RegisterPointLight(TSharedPtr<APointLight> const& PointLight)
     {
         RegisterLight_Internal(PointLight, m_PointLights);
     }

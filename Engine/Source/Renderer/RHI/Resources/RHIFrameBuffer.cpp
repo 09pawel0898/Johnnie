@@ -11,11 +11,11 @@ namespace Engine::RHI
 
 	}
 
-	std::unique_ptr<RHIFrameBuffer> RHIFrameBuffer::Create(RHIFrameBufferSpecification const& Specification)
+	TUniquePtr<RHIFrameBuffer> RHIFrameBuffer::Create(RHIFrameBufferSpecification const& Specification)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
-			case RenderingAPI::OpenGL: return std::make_unique<OpenGLFrameBuffer>(std::move(Specification)); break;
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLFrameBuffer>(MoveTemp(Specification)); break;
 		}
 		return nullptr;
 	}

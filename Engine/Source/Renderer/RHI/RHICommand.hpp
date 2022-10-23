@@ -9,12 +9,12 @@ namespace Engine::RHI
 	class RHICommand
 	{
 	private:
-		static std::unique_ptr<DynamicRHI> s_DynamicRHI;
+		static TUniquePtr<DynamicRHI> s_DynamicRHI;
 
 		friend class Renderer;
 
 	private:
-		static std::unique_ptr<DynamicRHI>& GetRHI(void)
+		static TUniquePtr<DynamicRHI>& GetRHI(void)
 		{
 			return s_DynamicRHI;
 		}
@@ -26,7 +26,7 @@ namespace Engine::RHI
 		/** RHI Methods */
 
 		static void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
-		static std::unique_ptr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		static TUniquePtr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
 		static void BindFramebuffer(std::string_view FramebufferName);
 		static void BindDefaultFramebuffer(void);
 
@@ -36,9 +36,9 @@ namespace Engine::RHI
 
 		static void Clear(void);
 
-		static void DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0);
+		static void DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0);
 
-		static void DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0);
+		static void DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0);
 	};
 
 	FORCEINLINE void RHICommand::Initialize(RenderingAPI RenderingAPI)
@@ -64,7 +64,7 @@ namespace Engine::RHI
 		s_DynamicRHI->InitializeFramebuffer(FramebufferName, FramebufferSpecification);
 	}
 
-	FORCEINLINE std::unique_ptr<RHIFrameBuffer>& RHICommand::GetFramebuffer(std::string_view FramebufferName)
+	FORCEINLINE TUniquePtr<RHIFrameBuffer>& RHICommand::GetFramebuffer(std::string_view FramebufferName)
 	{
 		return s_DynamicRHI->GetFramebuffer(FramebufferName);
 	}
@@ -89,12 +89,12 @@ namespace Engine::RHI
 		s_DynamicRHI->Clear();
 	}
 
-	FORCEINLINE void RHICommand::DrawLines(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t VertexCount)
+	FORCEINLINE void RHICommand::DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount)
 	{
 		s_DynamicRHI->DrawLines(VertexArray, VertexCount);
 	}
 
-	FORCEINLINE void RHICommand::DrawIndexed(std::shared_ptr<RHIVertexArray> const& VertexArray, uint32_t IndexCount)
+	FORCEINLINE void RHICommand::DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount)
 	{
 		s_DynamicRHI->DrawIndexed(VertexArray, IndexCount);
 	}
