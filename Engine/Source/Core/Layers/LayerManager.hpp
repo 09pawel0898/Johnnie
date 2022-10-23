@@ -4,16 +4,13 @@
 
 namespace Engine
 {
-	using LayerPointer = TSharedPtr<Layer>;
-
 	class LayerManager final
 	{
 	public:
 		using LayerName = std::string_view;
 
 	public:
-		LayerManager() noexcept
-		{}
+		LayerManager() = default;
 
 		~LayerManager();
 
@@ -25,13 +22,15 @@ namespace Engine
 
 	private:
 		uint8_t m_InsertIndex = 0;
-		std::vector<LayerPointer> m_Layers;
+		std::vector<TSharedPtr<Layer>> m_Layers;
 		
 	public:	
-		void PushLayer		(LayerPointer Layer);
-		void PushOverlay	(LayerPointer Layer);
-		void ReMoveTempLayer	(std::string_view LayerName);
-		void ReMoveTempOverlay	(std::string_view LayerName);
+		void PushLayer		(TSharedPtr<Layer> Layer);
+		void PushOverlay	(TSharedPtr<Layer> Layer);
+		void RemoveLayer	(std::string_view LayerName);
+		void RemoveOverlay	(std::string_view LayerName);
+
+		TSharedPtr<Layer>& GetLayer(LayerName LayerName);
 
 		bool IsEmpty(void) const
 		{
@@ -40,8 +39,8 @@ namespace Engine
 		void Clear(void);
 
 	public:
-		using Iterator		= std::vector<LayerPointer>::iterator;
-		using ConstIterator = std::vector<LayerPointer>::const_iterator;
+		using Iterator		= std::vector<TSharedPtr<Layer>>::iterator;
+		using ConstIterator = std::vector<TSharedPtr<Layer>>::const_iterator;
 		
 		Iterator		begin()			{ return m_Layers.begin();	}
 		Iterator		end()			{ return m_Layers.end();	}

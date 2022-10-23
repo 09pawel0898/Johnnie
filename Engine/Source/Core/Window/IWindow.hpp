@@ -40,7 +40,7 @@ namespace Engine::Core
 		virtual void SetEventCallback(const EventCallback& Callback) = 0;
 
 		/** Update */
-		virtual void OnTick(void) = 0;
+		virtual void SwapBuffers(void) = 0;
 
 		/** Properties */
 		virtual uint16_t GetWidth(void)	 const = 0;

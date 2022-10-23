@@ -4,10 +4,11 @@ namespace Engine
 {
 	struct ImGuiProperties
 	{
+		friend class ImGuiRenderer;
+
 	private:
 		bool bDockingEnabled;
 
-		friend class ImGuiLayer;
 	public:
 		void EnableDocking(void);
 	};

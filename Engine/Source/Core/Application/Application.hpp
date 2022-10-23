@@ -5,7 +5,7 @@
 #include "Core/Window/IWindow.hpp"
 #include "Core/Layers/LayerManager.hpp"
 #include "Core/Layers/EngineLayers/EngineBaseLayer.hpp"
-#include "ImGui/ImGuiLayer.hpp"
+#include "Renderer/ImGuiRenderer.hpp"
 
 int main(void);
 
@@ -32,6 +32,7 @@ namespace Engine::Core
 		};
 
 		explicit Application(const WindowProperties& WindowProperties = WindowProperties());
+
 		virtual ~Application() = default;
 
 		Application(Application const&) = delete;
@@ -42,33 +43,31 @@ namespace Engine::Core
 
 		/** Window */
 	private:		
-		using WindowPointer	= TSharedPtr<IWindow>;
-		WindowPointer m_Window;
+		TSharedPtr<IWindow> m_Window;
 
 	public:
-		WindowPointer const& GetWindow(void) const { return m_Window; }
+		TSharedPtr<IWindow> const& GetWindow(void) const 
+		{ 
+			return m_Window; 
+		}
+
+		ImGuiProperties& GetGuiProperties()
+		{
+			return ImGuiRenderer::Get()->GetImGuiProperties();
+		};
 
 		/** Layers */
 	private:
-		TUniquePtr<LayerManager>	m_LayerManager;
-		void InitLayerManager(void);
-		
-		TSharedPtr<ImGuiLayer>		m_ImGuiLayer;
-		void InitImGuiLayer(void);
-
-		TSharedPtr<EngineBaseLayer> m_EngineBaseLayer;
-		void InitEngineLayer(void);
-
-	public:
-		ImGuiProperties& GetGuiProperties() { return m_ImGuiLayer->GetImGuiProperties(); };
-		LayerManager& GetLayerManager(void) { return *m_LayerManager; }
+		EngineBaseLayer m_EngineLayer{ "EngineLayer" };
 		
 		/** Initialization/Runtime */
 	private:
 		void Run(void);
 		void UpdateFrame(void);
+
 		void InitApplication(const WindowProperties& WindowProperties);
 		void Shutdown(void);
+
 	public:
 		virtual void PostInitApplication(void);
 

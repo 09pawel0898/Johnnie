@@ -36,7 +36,7 @@ namespace Engine::Core
 		virtual void SetEventCallback(EventCallback const& Callback) override;
 
 		/** Update */
-		virtual void OnTick(void) override;
+		virtual void SwapBuffers(void) override;
 
 	public:
 		virtual void SetVSync(bool Enabled) override;

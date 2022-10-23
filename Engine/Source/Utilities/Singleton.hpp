@@ -7,7 +7,8 @@
 template <typename T>
 class Singleton
 {
-    static inline TUniquePtr<T> s_Instance;
+protected:
+    static inline TUniquePtr<T> s_Instance{ nullptr };
 
 public:
     static TUniquePtr<T>& Get()
@@ -35,9 +36,9 @@ protected:
 template <typename T>
 class MSingleton
 {
-    static inline TUniquePtr<T> s_Instance;
-
 protected:
+    static inline TUniquePtr<T> s_Instance{ nullptr };
+
     template <typename... Args>
     static void Construct(Args...)
     {
@@ -47,7 +48,7 @@ protected:
 public:
     static TUniquePtr<T>& Get()
     {
-        Check(s_Instance != nullptr);
+        CheckMsg(s_Instance != nullptr, "Singleton not initialized yet.");
         return s_Instance;
     }
 

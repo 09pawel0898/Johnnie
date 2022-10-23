@@ -7,11 +7,6 @@
 
 namespace Engine
 {
-	EngineBaseLayer::EngineBaseLayer(std::string_view Name) noexcept
-		:	Layer(Name)
-	{
-	}
-
 	void EngineBaseLayer::OnAwake(void)
 	{
 		PrepareShaders();

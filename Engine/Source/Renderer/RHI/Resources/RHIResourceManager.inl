@@ -65,7 +65,7 @@ namespace Engine::RHI
 	TSharedPtr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID)
 	{
 		auto foundResource = m_Resources.find(ResourceID);
-		assert(foundResource != m_Resources.end());
+		Check(foundResource != m_Resources.end());
 
 		return foundResource->second;
 	}
@@ -75,7 +75,7 @@ namespace Engine::RHI
 	const TSharedPtr<ResourceType>& RHIResourceManager<ResourceType, ResourceID>::GetResource(ResourceID ResourceID) const
 	{
 		auto foundResource = m_Resources.find(ResourceID);
-		assert(foundResource != m_Resources.end());
+		Check(foundResource != m_Resources.end());
 
 		return foundResource->second;
 	}

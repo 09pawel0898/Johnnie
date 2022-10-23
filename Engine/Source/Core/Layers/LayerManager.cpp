@@ -4,6 +4,17 @@
 
 namespace Engine
 {
+	namespace Utility
+	{
+		static decltype(auto) FindLayerByName(std::vector<TSharedPtr<Layer>>& LayersContainer, LayerManager::LayerName LayerName)
+		{
+			return std::find_if(LayersContainer.begin(), LayersContainer.end(), [LayerName](TSharedPtr<Layer> const& LayerPointer)
+			{
+				return LayerName == LayerPointer->GetName();
+			});
+		}
+	}
+
 	LayerManager::~LayerManager()
 	{
 		for (auto& layer : m_Layers)
@@ -12,38 +23,34 @@ namespace Engine
 		}
 	}
 
-	void LayerManager::PushLayer(LayerPointer Layer)
+	void LayerManager::PushLayer(TSharedPtr<Layer> Layer)
 	{
 		Layer->OnAwake();
 		m_Layers.emplace(m_Layers.begin() + m_InsertIndex, MoveTemp(Layer));
 	}
 
-	void LayerManager::PushOverlay(LayerPointer Layer)
+	void LayerManager::PushOverlay(TSharedPtr<Layer> Layer)
 	{
 		Layer->OnAwake();
 		m_Layers.emplace_back(MoveTemp(Layer));
 	}
 
-	void LayerManager::ReMoveTempLayer(std::string_view LayerName)
+	void LayerManager::RemoveLayer(std::string_view LayerName)
 	{
-		auto iter = std::find_if(m_Layers.begin(), m_Layers.begin(), 
-		[LayerName](LayerPointer const& LayerPointer)
-		{
-			return LayerName == LayerPointer->GetName();
-		});
+		auto foundLayer = Utility::FindLayerByName(m_Layers, LayerName);
 
-		if (iter != m_Layers.begin() + m_InsertIndex)
+		if (foundLayer != m_Layers.begin() + m_InsertIndex)
 		{
-			iter->get()->OnDetach();
-			m_Layers.erase(iter);
+			foundLayer->get()->OnDetach();
+			m_Layers.erase(foundLayer);
 			m_InsertIndex--;
 		}
 	}
 
-	void LayerManager::ReMoveTempOverlay(std::string_view LayerName)
+	void LayerManager::RemoveOverlay(std::string_view LayerName)
 	{
 		auto iter = std::find_if(m_Layers.begin() + m_InsertIndex, m_Layers.begin(), 
-		[LayerName](LayerPointer const& LayerPointer)
+		[LayerName](TSharedPtr<Layer> const& LayerPointer)
 		{
 			return LayerName == LayerPointer->GetName();
 		});
@@ -54,6 +61,15 @@ namespace Engine
 			m_Layers.erase(iter);
 		}
 	}
+
+	TSharedPtr<Layer>& LayerManager::GetLayer(LayerName LayerName)
+	{
+		auto foundLayer = Utility::FindLayerByName(m_Layers, LayerName);
+
+		CheckMsg(*foundLayer != nullptr, "Requested layer was not present in the container.");
+		return *foundLayer;
+	}
+
 	void LayerManager::Clear(void)
 	{
 		while (!IsEmpty())

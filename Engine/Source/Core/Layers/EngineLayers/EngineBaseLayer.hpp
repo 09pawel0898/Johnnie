@@ -4,12 +4,20 @@
 
 namespace Engine
 {
+	namespace Core
+	{
+		class Application;
+	}
+
 	class EngineBaseLayer final : public Layer
 	{
-	public:
-		explicit EngineBaseLayer(std::string_view Name) noexcept;
+		friend class Core::Application;
 
 	private:
+		explicit EngineBaseLayer(std::string_view Name)
+			:	Layer(Name)
+		{}
+
 		/** Layer Interface Impl*/
 		virtual void OnAwake(void) override;
 		virtual void OnDetach(void) override;
@@ -20,7 +28,6 @@ namespace Engine
 		virtual void OnRender(void) const override;
 		virtual void OnRenderGui(void) override;
 
-	private:
 		void PrepareShaders(void);
 	};
 }

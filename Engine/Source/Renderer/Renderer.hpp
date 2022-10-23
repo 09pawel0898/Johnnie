@@ -15,6 +15,7 @@ namespace Engine
 	{
 		class RHIShader;
 	}
+
 	using namespace RHI;
 	using namespace Core;
 
@@ -33,10 +34,12 @@ namespace Engine
 
 	public:
 		void InitializeViewport(glm::i32vec4 ViewportBounds);
+
 		void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
 		TUniquePtr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+
 		void BindFramebuffer(std::string_view FramebufferName);
-		virtual void BindDefaultFramebuffer(void);
+		void BindDefaultFramebuffer(void);
 
 		void Clear(void);
 		void Draw(TSharedPtr<RHIShader> const& Shader, TSharedPtr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat);
@@ -58,7 +61,6 @@ namespace Engine
 	private:
 		static inline RendererStatistics s_RendererStats;
 		
-		static void UpdateRendererStats(void);
 		friend class Core::Application;
 
 	public:

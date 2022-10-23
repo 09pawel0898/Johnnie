@@ -39,7 +39,7 @@ namespace Engine::Core
 		glfwTerminate();
 	}
 
-	void WindowsWindow::OnTick(void)
+	void WindowsWindow::SwapBuffers(void)
 	{
 		glfwPollEvents();
 		glfwSwapBuffers(m_WindowHandle);

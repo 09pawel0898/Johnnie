@@ -21,5 +21,8 @@ namespace Engine
 
 		uint32_t MeshesCount;
 		uint32_t ActorsCount;
+
+		void ResetStats(void);
+		void UpdateStats(void);
 	};
 }

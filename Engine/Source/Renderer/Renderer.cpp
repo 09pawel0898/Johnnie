@@ -15,14 +15,14 @@ namespace Engine
 	{
 		Construct();
 
-		RHICommand::Initialize(RenderingAPI);
-
-
+		RHICommand::Initialize(RenderingAPI); 
 	}
 	
 	void Renderer::Shutdown(void)
 	{
 		RHICommand::Shutdown();
+
+		s_Instance = nullptr;
 	}
 	
 	TUniquePtr<DynamicRHI>& Renderer::GetRHI(void)
@@ -37,17 +37,13 @@ namespace Engine
 
 	void Renderer::InitializeViewport(glm::i32vec4 ViewportBounds)
 	{
-		static glm::vec4 defaultClearColor = glm::vec4(0.101f, 0.105f, 0.109f, 1.00f);
-
-		RHICommand::SetClearColor(defaultClearColor);
+		RHICommand::SetClearColor(glm::vec4(0.101f, 0.105f, 0.109f, 1.00f));
 		RHICommand::SetViewport(ViewportBounds.x, ViewportBounds.y, ViewportBounds.z, ViewportBounds.w);
 	}
 
 	void Renderer::InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification)
 	{
-		static glm::vec4 defaultClearColor = glm::vec4(0.101f, 0.105f, 0.109f, 1.00f);
-
-		RHICommand::SetClearColor(defaultClearColor);
+		RHICommand::SetClearColor(glm::vec4(0.101f, 0.105f, 0.109f, 1.00f));
 		RHICommand::InitializeFramebuffer(FramebufferName, FramebufferSpecification);
 	}
 
@@ -112,16 +108,12 @@ namespace Engine
 
 	void Renderer::OnBeginRenderingFrame(void)
 	{
-		s_RendererStats.MeshesCount = 0;
-		s_RendererStats.DrawCalls = 0;
-		s_RendererStats.TotalTrisCount = 0;
-
-
+		s_RendererStats.ResetStats();
 	}
 
 	void Renderer::OnEndRenderingFrame(void)
 	{
-		UpdateRendererStats();
+		s_RendererStats.UpdateStats();
 	}
 
 	void Renderer::SetWireframeMode(bool Enabled)
@@ -142,16 +134,6 @@ namespace Engine
 	MaterialManager& Renderer::GetMaterialManager(void) const
 	{
 		return RHICommand::GetRHI()->GetMaterialManager();
-	}
-
-	void Renderer::UpdateRendererStats(void)
-	{
-
-		s_RendererStats.FrameDuration			= (double)(GET_PROFILE_RESULT("RendererStats_FrameDuration") / 1000.0);
-		s_RendererStats.TickDuration			= (double)(GET_PROFILE_RESULT("RendererStats_TickDuration") / 1000.0);
-		s_RendererStats.RenderDuration			= (double)(GET_PROFILE_RESULT("RendererStats_RenderDuration") / 1000.0);
-		s_RendererStats.RenderWorldDuration		= (double)(GET_PROFILE_RESULT("RendererStats_RenderWorldDuration") / 1000.0);
-		s_RendererStats.RenderGUIDuration		= (double)(GET_PROFILE_RESULT("RendererStats_RenderGUIDuration") / 1000.0);
 	}
 
 	RendererStatistics const& Renderer::GetRendererStats(void)

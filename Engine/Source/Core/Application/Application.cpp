@@ -27,12 +27,7 @@ namespace Engine::Core
             return;
         }
 
-        for (auto iter = m_LayerManager->end(); iter != m_LayerManager->begin();)
-        {
-            (*--iter)->OnEvent(Event);
-            if (Event.Handled())
-                return;
-        }
+        m_EngineLayer.OnEvent(Event);
     }
 
     bool Application::OnWindowClosed(Events::WindowClosedEvent& Event)
@@ -40,52 +35,12 @@ namespace Engine::Core
         m_bRunning = false;
         return true;
     }
-
-    void Application::InitLayerManager()
-    {
-        m_LayerManager = MakeUnique<LayerManager>();
-    }
-
-    void Application::InitImGuiLayer(void)
-    {
-        m_ImGuiLayer = MakeShared<ImGuiLayer>("ImGuiLayer");
-        m_LayerManager->PushOverlay(m_ImGuiLayer);
-    }
-
-    void Application::InitEngineLayer(void)
-    {
-        m_EngineBaseLayer = MakeShared<EngineBaseLayer>("EngineBaseLayer");
-        m_LayerManager->PushLayer(m_EngineBaseLayer);
-    }
     
     void Application::Run(void)
     { 
         const double maxPeriod = 1.0 / m_FPSLIMIT;
 
         Utility::TimePoint tFrameStart, tLastUpdate = Utility::Time::now();
-
-        Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
-       
-        Renderer::Get()->InitializeFramebuffer("RenderWorld", 
-            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 8, 
-                { 
-                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8},
-                    {RHIFrameBufferAttachmentType::DepthStencil,RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8}
-                },RHIFaceCullingType::Back));
-
-        Renderer::Get()->InitializeFramebuffer("RenderWorldSingleSample",
-            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1,
-                {
-                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
-                }));
-        
-        Renderer::Get()->InitializeFramebuffer("ShadowMap",
-            RHIFrameBufferSpecification(2048, 2048, 1,
-                {
-                    {RHIFrameBufferAttachmentType::Depth,RHIFrameBufferAttachmentTextureFormat::DEPTH16}
-                }, RHIFaceCullingType::None));
-
-        Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/DepthTexture.png");
 
         while (m_bRunning)
         {
@@ -107,33 +62,31 @@ namespace Engine::Core
 
     void Application::UpdateFrame(void)
     {
+        TUniquePtr<Renderer>& renderer = Renderer::Get();
+
+        TUniquePtr<RHIFrameBuffer>& shadowMapFrameBuffer        = renderer->GetFramebuffer("ShadowMap");
+        TUniquePtr<RHIFrameBuffer>& worldFrameBuffer            = renderer->GetFramebuffer("RenderWorld");
+        TUniquePtr<RHIFrameBuffer>& worldResolvedFrameBuffer    = renderer->GetFramebuffer("RenderWorld_Resolved");
+
+        Renderer::Get()->GetFramebuffer("ShadowMap");
+
         PROFILE_SCOPE("RendererStats_FrameDuration");
 
         {
             PROFILE_SCOPE("RendererStats_TickDuration");
-            for (auto& layer : *m_LayerManager)
-            {
-                layer->OnTick(m_DeltaTime);
-            }
+            m_EngineLayer.OnTick(m_DeltaTime);
         }
-
-
-        // Render ShadowMap //
 
         {
-            Renderer::Get()->bIsRenderingShadowMap = true;
             PROFILE_SCOPE("RendererStats_RenderShadowMap");
 
-            Renderer::Get()->BindFramebuffer("ShadowMap");
-            for (auto& layer : *m_LayerManager)
-            {
-                layer->OnRender();
-            }
+            renderer->bIsRenderingShadowMap = true;
 
-            Renderer::Get()->bIsRenderingShadowMap = false;
+            shadowMapFrameBuffer->Bind();
+            m_EngineLayer.OnRender();
+
+            renderer->bIsRenderingShadowMap = false;
         }
-
-        // //
 
         Renderer::Get()->OnBeginRenderingFrame();
         {
@@ -141,31 +94,23 @@ namespace Engine::Core
             {
                 PROFILE_SCOPE("RendererStats_RenderWorldDuration");
 
-                Renderer::Get()->BindFramebuffer("RenderWorld");
-                for (auto& layer : *m_LayerManager)
-                {
-                    layer->OnRender();
-                }
-            }
-            Renderer::Get()->GetFramebuffer("RenderWorld")->ResolveToFramebuffer(
-                Renderer::Get()->GetFramebuffer("RenderWorldSingleSample"));
+                worldFrameBuffer->Bind();
+                m_EngineLayer.OnRender();
 
+                worldFrameBuffer->ResolveToFramebuffer(worldResolvedFrameBuffer);
+            }
+           
             {
                 PROFILE_SCOPE("RendererStats_RenderGUIDuration");
 
-                Renderer::Get()->BindDefaultFramebuffer();
-                m_ImGuiLayer->BeginFrame();
-                for (auto& layer : *m_LayerManager)
-                {
-                    layer->OnRenderGui();
-                }
-                m_ImGuiLayer->EndFrame();
+                renderer->BindDefaultFramebuffer();
+
+                ImGuiRenderer::Get()->BeginFrame();
+                m_EngineLayer.OnRenderGui();
+                ImGuiRenderer::Get()->EndFrame();
             }
 
-            {
-                m_Window->OnTick();
-                //Renderer::Get()->Clear();
-            }
+            m_Window->SwapBuffers();
         }
         Renderer::Get()->OnEndRenderingFrame();
     }
@@ -179,11 +124,6 @@ namespace Engine::Core
         m_Window = IWindow::Create(WindowProperties);
         m_Window->SetEventCallback(BIND_FUNCTION(OnEvent));
 
-        Renderer::Init(RHI::RenderingAPI::OpenGL);
-        System::Init();
-
-        InitLayerManager();
-
 #if (_MSC_VER >= 1910)
         _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
@@ -191,13 +131,42 @@ namespace Engine::Core
 
     void Application::PostInitApplication(void)
     {
-        InitEngineLayer();
-        InitImGuiLayer();
+        Renderer::Init(RHI::RenderingAPI::OpenGL);
+        
+        Renderer::Get()->InitializeViewport(glm::i32vec4(0, 0, m_Window->GetWidth(), m_Window->GetHeight()));
+
+        Renderer::Get()->InitializeFramebuffer("RenderWorld",
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 8,
+                {
+                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8},
+                    {RHIFrameBufferAttachmentType::DepthStencil,RHIFrameBufferAttachmentTextureFormat::DEPTH24STENCIL8}
+                }, RHIFaceCullingType::Back));
+
+        Renderer::Get()->InitializeFramebuffer("RenderWorld_Resolved",
+            RHIFrameBufferSpecification(m_Window->GetWidth(), m_Window->GetHeight(), 1,
+                {
+                    {RHIFrameBufferAttachmentType::Color,RHIFrameBufferAttachmentTextureFormat::RGBA8}
+                }));
+
+        Renderer::Get()->InitializeFramebuffer("ShadowMap",
+            RHIFrameBufferSpecification(2048, 2048, 1,
+                {
+                    {RHIFrameBufferAttachmentType::Depth,RHIFrameBufferAttachmentTextureFormat::DEPTH16}
+                }, 
+                RHIFaceCullingType::None));
+
+        ImGuiRenderer::Init(RHI::RenderingAPI::OpenGL);
+        System::Init();
+
+        m_EngineLayer.OnAwake();
     }
 
     void Application::Shutdown(void)
     {
+        m_EngineLayer.OnDetach();
+
         System::Shutdown();
+        ImGuiRenderer::Shutdown();
         Renderer::Shutdown();
     }
 }

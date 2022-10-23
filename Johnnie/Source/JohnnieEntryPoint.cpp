@@ -17,14 +17,14 @@ public:
 	{
 		Super::PostInitApplication();
 
-		SceneManager::Get()->SetScene(std::make_unique<JohnnieScene>());
-		GetGuiProperties().EnableDocking();
+		SceneManager::Get()->SetScene(MakeUnique<JohnnieScene>());
+		ImGuiRenderer::Get()->GetImGuiProperties().EnableDocking();
 	}
 
 	~JohnnieApplication() = default;
 };
 
-std::shared_ptr<Core::Application> Core::CreateApplication(void)
+TSharedPtr<Core::Application> Core::CreateApplication(void)
 {
-	return std::make_shared<JohnnieApplication>();
+	return MakeShared<JohnnieApplication>();
 }
