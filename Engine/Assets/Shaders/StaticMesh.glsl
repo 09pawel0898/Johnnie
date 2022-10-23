@@ -34,6 +34,10 @@ void main()
 	TexCoord = aTexUV;
 	FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
 	ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
+	
+	// Fog Calculation
+	//vec4 positionRelativeToCam = mat4(1.0) * (uModelMat * vec4(aPosition,1.0));
+	
 }
 
 #shader fragment
@@ -92,6 +96,9 @@ in vec3 Normal;
 in vec3 FragWorldPos;
 in mat3 TBN; 
 in vec4 ShadowCoord;
+
+//uniform vec3 uFogColor;
+
 
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
@@ -234,6 +241,23 @@ float ShadowCalculation(vec4 FragPosLightSpace, vec3 Normal)
     return shadow;
 }
 
+const float fogDensity = 0.091;
+const float fogGradient = 10.0;
+
+vec3 mixFixed(vec3 v1, vec3 v2,float a)
+{
+    vec3 result;
+    result.x = v1.x * v1.x * (1 - a) + v2.x * v2.x * a;
+    result.y = v1.y * v1.y  * (1 - a) + v2.y * v2.y * a;
+    result.z = v1.z * v1.z  * (1 - a) + v2.z * v2.z * a;
+
+    result.x = sqrt(result.x);
+    result.y = sqrt(result.y);
+    result.z = sqrt(result.z);
+   
+    return result;
+}
+
 void main()
 {
 	vec3 norm;
@@ -283,6 +307,15 @@ void main()
 	{
 		result += CalculatePointLight(uPointLights[i],norm,FragWorldPos,viewDir,shadow);
 	}
+	
+	vec3 uFogColor = vec3(0.101, 0.105, 0.109);
+	//vec3 uFogColor = vec3(1.0, 1.0, 1.0);
+	// apply fog effect
+
+	float distanceFromCamera = length(FragWorldPos.xyz);
+	float FogVisibility = exp(-pow((distanceFromCamera * fogDensity),fogGradient));
+	FogVisibility = clamp(FogVisibility,0.0,1.0);
+	result = mixFixed(uFogColor,result,FogVisibility);
 	
 	FragColor = vec4(result,1.0);
 }

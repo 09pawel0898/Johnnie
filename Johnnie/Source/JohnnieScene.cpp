@@ -25,13 +25,12 @@ void JohnnieScene::OnAwake(void)
 	m_Platform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
 	//m_Platform->SetScale(glm::vec3(0.001f, 0.001f, 0.001f));
 	m_Platform->SetLocation(glm::vec3(0.f,-0.1f,0.f));
-	m_Platform->SetScale(glm::vec3(12.f,1.f,12.f));
+	m_Platform->SetScale(glm::vec3(12.f, 1.f, 12.f));
 	
 	//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 25, 25);
 	//m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
 	
 
-	
 	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda([this](AStaticMesh* s) 
 	{
 			m_Platform->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
@@ -40,7 +39,6 @@ void JohnnieScene::OnAwake(void)
 			{
 				mat->get()->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
 				mat->get()->SetSpecular(glm::vec3(0.f));
-
 			}
 	});
 	InitGui();
