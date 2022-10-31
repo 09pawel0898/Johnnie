@@ -10,7 +10,6 @@ namespace Engine::RHI
 	DynamicRHI::DynamicRHI(RenderingAPI RenderingAPI)
 		:	m_RHIType(RenderingAPI)
 	{
-		m_BoundTexturesUUID.fill(ID::None);
 	}
 
 	namespace Utility

@@ -89,8 +89,6 @@ namespace Engine::RHI
 		AUUID m_BoundShaderUUID		= ID::None;
 		AUUID m_BoundMaterialUUID	= ID::None;
 
-		std::array<AUUID, s_MaxTexturesPerShader> m_BoundTexturesUUID;
-
 		void SetBoundShaderUUID(AUUID const& UUID);
 		AUUID GetBoundShaderUUID(void) const;
 

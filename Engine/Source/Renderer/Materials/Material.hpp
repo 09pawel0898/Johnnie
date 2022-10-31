@@ -15,19 +15,28 @@ namespace Engine
 	}
 	using namespace RHI;
 
+	enum MaterialsEvaluateMethod : uint8_t
+	{
+		FromModelImporter,
+		OnePerSubmesh
+	};
+
 	struct MaterialUniform
 	{
 		glm::vec3 BaseColor{ 0.47f,0.47f,0.47f };
-		bool UseDiffuseMap = false;
+		bool UseDiffuseMap{ false };
 
 		glm::vec3 Specular{ 0.08f, 0.08f, 0.08f };
-		bool UseSpecularMap = false;
+		bool UseSpecularMap{ false };
 
-		bool UseNormalMap = false;
+		bool UseNormalMap{ false };
+
+		bool IsEmmisive{ false };
 
 		float Shiness = 8.f;
 
 		MaterialUniform() = default;
+
 		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& Specular, float Shiness)
 			:	BaseColor(BaseColor), Specular(Specular), Shiness(Shiness)
 		{}
@@ -35,69 +44,57 @@ namespace Engine
 
 	struct MaterialTextures
 	{
-		TSharedPtr<RHITexture2D> DiffuseTexture{ nullptr };
-		TSharedPtr<RHITexture2D> SpecularTexture{ nullptr };
-		TSharedPtr<RHITexture2D> NormalTexture{ nullptr };
-
-		std::vector<std::reference_wrapper<TSharedPtr<RHITexture2D>>> GetTextures(void)
-		{
-			return {	std::ref(DiffuseTexture),
-						std::ref(SpecularTexture),
-						std::ref(NormalTexture)};
-		}
+		TSharedPtr<RHITexture2D> DiffuseMapTexture	{ nullptr };
+		TSharedPtr<RHITexture2D> SpecularMapTexture	{ nullptr };
+		TSharedPtr<RHITexture2D> NormalMapTexture	{ nullptr };
 	};
 
-	class Material : public RHIResource
+	class Material final : public RHIResource
 	{
 	private:
-		MaterialUniform		m_MaterialUniform;
-		MaterialTextures	m_MaterialTextures;
-
-		bool				m_bIsMaterialEmissive{ false };
+		MaterialUniform		m_Uniform;
+		MaterialTextures	m_Textures;
 
 	public:
 		Material() = default;
 		~Material() = default;
 
-		template <typename TUniform>
-		requires std::is_base_of_v<MaterialUniform, TUniform>
-			Material(TUniform&& Uniform)
-			: m_MaterialUniform(Forward<TUniform>(Uniform))
+		explicit Material(MaterialUniform const& Uniform)
+			:	m_Uniform(Uniform)
 		{}
 
 	public:
 		void SetBaseColor(glm::vec3 BaseColor);
-
-		void SetDiffuseTexture(TSharedPtr<RHITexture2D> DiffuseTexture);
-		void SetSpecularTexture(TSharedPtr<RHITexture2D> SpecularTexture);
-		void SetNormalTexture(TSharedPtr<RHITexture2D> NormalTexture);
-		
+		void SetDiffuseTexture(TSharedPtr<RHITexture2D> DiffuseMapTexture);
 		bool SetUseDiffuseTexture(bool Use);
-		bool SetUseSpecularTexture(bool Use);
-		bool SetUseNormalTexture(bool Use);
 
 		void SetSpecular(glm::vec3 Specular);
+		void SetSpecularTexture(TSharedPtr<RHITexture2D> SpecularTexture);
+		bool SetUseSpecularTexture(bool Use);
+
+		void SetNormalTexture(TSharedPtr<RHITexture2D> NormalTexture);		
+		bool SetUseNormalTexture(bool Use);
 
 		void SetShiness(float Shiness);
 
 		void SetMaterialEmissive(bool IsMaterialEmissive);
 		bool IsMaterialEmissive(void) const;
 
+	public:
 		MaterialUniform const& GetMaterialUniform(void) const;
 		MaterialTextures& GetMaterialTextures(void);
 
-	public:
 		void Bind(TSharedPtr<RHIShader>& Shader) const;
 	};
 
 	FORCEINLINE MaterialUniform const& Material::GetMaterialUniform(void) const
 	{
-		return m_MaterialUniform;
+		return m_Uniform;
 	}
 
 	FORCEINLINE MaterialTextures& Material::GetMaterialTextures(void)
 	{
-		return m_MaterialTextures;
+		return m_Textures;
 	}
 
 	namespace DefaultMaterials

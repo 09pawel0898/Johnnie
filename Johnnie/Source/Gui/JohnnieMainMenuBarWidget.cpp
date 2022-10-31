@@ -52,7 +52,7 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
 		m_SelectedFileName = m_FileBrowser.GetSelected().string();
 
-		JohnnieDelegates::Get()->OnBeginLoadingNewModel.Broadcast(m_SelectedFileName);
+		JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelectedA.Broadcast(m_SelectedFileName);
 		
 		m_FileBrowser.ClearSelected();
 	}
@@ -66,5 +66,5 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
 {
 	m_FileBrowser.SetTitle("Select Mesh File");
-	m_FileBrowser.SetTypeFilters({".fbx"});
+	m_FileBrowser.SetTypeFilters({".obj",".fbx"});
 }

@@ -135,6 +135,14 @@ public:
     {
         m_CallableWrapper = MakeUnique<CallableStaticFunctionWrapper<TRetVal(Args...)>>(StaticFuncPtr);
     }
+    
+    Delegate CreateStatic(TRetVal(*StaticFuncPtr)(Args...))
+    {
+        Delegate<TRetVal(Args...)> delegate_;
+        delegate_.BindStatic(StaticFuncPtr);
+
+        return delegate_;
+    }
 
     template <typename TClass>
     void BindRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncPtr)(Args...))
@@ -143,15 +151,42 @@ public:
     }
 
     template <typename TClass>
+    static Delegate CreateRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncPtr)(Args...))
+    {
+        Delegate<TRetVal(Args...)> delegate_;
+        delegate_.BindRaw(Instance,ClassMemFuncPtr);
+
+        return delegate_;
+    }
+
+    template <typename TClass>
     void BindRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncConstPtr)(Args...) const)
     {
         m_CallableWrapper = MakeUnique<CallableMethodWrapper<true, TClass, TRetVal(Args...)>>(Instance, ClassMemFuncConstPtr);
+    }
+
+    template <typename TClass>
+    static Delegate CreateRaw(TClass* Instance, TRetVal(TClass::* ClassMemFuncPtr)(Args...) const)
+    {
+        Delegate<TRetVal(Args...)> delegate_;
+        delegate_.BindRaw(Instance, ClassMemFuncPtr);
+
+        return delegate_;
     }
 
     template <typename TLambda>
     void BindLambda(TLambda&& LambdaObject)
     {
         m_CallableWrapper = MakeUnique<CallableLambdaWrapper<std::decay_t<TLambda>, TRetVal(Args...)>>(Forward<TLambda>(LambdaObject));
+    } 
+    
+    template <typename TLambda>
+    static Delegate CreateLambda(TLambda&& LambdaObject)
+    {
+        Delegate<TRetVal(Args...)> delegate_;
+        delegate_.BindLamda(Forward<TLambda>(LambdaObject));
+
+        return delegate_;
     }
 
     explicit operator bool() const 

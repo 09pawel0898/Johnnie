@@ -4,22 +4,21 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Renderer/Materials/Material.hpp"
 #include "Scene/Entities/CoreActor.hpp"
 #include "Scene/SceneDeleates.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 
 #include "AssimpHelpers.hpp"
 
-
 namespace Engine
 {
-    AStaticMesh::AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation)
-        :   Actor(WorldLocation),
+   AStaticMesh::AStaticMesh(std::string const& FilePath, OnStaicMeshAsyncLoadingFinished OnLoadingFinished, glm::vec3 const& WorldLocation)
+       :    Actor(WorldLocation),
             m_ModelFilePath(FilePath)
-    {
-        m_bScheduleModelLoadOnConstruct = true;
-    }
+   {
+       OnAsyncLoadingFinishedDelegate = MoveTemp(OnLoadingFinished);
+       m_bScheduleModelLoadOnConstruct = true;
+   }
 
     AStaticMesh::AStaticMesh(std::vector<TSharedPtr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation)
@@ -27,37 +26,35 @@ namespace Engine
         m_bIsModelLoaded = true;
         m_SubMeshes = MoveTemp(SubMeshes);
 
-        InitSingleMaterialSlot();
+        InitializeMaterialSlots(MaterialsEvaluateMethod::OnePerSubmesh);
     }
 
     AStaticMesh::~AStaticMesh()
-    {}
+    {
+    }
 
     void AStaticMesh::LoadModel(std::string_view FilePath)
     {
-        auto& assetImporter = AssetImporter::Get()->GetImporter();
+        m_ModelImporter = AssetImporter::Create();
 
-        const aiScene* scene = assetImporter.ReadFile( FilePath.data(),
-            aiProcess_Triangulate 
-            | aiProcess_OptimizeMeshes 
-            | aiProcess_RemoveRedundantMaterials
-            | aiProcess_CalcTangentSpace
-            | aiProcess_PreTransformVertices);
+        const aiScene* scene = m_ModelImporter->GetImporter().ReadFile( FilePath.data(),
+                aiProcess_Triangulate 
+            |   aiProcess_OptimizeMeshes 
+            |   aiProcess_RemoveRedundantMaterials
+            |   aiProcess_CalcTangentSpace
+            |   aiProcess_PreTransformVertices);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
-            LOG(Assimp, Error, "{0}", assetImporter.GetErrorString());
+            LOG(Assimp, Error, "{0}", m_ModelImporter->GetImporter().GetErrorString());
             return;
         }
         m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
         
-        InitializeMaterialSlots(scene);
+        InitializeMaterialSlots(MaterialsEvaluateMethod::FromModelImporter);
         ProcessNode(scene->mRootNode, scene);
         
-        {
-            std::scoped_lock lock(m_Mutex);
-            m_bIsModelLoaded = true;
-        }
+        m_bIsModelLoaded = true;    
     }
     
     void AStaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
@@ -139,30 +136,48 @@ namespace Engine
         return subMesh;
     }
 
-    void AStaticMesh::InitializeMaterialSlots(const aiScene* Scene)
+    void AStaticMesh::InitializeMaterialSlots(MaterialsEvaluateMethod EvaluateMethod)
     {
         m_Materials.clear();
-        m_Materials.reserve(Scene->mNumMaterials);
+        
+        if (EvaluateMethod == MaterialsEvaluateMethod::FromModelImporter)
+        {
+            const aiScene* Scene = m_ModelImporter->GetScene();
 
-        for (uint8_t idx = 0; idx < Scene->mNumMaterials; idx++)
+            if (Scene != nullptr)
+            {
+                Emplace_N_MaterialSlots(Scene->mNumMaterials);
+            }
+            else
+            {
+                CheckMsg(false, "Scene was nullptr, can't parse materials info for initialization.");
+            }
+        }
+        else if (EvaluateMethod == MaterialsEvaluateMethod::OnePerSubmesh)
+        {
+            Emplace_N_MaterialSlots((uint8_t)m_SubMeshes.size());
+            
+            for (uint8_t idx = 0; idx < m_SubMeshes.size(); idx++)
+            {
+                m_Materials[idx] = MakeShared<Material>();
+                m_SubMeshes[idx]->SetMaterialIndex(idx);
+            }
+        }
+    }
+
+    void AStaticMesh::Emplace_N_MaterialSlots(uint8_t N)
+    {
+        m_Materials.reserve(N);
+
+        for (uint8_t idx = 0; idx < N; idx++)
         {
             m_Materials.emplace_back(nullptr);
         }
-
-        m_NumMaterials = Scene->mNumMaterials;
-    }
-
-    void AStaticMesh::InitSingleMaterialSlot(void)
-    {
-        m_Materials.clear();
-
-        m_Materials.emplace_back(DefaultMaterials::BasicWhite);
+        m_NumMaterials = N;
     }
 
     void AStaticMesh::ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx)
     {
-
-        
         /* If this material hasn't been processed yet */
         if (m_Materials[MaterialIdx] == nullptr)
         {
@@ -246,32 +261,29 @@ namespace Engine
 
     void AStaticMesh::OnTick(double DeltaTime)
     {
+        if (m_bIsModelLoaded && !m_bWasModelLoadedOnPrevFrame)
         {
-            std::scoped_lock lock(m_Mutex);
-
-            if (m_bIsModelLoaded && !m_bWasModelLoadedOnPrevFrame)
+            for (int8_t idx = 0; idx < m_SubMeshes.size(); idx++)
             {
-                for (int8_t idx = 0; idx < m_SubMeshes.size(); idx++)
+                if (m_SubMeshes[idx]->IsMeshLazyEvaluated() && !m_SubMeshes[idx]->IsManualEvaluationPerformed())
                 {
-                    if (m_SubMeshes[idx]->IsMeshLazyEvaluated() && !m_SubMeshes[idx]->IsManualEvaluationPerformed())
                     {
-                        {
-                            PROFILE_SCOPE("EvaluateMesh");
-                            m_SubMeshes[idx]->EvaluateMesh();
-                        }
-                        {
-                            PROFILE_SCOPE("ProcessMaterials");
-                            const aiScene* scene = AssetImporter::Get()->GetScene();
-                            ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
-                        }
+                        PROFILE_SCOPE("EvaluateMesh");
+                        m_SubMeshes[idx]->EvaluateMesh();
+                    }
+                    {
+                        PROFILE_SCOPE("ProcessMaterials");
+                        const aiScene* scene = m_ModelImporter->GetScene();
+                        ProcessMaterial(scene->mMaterials[m_SubMeshes[idx]->GetMaterialIndex()], m_SubMeshes[idx]->GetMaterialIndex());
                     }
                 }
-                SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
-                //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
-                //LOG(Core, Trace, "Process Materials {0}", (double)(GET_PROFILE_RESULT("ProcessMaterials") / 1000.0));
-                m_bIsModelReadyToDraw = true;
             }
+            SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
+            //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
+            //LOG(Core, Trace, "Process Materials {0}", (double)(GET_PROFILE_RESULT("ProcessMaterials") / 1000.0));
+            m_bIsModelReadyToDraw = true;
         }
+        
         m_bWasModelLoadedOnPrevFrame = m_bIsModelLoaded;
     }
 

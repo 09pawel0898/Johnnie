@@ -26,8 +26,11 @@ namespace Engine::RHI
 		/** RHI Methods */
 
 		static void InitializeFramebuffer(std::string_view FramebufferName, RHIFrameBufferSpecification const& FramebufferSpecification);
+		
 		static TUniquePtr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
+		
 		static void BindFramebuffer(std::string_view FramebufferName);
+
 		static void BindDefaultFramebuffer(void);
 
 		static void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height);

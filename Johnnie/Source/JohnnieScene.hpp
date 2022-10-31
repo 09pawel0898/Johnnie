@@ -36,12 +36,12 @@ private:
 	TSharedPtr<AFloatingCamera>				m_Camera;
 
 	/** Entities */
-	TSharedPtr<AStaticMesh>					m_Model = nullptr;
-	TSharedPtr<AStaticMesh>					m_Platform = nullptr;
+	TSharedPtr<AStaticMesh>					m_Model;
+	TSharedPtr<AStaticMesh>					m_Platform;
 
-	TSharedPtr<AStaticMesh>					m_Sphere			= nullptr;
-	TSharedPtr<APointLight>					m_PointLight		= nullptr;
-	TSharedPtr<ADirectionalLight>			m_DirectionalLight	= nullptr;
+	TSharedPtr<AStaticMesh>					m_Sphere;
+	TSharedPtr<APointLight>					m_PointLight;
+	TSharedPtr<ADirectionalLight>			m_DirectionalLight;
 
 private:
 	/** Layer Interface Impl*/

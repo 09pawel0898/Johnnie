@@ -17,7 +17,7 @@ WJohnnieSceneWidget::WJohnnieSceneWidget()
 		PrepareStaticMeshSubtab(StaticMesh);
 	});
 
-	JohnnieDelegates::Get()->OnBeginLoadingNewModel.AddLambda([this](std::string const& FilePath) 
+	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelectedA.AddLambda([this](std::string const& FilePath) 
 	{
 		ClearStaticMeshSubtabContent();
 	});
@@ -284,9 +284,9 @@ void MaterialSlotWidget::OnRenderGui(void)
 
 				if (columnIdx == 0)
 				{
-					if (materialTextures.DiffuseTexture != nullptr)
+					if (materialTextures.DiffuseMapTexture != nullptr)
 					{
-						ImGui::Image((void*)(intptr_t)materialTextures.DiffuseTexture->GetRendererID(), ImVec2(80, 80));
+						ImGui::Image((void*)(intptr_t)materialTextures.DiffuseMapTexture->GetRendererID(), ImVec2(80, 80));
 					}
 					else
 					{
@@ -344,9 +344,9 @@ void MaterialSlotWidget::OnRenderGui(void)
 
 				if (columnIdx == 0)
 				{
-					if (materialTextures.SpecularTexture != nullptr)
+					if (materialTextures.SpecularMapTexture != nullptr)
 					{
-						ImGui::Image((void*)(intptr_t)materialTextures.SpecularTexture->GetRendererID(), ImVec2(80, 80));
+						ImGui::Image((void*)(intptr_t)materialTextures.SpecularMapTexture->GetRendererID(), ImVec2(80, 80));
 					}
 					else
 					{
@@ -403,9 +403,9 @@ void MaterialSlotWidget::OnRenderGui(void)
 
 				if (columnIdx == 0)
 				{
-					if (materialTextures.NormalTexture != nullptr)
+					if (materialTextures.NormalMapTexture != nullptr)
 					{
-						ImGui::Image((void*)(intptr_t)materialTextures.NormalTexture->GetRendererID(), ImVec2(80, 80));
+						ImGui::Image((void*)(intptr_t)materialTextures.NormalMapTexture->GetRendererID(), ImVec2(80, 80));
 					}
 					else
 					{

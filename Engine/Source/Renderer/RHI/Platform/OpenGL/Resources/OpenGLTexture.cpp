@@ -98,10 +98,4 @@ namespace Engine::RHI
 		}
 		return false;
 	}
-
-	void OpenGLTexture2D::BindOpenGLTexture(uint32_t RendererID, uint32_t Slot)
-	{
-		glActiveTexture(GL_TEXTURE0 + Slot);
-		glBindTexture(GL_TEXTURE_2D, RendererID);
-	}
 }

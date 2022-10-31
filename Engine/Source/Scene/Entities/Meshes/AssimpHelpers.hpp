@@ -10,30 +10,23 @@
 
 namespace Engine
 {
-	class AssetImporter : public Singleton<AssetImporter>
+	class AssetImporter
 	{
 	private:
 		Assimp::Importer m_Importer;
-
+		
 	public:
 		AssetImporter() = default;
-		~AssetImporter() noexcept{}
 
+		static TUniquePtr<AssetImporter> Create(void);
+
+	public:
 		Assimp::Importer& GetImporter(void);
 		Assimp::Importer const& GetImporter(void) const;
 
 		const aiScene* GetScene(void);
 	};
 
-	FORCEINLINE aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHITextureType RHITextureType)
-	{
-		static std::unordered_map<RHI::RHITextureType, aiTextureType> map =
-		{
-			{RHI::RHITextureType::Diffuse,	aiTextureType_DIFFUSE	},
-			{RHI::RHITextureType::Specular,	aiTextureType_SPECULAR	},
-			{RHI::RHITextureType::Normal,	aiTextureType_NORMALS	},
-		};
-		return map[RHITextureType];
-	}
+	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHITextureType RHITextureType);
 }
 

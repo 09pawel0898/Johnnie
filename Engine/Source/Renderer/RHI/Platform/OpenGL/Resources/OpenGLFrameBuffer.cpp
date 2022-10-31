@@ -217,7 +217,7 @@ namespace Engine::RHI
 	{
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_ID);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
+		
 		glBlitFramebuffer(0, 0, m_Specification.Width, m_Specification.Height, 0, 0, m_Specification.Width, m_Specification.Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 	}
 

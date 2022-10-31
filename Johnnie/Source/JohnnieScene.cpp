@@ -22,18 +22,19 @@ void JohnnieScene::OnAwake(void)
 
 	CameraController::Get()->SetViewTarget(m_Camera);
 
+	//m_Model = BasicMeshGenerator::CreateSphere(2.f, 50, 50);
+	//m_Model->SetMaterialForSlot(0, DefaultMaterials::Emerald);
 	m_Platform = NewActor<AStaticMesh>("Assets/Models/talerz.obj");
-	//m_Platform->SetScale(glm::vec3(0.001f, 0.001f, 0.001f));
 	m_Platform->SetLocation(glm::vec3(0.f,-0.1f,0.f));
 	m_Platform->SetScale(glm::vec3(12.f, 1.f, 12.f));
+	
 	
 	//m_Model = BasicMeshGenerator::CreateSphere(1.5f, 25, 25);
 	//m_Model->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
 	
-
 	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda([this](AStaticMesh* s) 
 	{
-			m_Platform->SetMaterialForSlot(0, DefaultMaterials::BasicWhite);
+			m_Platform->SetMaterialForSlot(0, MakeUnique<Material>());
 			auto mat = m_Platform->GetMaterialInSlot(0);
 			if (mat.has_value())
 			{
@@ -73,10 +74,11 @@ void JohnnieScene::InitGui(void)
 
     /** Init widgets actions */
 
-	JohnnieDelegates::Get()->OnBeginLoadingNewModel.AddLambda([this](std::string const& FileName)
+	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelectedA.AddLambda([this](std::string const& FileName)
 	{
 		m_Model = NewActor<AStaticMesh>(FileName);
 		m_Model->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+		//m_Model->SetLocation(glm::vec3(0.0f, 2.0f, 0.0f));
 	});
 }
 

@@ -6,9 +6,13 @@
 
 #include "Renderer/RHI/RHITypes.hpp"
 #include "Renderer/RHI/Resources/RHIResourceManager.hpp"
+#include "Renderer/Materials/Material.hpp"
 
 #include "Scene/Entities/Primitives/Actor.hpp"
 #include "Scene/Entities/Primitives/Tickable.hpp"
+
+#include "Utilities/Delegates.hpp"
+
 
 struct aiNode;
 struct aiMesh;
@@ -17,25 +21,31 @@ struct aiMaterial;
 
 namespace Engine
 {
+    class AssetImporter;
+
     namespace RHI
     {
         class RHITexture2D;
         class RHIShader;
     }
-    class Material;
+
+    DECLARE_DELEGATE(OnStaicMeshAsyncLoadingFinished);
 
 	class AStaticMesh : public Actor, public SharedFromThis<AStaticMesh>
 	{
     private:
+        TUniquePtr<AssetImporter> m_ModelImporter{ nullptr };
+
         std::vector<TSharedPtr<Mesh>> m_SubMeshes;
         std::string m_Directory;
         std::string m_ModelFilePath;
-        mutable std::mutex  m_Mutex;
+
         bool m_bScheduleModelLoadOnConstruct{ false };
         bool m_bIsModelLoaded = false;
         bool m_bIsModelReadyToDraw = false;
         bool m_bWasModelLoadedOnPrevFrame = false;
         std::future<void> m_LoadModelFuture;
+        OnStaicMeshAsyncLoadingFinished OnAsyncLoadingFinishedDelegate;
 
     private:
         /** Model Loading */
@@ -49,8 +59,9 @@ namespace Engine
         std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
 
     public:
-        AStaticMesh(std::string const& FilePath, glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
+        AStaticMesh(std::string const& FilePath, OnStaicMeshAsyncLoadingFinished OnLoadingFinished = OnStaicMeshAsyncLoadingFinished(), glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
         AStaticMesh(std::vector<TSharedPtr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
+        
         ~AStaticMesh();
 	
     public:
@@ -73,7 +84,7 @@ namespace Engine
         MeshStatistics GetMeshStatistics(void) const;
 
     private:
-        void InitializeMaterialSlots(const aiScene* Scene);
-        void InitSingleMaterialSlot(void);
+        void InitializeMaterialSlots(MaterialsEvaluateMethod EvaluateMethod);
+        void Emplace_N_MaterialSlots(uint8_t N);
     };
 }
