@@ -72,6 +72,8 @@ namespace Engine
 
         /** Stats */
         MeshStatistics GetMeshStatistics(void) const;
+        std::string const& GetFilePath(void) const;
+
     private:
         /** Materials */
         std::vector<TSharedPtr<Material>> m_Materials;

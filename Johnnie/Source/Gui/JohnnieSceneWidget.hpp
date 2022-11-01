@@ -50,6 +50,7 @@ private:
 	bool m_bPointLightVisible{ false };
 	bool m_bPointLightMeshVisible{ false };
 	
+	AStaticMesh* m_LoadedStaticMesh{ nullptr };
 	std::weak_ptr<ADirectionalLight>	m_ManagedDirectionalLight;
 	ImColor								m_DirectionalLightColor;
 	float m_DirectionalLightAngle{ 0.f };

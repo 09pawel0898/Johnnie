@@ -344,4 +344,9 @@ namespace Engine
 
         return meshStats;
     }
+
+    std::string const& AStaticMesh::GetFilePath(void) const
+    {
+        return m_ModelFilePath;
+    }
 }

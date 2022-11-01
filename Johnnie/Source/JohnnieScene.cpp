@@ -9,6 +9,7 @@
 #include "Gui/JohnnieSceneWidget.hpp"
 #include "Gui/JohnnieViewportWidget.hpp"
 #include "JohnnieDelegates.hpp"
+#include "JohnnieGlobals.hpp"
 
 void JohnnieScene::OnAwake(void)
 {
@@ -79,7 +80,7 @@ void JohnnieScene::InitCamera(void)
 
 void JohnnieScene::InitScene(void)
 {
-	m_Platform = NewActor<AStaticMesh>("Assets/Models/Platform.obj", OnStaticMeshAsyncLoadingFinishedDelegate::CreateRaw(this,&JohnnieScene::InitPlatformMaterial));
+	m_Platform = NewActor<AStaticMesh>(JohnnieGlobals::PlatformModelFilePath, OnStaticMeshAsyncLoadingFinishedDelegate::CreateRaw(this,&JohnnieScene::InitPlatformMaterial));
 
 	m_Platform->SetLocation(glm::vec3(0.f, -0.1f, 0.f));
 	m_Platform->SetScale(glm::vec3(12.f, 1.f, 12.f));

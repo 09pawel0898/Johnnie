@@ -1,5 +1,6 @@
 #include "JohnnieSceneWidget.hpp"
 #include "../JohnnieDelegates.hpp"
+#include "../JohnnieGlobals.hpp"
 
 #include <Engine/Renderer.hpp>
 #include <Engine/Scene.hpp>
@@ -14,7 +15,10 @@ WJohnnieSceneWidget::WJohnnieSceneWidget()
 	
 	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda([this](AStaticMesh* StaticMesh)
 	{
-		PrepareStaticMeshSubtab(StaticMesh);
+		if (StaticMesh->GetFilePath() != JohnnieGlobals::PlatformModelFilePath)
+		{
+			PrepareStaticMeshSubtab(StaticMesh);
+		}
 	});
 
 	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath) 
@@ -124,8 +128,6 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
 
 				ImGui::Separator();
-
-				ImGui::Image((void*)(intptr_t)Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), ImVec2(256, 256));
 			}
 			ImGui::TreePop();
 		}
@@ -184,6 +186,42 @@ void WJohnnieSceneWidget::OnRenderMeshSubtab()
 	{
 		if (ImGui::CollapsingHeader(m_MeshSubtabName.value().c_str()))
 		{
+			ImGui::TextUnformatted("Transform");
+			ImGui::Separator();
+
+			if (ImGui::BeginTable("TransformTable", 3, ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersOuterV))
+			{
+				ImGui::TableNextRow();
+				for (uint16_t columnIdx = 0; columnIdx < 3; ++columnIdx)
+				{
+					ImGui::TableSetColumnIndex(columnIdx);
+
+					if (columnIdx == 0)
+					{
+						ImGui::InputFloat("X", &m_LoadedStaticMesh->GetLocation().x);
+					}
+					if (columnIdx == 1)
+					{
+						ImGui::InputFloat("Y", &m_LoadedStaticMesh->GetLocation().y);
+					}
+					if (columnIdx == 2)
+					{
+						ImGui::InputFloat("Z", &m_LoadedStaticMesh->GetLocation().z);
+					}
+				}
+				ImGui::EndTable();
+			}
+			ImGui::Dummy(ImVec2(0, 1.f));
+
+			static float meshScale;
+			meshScale = m_LoadedStaticMesh->GetScale().x;
+			
+			ImGui::SliderFloat("Scale", &meshScale,0.001f, 1.f);
+			
+			m_LoadedStaticMesh->SetScale(glm::vec3(meshScale));
+
+			ImGui::Dummy(ImVec2(0, 4.f));
+
 			if (m_MaterialSlotWidgets.size() > 0)
 			{
 				std::string materialsHeader = "Materials [" + std::to_string(m_MaterialSlotWidgets.size()) + "]";
@@ -209,6 +247,7 @@ void WJohnnieSceneWidget::OnRenderMeshSubtab()
 void WJohnnieSceneWidget::PrepareStaticMeshSubtab(AStaticMesh* StaticMesh)
 {
 	m_MeshSubtabName = "Static Mesh";
+	m_LoadedStaticMesh = StaticMesh;
 
 	m_MaterialSlotWidgets.clear();
 
@@ -229,6 +268,7 @@ void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)
 void WJohnnieSceneWidget::ClearStaticMeshSubtabContent(void)
 {
 	m_MaterialSlotWidgets.clear();
+	m_LoadedStaticMesh = nullptr;
 }
 
 MaterialSlotWidget::MaterialSlotWidget(Material* MaterialRef)
