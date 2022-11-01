@@ -52,7 +52,7 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 		LOG(Core, Trace, "Selected filename {0}",m_FileBrowser.GetSelected().string());
 		m_SelectedFileName = m_FileBrowser.GetSelected().string();
 
-		JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelectedA.Broadcast(m_SelectedFileName);
+		JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.Broadcast(m_SelectedFileName);
 		
 		m_FileBrowser.ClearSelected();
 	}

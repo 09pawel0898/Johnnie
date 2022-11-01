@@ -17,7 +17,7 @@ WJohnnieSceneWidget::WJohnnieSceneWidget()
 		PrepareStaticMeshSubtab(StaticMesh);
 	});
 
-	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelectedA.AddLambda([this](std::string const& FilePath) 
+	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath) 
 	{
 		ClearStaticMeshSubtabContent();
 	});
@@ -214,10 +214,9 @@ void WJohnnieSceneWidget::PrepareStaticMeshSubtab(AStaticMesh* StaticMesh)
 
 	for (int8_t idx = 0; idx < StaticMesh->GetNumMaterials(); ++idx)
 	{
-		auto material = StaticMesh->GetMaterialInSlot(idx);
-		if (material.has_value())
+		if (Material* material = StaticMesh->GetMaterialInSlot(idx))
 		{
-			m_MaterialSlotWidgets.emplace_back(MaterialSlotWidget(material->get()));
+			m_MaterialSlotWidgets.emplace_back(MaterialSlotWidget(material));
 		}
 	}
 }
@@ -232,8 +231,8 @@ void WJohnnieSceneWidget::ClearStaticMeshSubtabContent(void)
 	m_MaterialSlotWidgets.clear();
 }
 
-MaterialSlotWidget::MaterialSlotWidget(std::shared_ptr<Material>& MaterialRef)
-	: m_MaterialRef(MaterialRef)
+MaterialSlotWidget::MaterialSlotWidget(Material* MaterialRef)
+	:	m_MaterialRef(MaterialRef)
 {
 	InitializeFileBrowser();
 }

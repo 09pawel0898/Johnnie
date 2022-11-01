@@ -81,7 +81,7 @@ namespace Engine
 
 			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
 			{
-				glm::mat4 biasMatrix(
+				static const glm::mat4 biasMatrix(
 					0.5, 0.0, 0.0, 0.0,
 					0.0, 0.5, 0.0, 0.0,
 					0.0, 0.0, 0.5, 0.0,

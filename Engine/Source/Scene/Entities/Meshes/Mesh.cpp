@@ -68,7 +68,7 @@ namespace Engine
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
 
 		auto renderWithAssignedMaterial = 
-		[this,&shaderManager, &ModelMat](TSharedPtr<Material>& Material)
+		[this,&shaderManager, &ModelMat](Material* Material)
 		{
 			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
@@ -83,12 +83,12 @@ namespace Engine
 		{
 			if (auto hardMaterialRef = m_HardMaterialReference.lock())
 			{
-				renderWithAssignedMaterial(hardMaterialRef);
+				renderWithAssignedMaterial(hardMaterialRef.get());
 			}
 		}
-		else if (auto staticMeshSlotMaterialRef = GetMaterialFromStaticMeshSlot(m_MaterialIndex))
+		else if (auto staticMeshSlotMaterial = GetMaterialFromStaticMeshSlot(m_MaterialIndex))
 		{
-			renderWithAssignedMaterial(staticMeshSlotMaterialRef);
+			renderWithAssignedMaterial(staticMeshSlotMaterial);
 		}
 		else
 		{
@@ -138,16 +138,11 @@ namespace Engine
 		m_VAO->AddVertexBuffer(MoveTemp(vbo));
 	}
 
-	TSharedPtr<Material> Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
+	Material* Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
 	{
 		if (auto staticMeshOwner = m_StaticMeshOwner.lock())
 		{
-			auto material = staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
-			if (material.has_value())
-			{
-				return material->get();
-			}
-			return nullptr;
+			return staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
 		}
 		return nullptr;
 	}

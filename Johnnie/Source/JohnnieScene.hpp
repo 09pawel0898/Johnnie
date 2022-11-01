@@ -44,7 +44,7 @@ private:
 	TSharedPtr<ADirectionalLight>			m_DirectionalLight;
 
 private:
-	/** Layer Interface Impl*/
+	/** Scene Interface Impl*/
 	virtual void OnAwake(void) override;
 	virtual void OnDetach(void) override;
 
@@ -52,5 +52,9 @@ private:
 
 private:
 	void InitGui(void);
+	void InitCamera(void);
+	void InitScene(void);
 	void InitLighting(void);
+
+	void InitPlatformMaterial(AStaticMesh* Platform);
 };

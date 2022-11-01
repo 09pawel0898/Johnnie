@@ -8,7 +8,7 @@
 class MaterialSlotWidget final
 {
 private:
-	std::shared_ptr<Material>& m_MaterialRef;
+	Material* m_MaterialRef;
 	bool m_bUseDiffuseMap{ false };
 	bool m_bUseSpecularMap{ false };
 	bool m_bUseNormalMap{ false };
@@ -22,14 +22,14 @@ private:
 	RHITextureType m_TextureTypeFileBrowserOpenedFor = RHITextureType::BasicTexture2D;
 
 public:
-	MaterialSlotWidget(std::shared_ptr<Material>& MaterialRef);
+	MaterialSlotWidget(Material* MaterialRef);
 
-	std::shared_ptr<Material>& GetMaterialRef(void)
+	Material* GetMaterialRef(void)
 	{
 		return m_MaterialRef;
 	}
 
-	std::shared_ptr<Material> const& GetMaterialRef(void) const
+	const Material* GetMaterialRef(void) const
 	{
 		return m_MaterialRef;
 	}

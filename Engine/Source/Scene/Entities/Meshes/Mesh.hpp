@@ -78,7 +78,7 @@ namespace Engine
 	private:
 		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indicesbs);
 
-		TSharedPtr<Material> GetMaterialFromStaticMeshSlot(uint8_t Index) const;
+		Material* GetMaterialFromStaticMeshSlot(uint8_t Index) const;
 	};
 
 	FORCEINLINE void Mesh::SetStaticMeshOwner(TSharedPtr<AStaticMesh> const& Owner)

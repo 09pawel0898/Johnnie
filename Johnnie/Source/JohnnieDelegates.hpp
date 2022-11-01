@@ -9,6 +9,7 @@ DECLARE_MULTICAST_DELEGATE(OnSkeletalMeshToLoadPathSelected, std::string const&)
 class JohnnieDelegates : public Singleton<JohnnieDelegates>
 {
 public:
-	OnStaticMeshToLoadPathSelected		OnStaticMeshToLoadPathSelectedA;
-	OnSkeletalMeshToLoadPathSelected	OnSkeletalMeshToLoadPathSelectedA;
+	OnStaticMeshToLoadPathSelected		OnStaticMeshToLoadPathSelected;
+
+	OnSkeletalMeshToLoadPathSelected	OnSkeletalMeshToLoadPathSelected;
 };

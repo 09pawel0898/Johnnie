@@ -13,7 +13,6 @@
 
 #include "Utilities/Delegates.hpp"
 
-
 struct aiNode;
 struct aiMesh;
 struct aiScene;
@@ -29,7 +28,7 @@ namespace Engine
         class RHIShader;
     }
 
-    DECLARE_DELEGATE(OnStaicMeshAsyncLoadingFinished);
+    DECLARE_DELEGATE(OnStaticMeshAsyncLoadingFinishedDelegate, AStaticMesh*);
 
 	class AStaticMesh : public Actor, public SharedFromThis<AStaticMesh>
 	{
@@ -37,29 +36,30 @@ namespace Engine
         TUniquePtr<AssetImporter> m_ModelImporter{ nullptr };
 
         std::vector<TSharedPtr<Mesh>> m_SubMeshes;
+
         std::string m_Directory;
         std::string m_ModelFilePath;
 
+        bool m_bIsModelImported = false;
         bool m_bScheduleModelLoadOnConstruct{ false };
-        bool m_bIsModelLoaded = false;
         bool m_bIsModelReadyToDraw = false;
         bool m_bWasModelLoadedOnPrevFrame = false;
         std::future<void> m_LoadModelFuture;
-        OnStaicMeshAsyncLoadingFinished OnAsyncLoadingFinishedDelegate;
+        OnStaticMeshAsyncLoadingFinishedDelegate OnAsyncLoadingFinishedDelegate;
 
     private:
         /** Model Loading */
         
-        void LoadModel(std::string_view FilePath);
+        void ImportModel(std::string_view FilePath);
 
         void ProcessNode(aiNode* Node, const aiScene* Scene);
-        TSharedPtr<Mesh> ProcessMesh(aiMesh* _Mesh, const aiScene* Scene);
+        TSharedPtr<Mesh> ProcessMesh(aiMesh* Mesh_, const aiScene* Scene);
         void ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx);
 
         std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
 
     public:
-        AStaticMesh(std::string const& FilePath, OnStaicMeshAsyncLoadingFinished OnLoadingFinished = OnStaicMeshAsyncLoadingFinished(), glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
+        AStaticMesh(std::string const& FilePath, OnStaticMeshAsyncLoadingFinishedDelegate OnLoadingFinished = OnStaticMeshAsyncLoadingFinishedDelegate(), glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
         AStaticMesh(std::vector<TSharedPtr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));
         
         ~AStaticMesh();
@@ -70,21 +70,22 @@ namespace Engine
         void OnConstruct(void) override;
         TSharedPtr<AStaticMesh> Clone(void);
 
-    public:
-        /** Materials */
-        std::vector<TSharedPtr<Material>> m_Materials;
-        uint8_t m_NumMaterials;
-
-        size_t GetNumMaterials(void) const;
-        std::optional<std::reference_wrapper<TSharedPtr<Material>>> GetMaterialInSlot(uint8_t SlotIndex);
-        
-        void SetMaterialForSlot(uint8_t SlotIndex, TSharedPtr<Material> Material);
-
         /** Stats */
         MeshStatistics GetMeshStatistics(void) const;
-
     private:
+        /** Materials */
+        std::vector<TSharedPtr<Material>> m_Materials;
+        std::vector<bool> m_MaterialProcessed;
+
+        uint8_t m_NumMaterials;
+
         void InitializeMaterialSlots(MaterialsEvaluateMethod EvaluateMethod);
         void Emplace_N_MaterialSlots(uint8_t N);
+
+    public:
+        void SetMaterialForSlot(uint8_t SlotIndex, TSharedPtr<Material> Material);
+        Material* GetMaterialInSlot(uint8_t SlotIndex);
+       
+        size_t GetNumMaterials(void) const;
     };
 }

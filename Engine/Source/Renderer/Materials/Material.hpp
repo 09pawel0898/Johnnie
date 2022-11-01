@@ -3,6 +3,7 @@
 #include "Core/CoreMinimal.hpp"
 #include "glm/glm.hpp"
 #include "../RHI/Resources/RHIResource.hpp"
+#include "../RHI/RHITypes.hpp"
 
 #include <vector>
 
@@ -79,6 +80,8 @@ namespace Engine
 
 		void SetMaterialEmissive(bool IsMaterialEmissive);
 		bool IsMaterialEmissive(void) const;
+
+		void SetTextureByType(RHITextureType TextureType, TSharedPtr<RHITexture2D> Texture);
 
 	public:
 		MaterialUniform const& GetMaterialUniform(void) const;

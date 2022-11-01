@@ -87,6 +87,22 @@ namespace Engine
 		return m_Uniform.IsEmmisive;
 	}
 
+	void Material::SetTextureByType(RHITextureType TextureType, TSharedPtr<RHITexture2D> Texture)
+	{
+		if (TextureType == RHITextureType::Diffuse)
+		{
+			SetDiffuseTexture(Texture);
+		}
+		else if (TextureType == RHITextureType::Specular)
+		{
+			SetSpecularTexture(Texture);
+		}
+		else if (TextureType == RHITextureType::Normal)
+		{
+			SetNormalTexture(Texture);
+		}
+	}
+
 	void Material::Bind(TSharedPtr<RHIShader>& Shader) const
 	{
 		Shader->Bind();

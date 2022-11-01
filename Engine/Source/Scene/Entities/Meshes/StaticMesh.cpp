@@ -12,7 +12,7 @@
 
 namespace Engine
 {
-   AStaticMesh::AStaticMesh(std::string const& FilePath, OnStaicMeshAsyncLoadingFinished OnLoadingFinished, glm::vec3 const& WorldLocation)
+   AStaticMesh::AStaticMesh(std::string const& FilePath, OnStaticMeshAsyncLoadingFinishedDelegate OnLoadingFinished, glm::vec3 const& WorldLocation)
        :    Actor(WorldLocation),
             m_ModelFilePath(FilePath)
    {
@@ -23,17 +23,16 @@ namespace Engine
     AStaticMesh::AStaticMesh(std::vector<TSharedPtr<Mesh>>&& SubMeshes, glm::vec3 const& WorldLocation)
         :   Actor(WorldLocation)
     {
-        m_bIsModelLoaded = true;
+        m_bIsModelImported = true;
         m_SubMeshes = MoveTemp(SubMeshes);
 
         InitializeMaterialSlots(MaterialsEvaluateMethod::OnePerSubmesh);
     }
 
     AStaticMesh::~AStaticMesh()
-    {
-    }
+    {}
 
-    void AStaticMesh::LoadModel(std::string_view FilePath)
+    void AStaticMesh::ImportModel(std::string_view FilePath)
     {
         m_ModelImporter = AssetImporter::Create();
 
@@ -54,7 +53,7 @@ namespace Engine
         InitializeMaterialSlots(MaterialsEvaluateMethod::FromModelImporter);
         ProcessNode(scene->mRootNode, scene);
         
-        m_bIsModelLoaded = true;    
+        m_bIsModelImported = true;    
     }
     
     void AStaticMesh::ProcessNode(aiNode* Node, const aiScene* Scene)
@@ -76,34 +75,37 @@ namespace Engine
         }
     }
     
-    TSharedPtr<Mesh> AStaticMesh::ProcessMesh(aiMesh* _Mesh, const aiScene* Scene)
+    TSharedPtr<Mesh> AStaticMesh::ProcessMesh(aiMesh* Mesh_, const aiScene* Scene)
     {
         std::vector<RHIVertex> vertices;
         std::vector<uint32_t> indices;
     
-        /** Process vertices */
-        for (unsigned int i = 0; i < _Mesh->mNumVertices; i++)
+        vertices.reserve(Mesh_->mNumVertices);
+        indices.reserve(Mesh_->mNumFaces * 3);
+        
+        // Process vertices //
+        for (uint32_t i = 0; i < Mesh_->mNumVertices; i++)
         {
             RHIVertex vertex;
     
-            aiVector3D const& vertexPosition = _Mesh->mVertices[i];
+            aiVector3D const& vertexPosition = Mesh_->mVertices[i];
             vertex.Position = { vertexPosition.x, vertexPosition.y, vertexPosition.z };
             
-            if (_Mesh->mNormals)
+            if (Mesh_->mNormals)
             {
-                aiVector3D const& normal = _Mesh->mNormals[i];
+                aiVector3D const& normal = Mesh_->mNormals[i];
                 vertex.Normal = { normal.x, normal.y, normal.z };
             }
             
-            if (_Mesh->mTangents)
+            if (Mesh_->mTangents)
             {
-                aiVector3D const& tangent = _Mesh->mTangents[i];
+                aiVector3D const& tangent = Mesh_->mTangents[i];
                 vertex.Tangent = { tangent.x, tangent.y, tangent.z };
             }
-            /** Check if the mesh contain texture coordinates */
-            if (_Mesh->mTextureCoords[0])
+            
+            if (Mesh_->mTextureCoords[0])
             {
-                aiVector3D const& textureCoords = _Mesh->mTextureCoords[0][i];
+                aiVector3D const& textureCoords = Mesh_->mTextureCoords[0][i];
                 vertex.TexUV = { textureCoords.x, textureCoords.y };
             }
             else
@@ -113,24 +115,24 @@ namespace Engine
             vertices.emplace_back(MoveTemp(vertex));
         }
     
-        /** Process indices */
-        for (uint32_t i = 0; i < _Mesh->mNumFaces; i++)
+        // Process indices //
+        for (uint32_t i = 0; i < Mesh_->mNumFaces; i++)
         {
-            aiFace const& face = _Mesh->mFaces[i];
+            aiFace const& face = Mesh_->mFaces[i];
             for (uint32_t j = 0; j < face.mNumIndices; j++)
             {
-                indices.push_back(face.mIndices[j]);
+                indices.emplace_back(face.mIndices[j]);
             }
         }
         
-        TSharedPtr<Mesh> subMesh = MakeShared<Mesh>( MoveTemp(vertices),
-                                                                MoveTemp(indices),
-                                                                true);
+        TSharedPtr<Mesh> subMesh = MakeShared<Mesh>(MoveTemp(vertices),
+                                                    MoveTemp(indices),
+                                                    true);
 
-        /** Process materials */
-        if (_Mesh->mMaterialIndex >= 0)
+        // Process materials //
+        if (Mesh_->mMaterialIndex >= 0)
         {
-            subMesh->SetMaterialIndex(_Mesh->mMaterialIndex);
+            subMesh->SetMaterialIndex(Mesh_->mMaterialIndex);
         }
 
         return subMesh;
@@ -139,9 +141,11 @@ namespace Engine
     void AStaticMesh::InitializeMaterialSlots(MaterialsEvaluateMethod EvaluateMethod)
     {
         m_Materials.clear();
-        
+
         if (EvaluateMethod == MaterialsEvaluateMethod::FromModelImporter)
         {
+            m_MaterialProcessed.clear();
+
             const aiScene* Scene = m_ModelImporter->GetScene();
 
             if (Scene != nullptr)
@@ -159,7 +163,6 @@ namespace Engine
             
             for (uint8_t idx = 0; idx < m_SubMeshes.size(); idx++)
             {
-                m_Materials[idx] = MakeShared<Material>();
                 m_SubMeshes[idx]->SetMaterialIndex(idx);
             }
         }
@@ -168,56 +171,38 @@ namespace Engine
     void AStaticMesh::Emplace_N_MaterialSlots(uint8_t N)
     {
         m_Materials.reserve(N);
+        m_MaterialProcessed.reserve(N);
 
         for (uint8_t idx = 0; idx < N; idx++)
         {
-            m_Materials.emplace_back(nullptr);
+            m_Materials.emplace_back(MakeShared<Material>());
+            m_MaterialProcessed.emplace_back(false);
         }
         m_NumMaterials = N;
     }
 
     void AStaticMesh::ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx)
     {
-        /* If this material hasn't been processed yet */
-        if (m_Materials[MaterialIdx] == nullptr)
+        // If this material hasn't been processed yet //
+        if (!m_MaterialProcessed[MaterialIdx])
         {
+            std::vector<TSharedPtr<RHITexture2D>> materialTextures;
+
             std::vector<TSharedPtr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
             std::vector<TSharedPtr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
             std::vector<TSharedPtr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
             
-            std::vector<TSharedPtr<RHITexture2D>> materialTextures;
-
-            materialTextures.insert(materialTextures.end(),
-                                    std::make_move_iterator(diffuseMaps.begin()),
-                                    std::make_move_iterator(diffuseMaps.end()));
-
-            materialTextures.insert(materialTextures.end(),
-                                    std::make_move_iterator(specularMaps.begin()),
-                                    std::make_move_iterator(specularMaps.end()));
-            
-            materialTextures.insert(materialTextures.end(),
-                                    std::make_move_iterator(normalMaps.begin()),
-                                    std::make_move_iterator(normalMaps.end()));
+            materialTextures.insert(materialTextures.end(),     std::make_move_iterator(diffuseMaps.begin()),   std::make_move_iterator(diffuseMaps.end()));
+            materialTextures.insert(materialTextures.end(),     std::make_move_iterator(specularMaps.begin()),  std::make_move_iterator(specularMaps.end()));
+            materialTextures.insert(materialTextures.end(),     std::make_move_iterator(normalMaps.begin()),    std::make_move_iterator(normalMaps.end()));
 
             if (materialTextures.size() > 0)
             {
-                m_Materials[MaterialIdx] = MakeShared<Material>();
-
                 for (auto& texture : materialTextures)
                 {
-                    if (texture->GetType() == RHITextureType::Diffuse)
-                    {
-                        m_Materials[MaterialIdx]->SetDiffuseTexture(texture);
-                    }
-                    else if (texture->GetType() == RHITextureType::Specular)
-                    {
-                        m_Materials[MaterialIdx]->SetSpecularTexture(texture);
-                    } 
-                    else if (texture->GetType() == RHITextureType::Normal)
-                    {
-                        m_Materials[MaterialIdx]->SetNormalTexture(texture);
-                    }
+                    m_Materials[MaterialIdx]->SetTextureByType(texture->GetType(), texture);
                 }
+                m_MaterialProcessed[MaterialIdx] = true;
             }
         }
     }
@@ -261,7 +246,7 @@ namespace Engine
 
     void AStaticMesh::OnTick(double DeltaTime)
     {
-        if (m_bIsModelLoaded && !m_bWasModelLoadedOnPrevFrame)
+        if (m_bIsModelImported && !m_bWasModelLoadedOnPrevFrame)
         {
             for (int8_t idx = 0; idx < m_SubMeshes.size(); idx++)
             {
@@ -278,27 +263,26 @@ namespace Engine
                     }
                 }
             }
+            OnAsyncLoadingFinishedDelegate.ExecuteIfBound(this);
             SceneDelegates::Get()->OnStaticMeshLoaded.Broadcast(this);
-            //LOG(Core, Trace, "Evaluate Mesh {0}", (double)(GET_PROFILE_RESULT("EvaluateMesh") / 1000.0));
-            //LOG(Core, Trace, "Process Materials {0}", (double)(GET_PROFILE_RESULT("ProcessMaterials") / 1000.0));
+
             m_bIsModelReadyToDraw = true;
         }
         
-        m_bWasModelLoadedOnPrevFrame = m_bIsModelLoaded;
+        m_bWasModelLoadedOnPrevFrame = m_bIsModelImported;
     }
 
     void AStaticMesh::OnConstruct(void)
     {
         if(m_bScheduleModelLoadOnConstruct)
         {
-            m_LoadModelFuture = std::async(std::launch::async, std::bind(&AStaticMesh::LoadModel,this,std::placeholders::_1), m_ModelFilePath);
+            m_LoadModelFuture = std::async(std::launch::async, std::bind(&AStaticMesh::ImportModel,this,std::placeholders::_1), m_ModelFilePath);
         }
         else
         {
             for (auto& mesh : m_SubMeshes)
             {
                 mesh->SetStaticMeshOwner(shared_from_this());
-                mesh->SetMaterialIndex(0);
             }
         }
     }
@@ -323,17 +307,17 @@ namespace Engine
         return m_Materials.size();
     }
 
-    std::optional<std::reference_wrapper<TSharedPtr<Material>>> AStaticMesh::GetMaterialInSlot(uint8_t SlotIndex)
+    Material* AStaticMesh::GetMaterialInSlot(uint8_t SlotIndex)
     {
         if (SlotIndex > m_Materials.size() - 1)
         {
             LOG(Materials, Warning, "Bad index. Tried to get material from slot of index {0}. Available slots for this static mesh : [0-{1}]",
                 SlotIndex, m_Materials.size()-1);
-            return std::nullopt;
+            return nullptr;
         }
         else
         {
-            return std::ref(m_Materials[SlotIndex]);
+            return m_Materials[SlotIndex].get();
         }
     }
 
