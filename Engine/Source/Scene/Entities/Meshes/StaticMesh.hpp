@@ -33,6 +33,7 @@ namespace Engine
 	{
     private:
         TUniquePtr<AssetImporter> m_ModelImporter{ nullptr };
+        bool m_bEmbeddedTextures{ false };
 
         std::vector<TSharedPtr<Mesh>> m_SubMeshes;
 

@@ -24,4 +24,17 @@ namespace Engine::RHI
 		};
 		return RHIElementSizes.at(ElementType);
 	}
+
+	uint32_t RHIInternalTextureFormatToOpenGL(RHIInternalTextureFormat InternalFormat)
+	{
+		static const std::unordered_map<RHIInternalTextureFormat, uint32_t> RHIInternalFormats =
+		{
+			{RHIInternalTextureFormat::R,		GL_RED_INTEGER},
+			{RHIInternalTextureFormat::RGB,		GL_RGB},
+			{RHIInternalTextureFormat::RGBA,	GL_RGBA},
+			{RHIInternalTextureFormat::RGBA,	GL_RGBA},
+			{RHIInternalTextureFormat::BGRA,	GL_BGRA}
+		};
+		return RHIInternalFormats.at(InternalFormat);
+	}
 }

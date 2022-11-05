@@ -49,8 +49,18 @@ void JohnnieScene::InitGui(void)
 
 	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FileName)
 	{
-		m_Model = NewActor<AStaticMesh>(FileName);
-		m_Model->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+		m_SkeletalMesh = nullptr;
+		
+		m_StaticMesh = NewActor<AStaticMesh>(FileName);
+		m_StaticMesh->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+	});
+	
+	JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.AddLambda([this](std::string const& FileName)
+	{
+		m_StaticMesh = nullptr;
+		
+		m_SkeletalMesh = NewActor<ASkeletalMesh>(FileName);
+		m_SkeletalMesh->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
 	});
 }
 

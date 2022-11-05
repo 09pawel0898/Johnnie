@@ -6,6 +6,7 @@
 #include "Scene/Entities/CoreWidget.hpp"
 		 
 #include "Scene/Entities/Meshes/StaticMesh.hpp"
+#include "Scene/Entities/Meshes/SkeletalMesh.hpp"
 #include "Scene/Entities/Meshes/BasicMeshGenerator.hpp"
 
 #include "Scene/Entities/Lights/PointLight.hpp"

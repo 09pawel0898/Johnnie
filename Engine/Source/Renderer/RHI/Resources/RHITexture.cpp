@@ -15,4 +15,13 @@ namespace Engine::RHI
 		}
 		return nullptr;
 	}
+
+	TUniquePtr<RHITexture2D> RHITexture2D::Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType)
+	{
+		switch (Renderer::Get()->GetApiType())
+		{
+			case RenderingAPI::OpenGL: return MakeUnique<OpenGLTexture2D>(PixelsData, Width, Height, TextureType); break;
+		}
+		return nullptr;
+	}
 }

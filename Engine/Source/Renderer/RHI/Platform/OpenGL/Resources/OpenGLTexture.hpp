@@ -10,7 +10,9 @@ namespace Engine::RHI
 		uint32_t m_ID = 0;
 
 	public:
-		explicit OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType);
+		OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType);
+		OpenGLTexture2D(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType);
+
 		~OpenGLTexture2D();
 
 		virtual void Bind(uint8_t TextureSlotID) override;
@@ -20,6 +22,7 @@ namespace Engine::RHI
 	
 	private:
 		bool LoadTextureFromFile(void);	
+		void CreateTextureFromPixelData(const void* PixelsData, uint32_t Width, uint32_t Height);
 	};
 
 	

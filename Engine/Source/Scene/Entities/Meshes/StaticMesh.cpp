@@ -51,6 +51,12 @@ namespace Engine
         m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
         
         InitializeMaterialSlots(MaterialsEvaluateMethod::FromModelImporter);
+
+        if (scene->HasTextures())
+        {
+            m_bEmbeddedTextures = true;
+        }
+
         ProcessNode(scene->mRootNode, scene);
         
         m_bIsModelImported = true;    
@@ -191,11 +197,11 @@ namespace Engine
             std::vector<TSharedPtr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
             std::vector<TSharedPtr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
             std::vector<TSharedPtr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
-            
+                
             materialTextures.insert(materialTextures.end(),     std::make_move_iterator(diffuseMaps.begin()),   std::make_move_iterator(diffuseMaps.end()));
             materialTextures.insert(materialTextures.end(),     std::make_move_iterator(specularMaps.begin()),  std::make_move_iterator(specularMaps.end()));
             materialTextures.insert(materialTextures.end(),     std::make_move_iterator(normalMaps.begin()),    std::make_move_iterator(normalMaps.end()));
-
+           
             if (materialTextures.size() > 0)
             {
                 for (auto& texture : materialTextures)
@@ -218,15 +224,25 @@ namespace Engine
             
             std::string texturePath = m_Directory + "/";
             texturePath.append(texFileName.C_Str());
-            
-            auto& textureManager = Renderer::Get()->GetTexture2DManager();
-            
-            textureManager.LoadResource(texturePath, Type);
-            
-            auto& loadedTexture = textureManager.GetResource(texturePath);
-            loadedTexture->SetType(Type);
 
-            textures.push_back(textureManager.GetResource(texturePath));
+            if (m_bEmbeddedTextures)
+            {
+                const aiScene* Scene = m_ModelImporter->GetScene();
+
+                const aiTexture* AiTexture = Scene->GetEmbeddedTexture(texFileName.C_Str());
+                        
+                auto Texture = RHITexture2D::Create(AiTexture->pcData, 
+                                                    AiTexture->mWidth, 
+                                                    AiTexture->mHeight, 
+                                                    Type);
+
+                textures.emplace_back(MoveTemp(Texture));
+            }
+            else
+            {
+                auto Texture = RHITexture2D::Create(texturePath, Type);
+                textures.emplace_back(MoveTemp(Texture));
+            }
         }
         return textures;
     }

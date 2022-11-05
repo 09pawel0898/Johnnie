@@ -16,6 +16,7 @@ namespace Engine
 {
 	class AFloatingCamera;
 	class AStaticMesh;
+	class ASkeletalMesh;
 }
 
 class JohnnieScene final : public Scene
@@ -36,7 +37,9 @@ private:
 	TSharedPtr<AFloatingCamera>				m_Camera;
 
 	/** Entities */
-	TSharedPtr<AStaticMesh>					m_Model;
+	TSharedPtr<AStaticMesh>					m_StaticMesh;
+	TSharedPtr<ASkeletalMesh>				m_SkeletalMesh;
+
 	TSharedPtr<AStaticMesh>					m_Platform;
 
 	TSharedPtr<AStaticMesh>					m_Sphere;

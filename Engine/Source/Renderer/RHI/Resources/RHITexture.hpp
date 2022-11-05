@@ -16,6 +16,10 @@ namespace Engine::RHI
 		RHITexture(std::string_view FilePath, RHITextureType TextureType)
 			:	m_FilePath(FilePath), m_TextureType(TextureType)
 		{}
+		
+		RHITexture(const void* PixelsData, RHITextureType TextureType, uint32_t Width, uint32_t Height)
+			:	m_TextureType(TextureType), m_Width(Width), m_Height(Height)
+		{}
 	
 	public:
 		virtual ~RHITexture() = default;
@@ -47,9 +51,16 @@ namespace Engine::RHI
 		RHITexture2D(std::string_view FilePath, RHITextureType TextureType)
 			:	RHITexture(FilePath, TextureType)
 		{}
+		
+		RHITexture2D(const void* PixelsData, RHITextureType TextureType, uint32_t Width, uint32_t Height)
+			:	RHITexture(PixelsData, TextureType, Width,Height)
+		{}
 
 	public:
 		[[nodiscard]]
 		static TUniquePtr<RHITexture2D> Create(std::string_view FilePath, RHITextureType TextureType = RHITextureType::BasicTexture2D);
+		
+		[[nodiscard]]
+		static TUniquePtr<RHITexture2D> Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType = RHITextureType::BasicTexture2D);
 	};
 }

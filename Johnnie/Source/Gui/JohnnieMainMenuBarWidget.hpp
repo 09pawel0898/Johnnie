@@ -5,13 +5,21 @@
 
 #include "ImGui/ImGuiWidgetBase.hpp"
 
+enum class FileBrowserSelectedAssetType : uint8_t
+{
+	StaticMesh,
+	SkeletalMesh
+};
+
 class WJohnnieMainMenuBarWidget final : public ImGuiWidgetBase
 {
 private:
-	ImGui::FileBrowser m_FileBrowser;
-	bool m_bIsFileBrowserOpened{ false };
+	std::string			m_SelectedFileName = "";
+	ImGui::FileBrowser	m_FileBrowser;
+	bool				m_bIsFileBrowserOpened{ false };
 
-	std::string m_SelectedFileName = "";
+	FileBrowserSelectedAssetType m_FileBrowserSelectedAssetType;
+	
 
 	void InitFileBrowser(void);
 
@@ -20,4 +28,8 @@ public:
 
 	virtual void OnTick(double DeltaTime) override;
 	virtual void OnRenderGui(void) override;
+
+private:
+	void OpenFileBrowserForAssetType(FileBrowserSelectedAssetType AssetType);
+	void NotifyFileBrowserAssetSelected();
 };

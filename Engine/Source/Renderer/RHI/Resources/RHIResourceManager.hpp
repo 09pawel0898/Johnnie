@@ -29,7 +29,7 @@ namespace Engine::RHI
 
 	using FilePath		= std::string;
 	using ShaderName	= std::string;
-	using MaterialName = std::string;
+	using MaterialName	= std::string;
 
 	using RHITexture2DManager	= RHIResourceManager<RHITexture2D, FilePath>;
 	using RHIShaderManager		= RHIResourceManager<RHIShader, ShaderName>;

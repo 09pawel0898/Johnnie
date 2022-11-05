@@ -20,9 +20,17 @@ namespace Engine::RHI
 		glm::vec3 Tangent;
 	};
 
+	enum class RHIInternalTextureFormat : uint8_t
+	{
+		R = 0,
+		RGB,
+		RGBA,
+		BGRA
+	};
+
 	enum class RHITextureType : uint8_t
 	{
-		BasicTexture2D,
+		BasicTexture2D = 0,
 		Diffuse,
 		Specular,
 		Normal
