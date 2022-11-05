@@ -9,7 +9,6 @@
 #include "Renderer/Materials/Material.hpp"
 
 #include "Scene/Entities/Primitives/Actor.hpp"
-#include "Scene/Entities/Primitives/Tickable.hpp"
 
 #include "Utilities/Delegates.hpp"
 
