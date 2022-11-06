@@ -22,14 +22,22 @@ namespace Engine
 	struct VertexBoneData
 	{
 	private:
-		static constexpr inline int8_t s_MaxBonesPerVertex = 4;
+		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
 
 		std::array<uint32_t, s_MaxBonesPerVertex> BoneIDs;
 		std::array<float, s_MaxBonesPerVertex> Weights;
 
+	public:
 		VertexBoneData() = default;
 
-		void AddBoneData(uint32_t BoneID, float Weight);
+		void AddBoneData(uint32_t VertID, uint32_t BoneID, float Weight);
+	};
+
+	struct SkeletonData
+	{
+		std::vector<VertexBoneData> VertexToBones;
+		std::vector<uint32_t> MeshBaseVertex;
+		std::map<std::string, uint32_t> BoneNameIndexMap;
 	};
 
 	DECLARE_DELEGATE(OnMaterialsInfoAcquired, uint8_t);
@@ -40,6 +48,7 @@ namespace Engine
 		Assimp::Importer m_AssimpImporter;
 		std::future<void> m_ImportModelFuture;
 		AssetImporterType m_ImporterType;
+
 
 	public:
 		AssetImporter() = default;
@@ -53,15 +62,6 @@ namespace Engine
 		OnMaterialsInfoAcquired OnMaterialsInforAcquiredDelegate;
 
 		virtual void AsyncImportModel(std::string_view FilePath) = 0;
-
-		void AsyncImportModel_Internal(std::string_view FilePath, uint32_t Flags);
-
-	protected:
-		void ParseScene(const aiScene* Scene);
-		void ParseMeshes(const aiScene* Scene);
-		void ParseSingleMesh(const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
-		void ParseMeshBones(const aiMesh* Mesh);
-		void ParseSingleBone(uint16_t BoneIndex, const aiBone* Bone);
 	};
 
 	class StaticModelImporter : public AssetImporter
@@ -77,11 +77,24 @@ namespace Engine
 	class SkeletalModelImporter : public AssetImporter
 	{
 	private:
+		SkeletonData m_SkeletonData;
 
 	public:
 		SkeletalModelImporter();
 
 		void AsyncImportModel(std::string_view FilePath) override;
+
+	private:
+		void AsyncImportModel_Internal(std::string_view FilePath, uint32_t Flags);
+
+		void ParseScene(const aiScene* Scene);
+		void ParseMeshes(const aiScene* Scene);
+		void PreprocessMeshes(const aiScene* Scene, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
+		void PreprocessSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
+		void ParseSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
+		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* Mesh);
+		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
+		uint32_t GetBoneID(const aiBone* Bone);
 	};
 
 

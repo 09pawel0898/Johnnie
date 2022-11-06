@@ -41,7 +41,8 @@ namespace Engine
             |   aiProcess_OptimizeMeshes 
             |   aiProcess_RemoveRedundantMaterials
             |   aiProcess_CalcTangentSpace
-            |   aiProcess_PreTransformVertices);
+            |   aiProcess_PreTransformVertices
+            |   aiProcess_JoinIdenticalVertices);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
