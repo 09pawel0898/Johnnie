@@ -19,7 +19,7 @@ struct aiMaterial;
 
 namespace Engine
 {
-    class AssetImporter;
+    class StaticModelImporter;
 
     namespace RHI
     {
@@ -32,7 +32,7 @@ namespace Engine
 	class AStaticMesh : public Actor, public SharedFromThis<AStaticMesh>
 	{
     private:
-        TUniquePtr<AssetImporter> m_ModelImporter{ nullptr };
+        TUniquePtr<StaticModelImporter> m_ModelImporter{ nullptr };
         bool m_bEmbeddedTextures{ false };
 
         std::vector<TSharedPtr<Mesh>> m_SubMeshes;

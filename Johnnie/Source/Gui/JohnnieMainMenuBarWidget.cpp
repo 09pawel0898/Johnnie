@@ -86,15 +86,18 @@ void WJohnnieMainMenuBarWidget::OpenFileBrowserForAssetType(FileBrowserSelectedA
 
 void WJohnnieMainMenuBarWidget::NotifyFileBrowserAssetSelected()
 {
-	LOG(Core, Trace, "Selected filename {0}", m_FileBrowser.GetSelected().string());
 	m_SelectedFileName = m_FileBrowser.GetSelected().string();
 
 	if (m_FileBrowserSelectedAssetType == FileBrowserSelectedAssetType::StaticMesh)
 	{
+		LOG(Core, Trace, "Loading static model from {0}", m_FileBrowser.GetSelected().string());
+
 		JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.Broadcast(m_SelectedFileName);
 	}
 	if (m_FileBrowserSelectedAssetType == FileBrowserSelectedAssetType::SkeletalMesh)
 	{
+		LOG(Core, Trace, "Loading skeletal model from {0}", m_FileBrowser.GetSelected().string());
+
 		JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.Broadcast(m_SelectedFileName);
 	}
 

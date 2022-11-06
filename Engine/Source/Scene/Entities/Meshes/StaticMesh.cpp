@@ -8,7 +8,7 @@
 #include "Scene/SceneDeleates.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 
-#include "AssimpHelpers.hpp"
+#include "AssetImporter.hpp"
 
 namespace Engine
 {
@@ -34,7 +34,7 @@ namespace Engine
 
     void AStaticMesh::ImportModel(std::string_view FilePath)
     {
-        m_ModelImporter = AssetImporter::Create();
+        m_ModelImporter = MakeUnique<StaticModelImporter>();
 
         const aiScene* scene = m_ModelImporter->GetImporter().ReadFile( FilePath.data(),
                 aiProcess_Triangulate 
