@@ -6,8 +6,10 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Utilities/VariantUtility.hpp"
 
 #include "StaticMesh.hpp"
+#include "SkeletalMesh.hpp"
 
 namespace Engine
 {
@@ -140,10 +142,17 @@ namespace Engine
 
 	Material* Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
 	{
-		if (auto staticMeshOwner = m_StaticMeshOwner.lock())
-		{
-			return staticMeshOwner->GetMaterialInSlot(m_MaterialIndex);
-		}
+		return std::visit(
+			[this](auto const& MeshOwner) -> Material*
+			{
+				if (auto meshOwner = MeshOwner.lock())
+				{
+					return meshOwner->GetMaterialInSlot(m_MaterialIndex);
+				}
+				return nullptr;
+			}
+		, m_OwnerActor);
+
 		return nullptr;
 	}
 

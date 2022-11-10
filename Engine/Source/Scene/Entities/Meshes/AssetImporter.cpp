@@ -1,24 +1,36 @@
 #include "EnginePCH.hpp"
 
+#include "Mesh.hpp"
 #include "AssetImporter.hpp"
 #include "Log/Log.hpp"
 
+#include "SkeletalMesh.hpp"
 
 namespace Engine
 {
-	Assimp::Importer& Engine::AssetImporter::GetImporter(void)
+	Assimp::Importer& AssetImporter::GetImporter(void)
 	{
 		return m_AssimpImporter;
 	}
 
-	Assimp::Importer const& Engine::AssetImporter::GetImporter(void) const
+	Assimp::Importer const& AssetImporter::GetImporter(void) const
 	{
 		return m_AssimpImporter;
 	}
 
-	const aiScene* Engine::AssetImporter::GetScene(void)
+	const aiScene* AssetImporter::GetScene(void)
 	{
 		return m_AssimpImporter.GetScene();
+	}
+
+	bool AssetImporter::HasEmbededTextures(void)
+	{
+		return m_bHasEmbeddedTextures;
+	}
+
+	bool AssetImporter::IsModelAlreadyLoaded(void)
+	{
+		return m_bIsModelImported;
 	}
 
 	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHITextureType RHITextureType)
@@ -41,19 +53,20 @@ namespace Engine
 	{
 	}
 
-	SkeletalModelImporter::SkeletalModelImporter()
+	SkeletalModelImporter::SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh)
 	{
+		m_SkeletalMesh = MoveTemp(SkeletalMesh);
 		m_ImporterType = AssetImporterType::SkeletalModel;
 	}
 
 	void SkeletalModelImporter::AsyncImportModel(std::string_view FilePath)
 	{
-		uint32_t Flags =  aiProcess_Triangulate
-						| aiProcess_RemoveRedundantMaterials
-						| aiProcess_OptimizeMeshes
-						| aiProcess_GenNormals
-						| aiProcess_JoinIdenticalVertices
-						| aiProcess_CalcTangentSpace;
+		uint32_t Flags = aiProcess_Triangulate
+			| aiProcess_RemoveRedundantMaterials
+			| aiProcess_OptimizeMeshes
+			| aiProcess_GenNormals
+			| aiProcess_JoinIdenticalVertices
+			| aiProcess_CalcTangentSpace;
 
 		m_ImportModelFuture = std::async(	std::launch::async, 
 											std::bind(&SkeletalModelImporter::AsyncImportModel_Internal, this, std::placeholders::_1,std::placeholders::_2),
@@ -71,63 +84,148 @@ namespace Engine
 			return;
 		}
 		//m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
-		OnMaterialsInforAcquiredDelegate.ExecuteIfBound(Scene->mNumMaterials);
+		if (TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock())
+		{
+			SkeletalMesh->InitializeMaterialSlots(Scene->mNumMaterials);
+		}
+
 		ParseScene(Scene);
+		
+		m_bIsModelImported = true;
 	}
 
 	void SkeletalModelImporter::ParseScene(const aiScene* Scene)
 	{
+		if (Scene->HasTextures())
+		{
+			m_bHasEmbeddedTextures = true;
+		}
+
 		ParseMeshes(Scene);
 	}
 
 	void SkeletalModelImporter::ParseMeshes(const aiScene* Scene)
 	{
-		uint32_t TotalVertices = 0;
-		uint32_t TotalIndices = 0;
-		uint32_t TotalBones = 0;
-
-		PreprocessMeshes(Scene, TotalVertices, TotalIndices, TotalBones);
+		PreprocessMeshes(Scene);
 		
 		for (uint16_t idx = 0; idx < Scene->mNumMeshes; idx++)
 		{
-			ParseSingleMesh(idx, Scene->mMeshes[idx], TotalVertices, TotalIndices, TotalBones);
+			ParseSingleMesh(idx, Scene->mMeshes[idx]);
 		}
 	}
 
-	void SkeletalModelImporter::PreprocessMeshes(const aiScene* Scene, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount)
+	void SkeletalModelImporter::PreprocessMeshes(const aiScene* Scene)
 	{
 		m_SkeletonData.MeshBaseVertex.resize(Scene->mNumMeshes);
 
 		for (uint16_t idx = 0; idx < Scene->mNumMeshes; idx++)
 		{
-			PreprocessSingleMesh(idx, Scene->mMeshes[idx], TotalVerticesCount, TotalIndicesCount, TotalBonesCount);
+			PreprocessSingleMesh(idx, Scene->mMeshes[idx]);
 		}
 	}
 
-	void SkeletalModelImporter::PreprocessSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount)
+	void SkeletalModelImporter::PreprocessSingleMesh(uint16_t Index, const aiMesh* AiMesh)
 	{
-		m_SkeletonData.MeshBaseVertex[Index] = TotalVerticesCount;
+		m_SkeletonData.MeshBaseVertex[Index] = m_ModelView.TotalVertices;
 
-		TotalVerticesCount += Mesh->mNumVertices;
-		TotalIndicesCount += Mesh->mNumFaces * 3;
-		TotalBonesCount += Mesh->mNumBones;
+		const uint32_t MeshVertices = AiMesh->mNumVertices;
+		const uint32_t MeshIndices = AiMesh->mNumFaces * 3;
+		const uint32_t MeshBones = AiMesh->mNumBones;
 
-		m_SkeletonData.VertexToBones.resize(TotalVerticesCount);
+		m_ModelView.TotalVertices += MeshVertices;
+		m_ModelView.TotalIndices += MeshIndices;
+		m_ModelView.TotalBones += MeshBones;
+
+		m_ModelView.Meshes.push_back({ Index,MeshVertices,MeshIndices,MeshBones });
+
+		m_SkeletonData.VertexToBones.resize(m_ModelView.TotalVertices);
 	}
 
-	void SkeletalModelImporter::ParseSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount)
+	void SkeletalModelImporter::ParseSingleMesh(uint16_t Index, const aiMesh* AiMesh)
 	{
-		if (Mesh->HasBones())
+		if (AiMesh->HasBones())
 		{
-			ParseMeshBones(Index, Mesh);
+			ParseMeshBones(Index, AiMesh);
+		}
+
+		if (TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock())
+		{
+			TSharedPtr<Mesh> SubMesh = ParseSingleMeshData(AiMesh);
+			SubMesh->SetStaticMeshOwner(SkeletalMesh);
+			SubMesh->GetMeshStatistics().TrisCount = AiMesh->mNumFaces;
+
+			SkeletalMesh->m_SubMeshes.emplace_back(MoveTemp(SubMesh));
 		}
 	}
 
-	void SkeletalModelImporter::ParseMeshBones(uint16_t MeshIndex, const aiMesh* Mesh)
+	TSharedPtr<Mesh> SkeletalModelImporter::ParseSingleMeshData(const aiMesh* AiMesh)
 	{
-		for (uint16_t idx = 0; idx < Mesh->mNumBones; idx++)
+		std::vector<RHIVertex>	Vertices;
+		std::vector<uint32_t>	Indices;
+
+		Vertices.reserve(AiMesh->mNumVertices);
+		Indices.reserve(AiMesh->mNumFaces * 3);
+
+		// Process vertices //
+		for (uint32_t i = 0; i < AiMesh->mNumVertices; i++)
 		{
-			ParseSingleBone(MeshIndex, Mesh->mBones[idx]);
+			RHIVertex Vertex;
+
+			aiVector3D const& VertexPosition = AiMesh->mVertices[i];
+			Vertex.Position = { VertexPosition.x, VertexPosition.y, VertexPosition.z };
+
+			if (AiMesh->mNormals)
+			{
+				aiVector3D const& Normal = AiMesh->mNormals[i];
+				Vertex.Normal = { Normal.x, Normal.y, Normal.z };
+			}
+
+			if (AiMesh->mTangents)
+			{
+				aiVector3D const& Tangent = AiMesh->mTangents[i];
+				Vertex.Tangent = { Tangent.x, Tangent.y, Tangent.z };
+			}
+
+			if (AiMesh->mTextureCoords[0])
+			{
+				aiVector3D const& TextureCoords = AiMesh->mTextureCoords[0][i];
+				Vertex.TexUV = { TextureCoords.x, TextureCoords.y };
+			}
+			else
+			{
+				Vertex.TexUV = { 0.f, 0.f };
+			}
+			Vertices.emplace_back(MoveTemp(Vertex));
+		}
+
+		// Process indices //
+		for (uint32_t i = 0; i < AiMesh->mNumFaces; i++)
+		{
+			aiFace const& face = AiMesh->mFaces[i];
+			for (uint32_t j = 0; j < face.mNumIndices; j++)
+			{
+				Indices.emplace_back(face.mIndices[j]);
+			}
+		}
+
+		TSharedPtr<Mesh> SubMesh = MakeShared<Mesh>(MoveTemp(Vertices),
+													MoveTemp(Indices),
+													true);
+
+		// Process materials //
+		if (AiMesh->mMaterialIndex >= 0)
+		{
+			SubMesh->SetMaterialIndex(AiMesh->mMaterialIndex);
+		}
+
+		return SubMesh;
+	}
+
+	void SkeletalModelImporter::ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh)
+	{
+		for (uint16_t idx = 0; idx < AiMesh->mNumBones; idx++)
+		{
+			ParseSingleBone(MeshIndex, AiMesh->mBones[idx]);
 		}
 	}
 
@@ -137,12 +235,11 @@ namespace Engine
 
 		for (unsigned long long idx = 0; idx < Bone->mNumWeights; idx++)
 		{
-			
 			const aiVertexWeight& VertexWeight = Bone->mWeights[idx];
 			
 			uint32_t GlobalVertexId = m_SkeletonData.MeshBaseVertex[MeshIndex] + VertexWeight.mVertexId;
 			Check(GlobalVertexId < m_SkeletonData.VertexToBones.size());
-		
+			
 			m_SkeletonData.VertexToBones[GlobalVertexId].AddBoneData(GlobalVertexId, BoneID, VertexWeight.mWeight);
 		}
 	}
@@ -158,7 +255,7 @@ namespace Engine
 		}
 		else
 		{
-			BoneID = m_SkeletonData.BoneNameIndexMap.size();
+			BoneID = (uint32_t)m_SkeletonData.BoneNameIndexMap.size();
 			m_SkeletonData.BoneNameIndexMap[BoneName] = BoneID;
 		}
 
@@ -167,19 +264,19 @@ namespace Engine
 
 	void VertexBoneData::AddBoneData(uint32_t VertID, uint32_t BoneID, float Weight)
 	{
-		for (uint16_t idx = 0; idx < s_MaxBonesPerVertex; idx++)
+		for (uint8_t idx = 0; idx < s_MaxBonesPerVertex; idx++)
 		{
-			// Sanity check because importing with aiProcess_JoinIdenticalVertices produces duplicates of aiVertexWeight. 
-			if (bool WeightAlreadyInvolved = std::find(Weights.cbegin(), Weights.cend(), Weight) != Weights.cend())
+			// Sanity check because importing with aiProcess_JoinIdenticalVertices produces duplicates of aiVertexWeight
+			if (Weight == BoneInfluenceData[idx].Weight && BoneInfluenceData[idx].BoneID == BoneID)
 			{
 				return;
 			}
-
-			if (Weights[idx] == 0.f)
+			
+			if (BoneInfluenceData[idx].Weight == 0.f)
 			{
 				//LOG(Assimp, Trace, "VertID {0} BoneID {1} Weight {2}",VertID, BoneID, Weight);
-				BoneIDs[idx] = BoneID;
-				Weights[idx] = Weight;
+				BoneInfluenceData[idx].BoneID = BoneID;
+				BoneInfluenceData[idx].Weight = Weight;
 				return;
 			}
 		}

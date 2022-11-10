@@ -13,19 +13,81 @@
 
 namespace Engine
 {
+	class ASkeletalMesh;
+	class Mesh;
+
 	enum class AssetImporterType : uint8_t
 	{
 		StaticModel,
 		SkeletalModel
 	};
 
+	struct ModelView
+	{
+		uint32_t TotalVertices = 0;
+		uint32_t TotalIndices = 0;
+		uint32_t TotalBones = 0;
+
+		struct MeshView
+		{
+			uint32_t Index = Index::None;
+
+			uint32_t Vertices = 0;
+			uint32_t Indices = 0;
+			uint32_t Bones = 0;
+		};
+		
+		std::vector<MeshView> Meshes;
+	};
+
+	class AssetImporter
+	{
+	protected:
+		Assimp::Importer	m_AssimpImporter;
+		std::future<void>	m_ImportModelFuture;
+
+		AssetImporterType	m_ImporterType;
+		bool				m_bHasEmbeddedTextures{ false };
+		bool				m_bIsModelImported{ false };
+
+	public:
+		AssetImporter() = default;
+
+	public:
+		Assimp::Importer& GetImporter(void);
+		Assimp::Importer const& GetImporter(void) const;
+		const aiScene* GetScene(void);
+
+	public:
+		virtual void AsyncImportModel(std::string_view FilePath) = 0;
+
+		bool HasEmbededTextures(void);
+		bool IsModelAlreadyLoaded(void);
+	};
+
+	class StaticModelImporter : public AssetImporter
+	{
+	private:
+
+	public:
+		StaticModelImporter();
+
+		void AsyncImportModel(std::string_view FilePath) override;
+	};
+	
 	struct VertexBoneData
 	{
 	private:
 		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
 
-		std::array<uint32_t, s_MaxBonesPerVertex> BoneIDs;
-		std::array<float, s_MaxBonesPerVertex> Weights;
+	public:
+		struct BoneInlfuenceData
+		{
+			uint32_t BoneID = -1;
+			float Weight;
+		};
+
+		std::array<BoneInlfuenceData, s_MaxBonesPerVertex> BoneInfluenceData;
 
 	public:
 		VertexBoneData() = default;
@@ -40,47 +102,16 @@ namespace Engine
 		std::map<std::string, uint32_t> BoneNameIndexMap;
 	};
 
-	DECLARE_DELEGATE(OnMaterialsInfoAcquired, uint8_t);
-
-	class AssetImporter
-	{
-	protected:
-		Assimp::Importer m_AssimpImporter;
-		std::future<void> m_ImportModelFuture;
-		AssetImporterType m_ImporterType;
-
-
-	public:
-		AssetImporter() = default;
-
-	public:
-		Assimp::Importer& GetImporter(void);
-		Assimp::Importer const& GetImporter(void) const;
-		const aiScene* GetScene(void);
-
-	public:
-		OnMaterialsInfoAcquired OnMaterialsInforAcquiredDelegate;
-
-		virtual void AsyncImportModel(std::string_view FilePath) = 0;
-	};
-
-	class StaticModelImporter : public AssetImporter
-	{
-	private:
-
-	public:
-		StaticModelImporter();
-
-		void AsyncImportModel(std::string_view FilePath) override;
-	};
-	
 	class SkeletalModelImporter : public AssetImporter
 	{
 	private:
-		SkeletonData m_SkeletonData;
+		TWeakPtr<ASkeletalMesh>	m_SkeletalMesh;
+		
+		ModelView				m_ModelView;
+		SkeletonData			m_SkeletonData;
 
 	public:
-		SkeletalModelImporter();
+		SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
 		void AsyncImportModel(std::string_view FilePath) override;
 
@@ -89,12 +120,14 @@ namespace Engine
 
 		void ParseScene(const aiScene* Scene);
 		void ParseMeshes(const aiScene* Scene);
-		void PreprocessMeshes(const aiScene* Scene, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
-		void PreprocessSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
-		void ParseSingleMesh(uint16_t Index, const aiMesh* Mesh, uint32_t& TotalVerticesCount, uint32_t& TotalIndicesCount, uint32_t& TotalBonesCount);
-		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* Mesh);
+		void PreprocessMeshes(const aiScene* Scene);
+		void PreprocessSingleMesh(uint16_t Index, const aiMesh* AiMesh);
+		void ParseSingleMesh(uint16_t Index, const aiMesh* AiMesh);
+		TSharedPtr<Mesh> ParseSingleMeshData(const aiMesh* AiMesh);
+		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
 		uint32_t GetBoneID(const aiBone* Bone);
+	
 	};
 
 

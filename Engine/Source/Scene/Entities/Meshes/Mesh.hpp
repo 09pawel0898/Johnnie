@@ -5,6 +5,8 @@
 #include "Renderer/Materials/Material.hpp"
 #include "Renderer/RendererStatistics.hpp"
 
+#include <variant>
+
 namespace Engine
 {
 	namespace RHI
@@ -14,6 +16,7 @@ namespace Engine
 	using namespace RHI;
 
 	class AStaticMesh;
+	class ASkeletalMesh;
 
 	class Mesh
 	{
@@ -26,7 +29,7 @@ namespace Engine
 		bool m_bUseHardMaterialReference{ false };
 
 		uint8_t						m_MaterialIndex = Index::None;
-		TWeakPtr<AStaticMesh>	m_StaticMeshOwner;
+		std::variant<TWeakPtr<AStaticMesh>, TWeakPtr<ASkeletalMesh>>	m_OwnerActor;
 
 		/** Mesh Info */
 		MeshStatistics m_MeshStatistics;
@@ -59,6 +62,7 @@ namespace Engine
 		/* Material can also be parsed from StaticMesh when its reference is valid, 
 		then proper material with assigned index is being applied */
 		void SetStaticMeshOwner(TSharedPtr<AStaticMesh> const& Owner);
+		void SetStaticMeshOwner(TSharedPtr<ASkeletalMesh> const& Owner);
 		uint8_t GetMaterialIndex(void) const;
 		void SetMaterialIndex(uint8_t Index);
 	
@@ -83,7 +87,12 @@ namespace Engine
 
 	FORCEINLINE void Mesh::SetStaticMeshOwner(TSharedPtr<AStaticMesh> const& Owner)
 	{
-		m_StaticMeshOwner = Owner;
+		m_OwnerActor = Owner;
+	}
+
+	FORCEINLINE void Mesh::SetStaticMeshOwner(TSharedPtr<ASkeletalMesh> const& Owner)
+	{
+		m_OwnerActor = Owner;
 	}
 
 	FORCEINLINE uint8_t Mesh::GetMaterialIndex(void) const
