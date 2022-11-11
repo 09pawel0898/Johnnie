@@ -41,8 +41,17 @@ namespace Engine::RHI
 		auto add1DVertexAttribArray = [&currentAttribIndex](auto const& Layout, auto const& Element, uint8_t Size)
 		{
 			glEnableVertexAttribArray(currentAttribIndex);
-			glVertexAttribPointer(currentAttribIndex, Size, RHIElementTypeToOpenGL(Element->VBOElementType),
-				Element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)Layout->GetStride(), (const void*)Element->Offset);
+
+			if (RHIIsIntegerElement(Element->VBOElementType))
+			{
+				glVertexAttribIPointer(currentAttribIndex, Size, RHIElementTypeToOpenGL(Element->VBOElementType),
+					(int32_t)Layout->GetStride(), (const void*)Element->Offset);
+			}
+			else
+			{
+				glVertexAttribPointer(currentAttribIndex, Size, RHIElementTypeToOpenGL(Element->VBOElementType),
+					Element->bNormalized ? GL_TRUE : GL_FALSE, (int32_t)Layout->GetStride(), (const void*)Element->Offset);
+			}
 			currentAttribIndex++;
 		};
 

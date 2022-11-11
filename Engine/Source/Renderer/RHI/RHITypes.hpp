@@ -19,6 +19,19 @@ namespace Engine::RHI
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 	};
+	
+	struct RHIAnimatedVertex
+	{
+		glm::vec3 Position;
+		glm::vec3 Normal;
+		glm::vec2 TexUV;
+		glm::vec3 Tangent;
+
+		int32_t	BoneIDs[4] = { 0 };
+		float	Weights[4] = { 0.f };
+
+		RHIAnimatedVertex& operator=(RHIVertex const& Rhs);
+	};
 
 	enum class RHIInternalTextureFormat : uint8_t
 	{

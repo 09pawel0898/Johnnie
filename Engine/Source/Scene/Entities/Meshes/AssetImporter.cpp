@@ -6,7 +6,7 @@
 
 #include "SkeletalMesh.hpp"
 
-#define DEBUG_MODEL_IMPORTER
+//#define DEBUG_MODEL_IMPORTER
 
 namespace Engine
 {
@@ -63,11 +63,12 @@ namespace Engine
 
 	void SkeletalModelImporter::AsyncImportModel(std::string_view FilePath)
 	{
-		uint32_t Flags = aiProcess_Triangulate
-			| aiProcess_RemoveRedundantMaterials
-			| aiProcess_OptimizeMeshes
-			| aiProcess_GenNormals
-			| aiProcess_CalcTangentSpace;
+		uint32_t Flags =  aiProcess_Triangulate
+						| aiProcess_RemoveRedundantMaterials
+						| aiProcess_OptimizeMeshes
+						| aiProcess_GenNormals
+						| aiProcess_JoinIdenticalVertices
+						| aiProcess_CalcTangentSpace;
 
 		m_ImportModelFuture = std::async(	std::launch::async, 
 											std::bind(&SkeletalModelImporter::AsyncImportModel_Internal, this, std::placeholders::_1,std::placeholders::_2),
@@ -328,14 +329,12 @@ namespace Engine
 
 		CheckMsg(Index != s_MaxBonesPerVertex,"Program not supports so many vertices influenced by one bone.");
 		
-
 		BoneIDs[Index] = BoneID;
 		Weights[Index] = Weight;
 
 #ifdef DEBUG_MODEL_IMPORTER
 		//LOG(Assimp, Trace, "GlobalVertexID {0} BoneID {1} Weight {2} InfoSlotIndex {3}", GlobalVertexID, BoneIDs[Index], Weights[Index], Index);
 #endif
-
 		Index++;
 	}
 }

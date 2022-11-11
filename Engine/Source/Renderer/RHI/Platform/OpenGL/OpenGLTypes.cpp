@@ -27,6 +27,20 @@ namespace Engine::RHI
 		return RHIElementSizes.at(ElementType);
 	}
 
+	bool RHIIsIntegerElement(RHIElementType ElementType)
+	{
+
+		if (	ElementType == RHIElementType::Int
+			||	ElementType == RHIElementType::Int2
+			||	ElementType == RHIElementType::Int3
+			||	ElementType == RHIElementType::Int4
+			||  ElementType == RHIElementType::Int10)
+		{
+			return true;
+		}
+		return false;
+	}
+
 	uint32_t RHIInternalTextureFormatToOpenGL(RHIInternalTextureFormat InternalFormat)
 	{
 		static const std::unordered_map<RHIInternalTextureFormat, uint32_t> RHIInternalFormats =

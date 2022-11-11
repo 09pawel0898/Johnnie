@@ -128,7 +128,7 @@ namespace Engine
 	private:
 		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
 	public:
-		int32_t	BoneIDs[s_MaxBonesPerVertex] = { -1 };
+		int32_t	BoneIDs[s_MaxBonesPerVertex] = { 0 };
 		float	Weights[s_MaxBonesPerVertex] = { 0.f };
 
 		uint16_t Index = 0;

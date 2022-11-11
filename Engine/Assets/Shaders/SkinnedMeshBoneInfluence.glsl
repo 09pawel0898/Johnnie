@@ -37,19 +37,20 @@ in vec4 Weights;
 void main()
 {
 	bool found = false;
+	
 	for(int i = 0; i<4 ;i++)
 	{
-		if(BoneIDs[i] > 999999)
-		{
+		//if(BoneIDs[i] == 15)
+		//{
 			if(Weights[i] == -1 || Weights[i] == 0.f)
 			{
 				break;
 			}
-			if(Weights[i] >= 0.7)
+			else if(Weights[i] >= 0.7)
 			{
 				FragColor = vec4(vec3(1.0,0.0,0.0) * Weights[i],1.0);
 			}
-			if(Weights[i] >= 0.4 && Weights[i] <0.7)
+			else if(Weights[i] >= 0.4 && Weights[i] <0.7)
 			{
 				FragColor = vec4(vec3(0.0,1.0,0.0) * Weights[i],1.0);
 			}
@@ -57,13 +58,13 @@ void main()
 			{
 				FragColor = vec4(vec3(1.0,1.0,0.0) * Weights[i],1.0);
 			}
-			if(Weights[i] < 0.1)
+			else if(Weights[i] < 0.1)
 			{
 				FragColor = vec4(vec3(0.0,1.0,1.0) * Weights[i],1.0);
 			}
 			found = true;
-			break;
-		}
+			return;
+		//}
 		
 	}
 	

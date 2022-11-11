@@ -36,4 +36,14 @@ namespace Engine::RHI
 		};
 		return RHITextureUniformNames[TextureType];
 	}
+
+	RHIAnimatedVertex& RHIAnimatedVertex::operator=(RHIVertex const& Rhs)
+	{
+		Position	= Rhs.Position;
+		Tangent		= Rhs.Tangent;
+		Normal		= Rhs.Normal;
+		TexUV		= Rhs.TexUV;
+
+		return *this;
+	}
 }
