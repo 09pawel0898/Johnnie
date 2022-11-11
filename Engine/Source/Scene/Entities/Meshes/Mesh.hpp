@@ -6,6 +6,8 @@
 #include "Renderer/RendererStatistics.hpp"
 
 #include <variant>
+#include <map>
+#include <array>
 
 namespace Engine
 {
@@ -20,20 +22,20 @@ namespace Engine
 
 	class Mesh
 	{
-	private:
+	protected:
 		/** RHI Data */
 		TSharedPtr<RHIVertexArray>	m_VAO;
 
 		/** Material Info */
-		TWeakPtr<Material> m_HardMaterialReference;
-		bool m_bUseHardMaterialReference{ false };
+		TWeakPtr<Material>	m_HardMaterialReference;
+		bool				m_bUseHardMaterialReference{ false };
+		
+		uint8_t				m_MaterialIndex = Index::None;
 
-		uint8_t						m_MaterialIndex = Index::None;
 		std::variant<TWeakPtr<AStaticMesh>, TWeakPtr<ASkeletalMesh>>	m_OwnerActor;
 
 		/** Mesh Info */
 		MeshStatistics m_MeshStatistics;
-
 
 		/** Model Evaluation */
 		bool m_bIsMeshLazyEvaluated;
@@ -42,12 +44,13 @@ namespace Engine
 		std::vector<uint32_t>	m_LazyIndices;
 
 	public:
+		Mesh() = default;
 		Mesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, bool LazyEvaluateMesh = false);
 		Mesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, bool LazyEvaluateMesh = false);
-		~Mesh();
+		virtual ~Mesh();
 
 		/** Drawing */
-		void Draw(glm::mat4 const& ModelMat) const;
+		virtual void Draw(glm::mat4 const& ModelMat) const;
 		
 		/** Stats */
 		MeshStatistics& GetMeshStatistics(void);
@@ -77,9 +80,9 @@ namespace Engine
 			return m_bEvaluated;
 		}
 
-		void EvaluateMesh(void);
+		virtual void EvaluateMesh(void);
 
-	private:
+	protected:
 		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indicesbs);
 
 		Material* GetMaterialFromStaticMeshSlot(uint8_t Index) const;
@@ -119,4 +122,43 @@ namespace Engine
 	{
 		return m_MeshStatistics;
 	}
+
+	struct VertexBoneData
+	{
+	private:
+		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
+	public:
+		int32_t	BoneIDs[s_MaxBonesPerVertex] = { -1 };
+		float	Weights[s_MaxBonesPerVertex] = { 0.f };
+
+		uint16_t Index = 0;
+
+	public:
+		VertexBoneData() = default;
+
+		void AddBoneData(uint32_t GlobalVertexID, uint32_t BoneID, float Weight);
+	};
+
+	struct SkeletonData
+	{
+		std::vector<VertexBoneData> VertexToBones;
+		std::vector<uint32_t> MeshBaseVertex;
+		std::map<std::string, uint32_t> BoneNameIndexMap;
+	};
+
+	class SkinnedMesh : public Mesh
+	{
+	private:
+		std::vector<VertexBoneData> m_LazyBoneInfluenceData;
+
+	public:
+		SkinnedMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<VertexBoneData>&& BoneData);
+
+	private:
+		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<VertexBoneData> const& BoneData);
+	
+	public:
+		virtual void EvaluateMesh(void) override;
+		virtual void Draw(glm::mat4 const& ModelMat) const override;
+	};
 }

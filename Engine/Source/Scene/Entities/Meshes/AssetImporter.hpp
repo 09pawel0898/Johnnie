@@ -4,6 +4,7 @@
 #include "Renderer/RHI/RHITypes.hpp"
 #include "Utilities/Singleton.hpp"
 #include "Utilities/Delegates.hpp"
+#include "Mesh.hpp"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -15,6 +16,7 @@ namespace Engine
 {
 	class ASkeletalMesh;
 	class Mesh;
+	class SkinnedMesh;
 
 	enum class AssetImporterType : uint8_t
 	{
@@ -74,33 +76,6 @@ namespace Engine
 
 		void AsyncImportModel(std::string_view FilePath) override;
 	};
-	
-	struct VertexBoneData
-	{
-	private:
-		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
-
-	public:
-		struct BoneInlfuenceData
-		{
-			uint32_t BoneID = -1;
-			float Weight;
-		};
-
-		std::array<BoneInlfuenceData, s_MaxBonesPerVertex> BoneInfluenceData;
-
-	public:
-		VertexBoneData() = default;
-
-		void AddBoneData(uint32_t VertID, uint32_t BoneID, float Weight);
-	};
-
-	struct SkeletonData
-	{
-		std::vector<VertexBoneData> VertexToBones;
-		std::vector<uint32_t> MeshBaseVertex;
-		std::map<std::string, uint32_t> BoneNameIndexMap;
-	};
 
 	class SkeletalModelImporter : public AssetImporter
 	{
@@ -123,7 +98,7 @@ namespace Engine
 		void PreprocessMeshes(const aiScene* Scene);
 		void PreprocessSingleMesh(uint16_t Index, const aiMesh* AiMesh);
 		void ParseSingleMesh(uint16_t Index, const aiMesh* AiMesh);
-		TSharedPtr<Mesh> ParseSingleMeshData(const aiMesh* AiMesh);
+		TSharedPtr<SkinnedMesh> ParseSingleMeshData(uint16_t Index, const aiMesh* AiMesh);
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
 		uint32_t GetBoneID(const aiBone* Bone);

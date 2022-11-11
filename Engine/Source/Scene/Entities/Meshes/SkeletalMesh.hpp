@@ -32,7 +32,7 @@ namespace Engine
         std::string m_Directory;
         std::string m_ModelFilePath;
 
-        std::vector<TSharedPtr<Mesh>> m_SubMeshes;
+        std::vector<TSharedPtr<SkinnedMesh>> m_SubMeshes;
 
     public:
         ASkeletalMesh(std::string const& FilePath, OnSkeletalMeshAsyncLoadingFinishedDelegate OnLoadingFinished = OnSkeletalMeshAsyncLoadingFinishedDelegate(), glm::vec3 const& WorldLocation = glm::vec3(0.f, 0.f, 0.f));

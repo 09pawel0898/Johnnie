@@ -55,6 +55,9 @@ namespace Engine::RHI
 				case Float2:	add1DVertexAttribArray(layout, element, 2);	break;
 				case Float3:	add1DVertexAttribArray(layout, element, 3);	break;
 				case Float4:	add1DVertexAttribArray(layout, element, 4);	break;
+				case Float10:	add1DVertexAttribArray(layout, element, 10);break;
+				case Int10:		add1DVertexAttribArray(layout, element, 10);break;
+				case Int4:		add1DVertexAttribArray(layout, element, 4);break;
 
 				default:
 					CheckMsg(false, "Unsupported Element for OpenGL VertexBufferLayout!");
