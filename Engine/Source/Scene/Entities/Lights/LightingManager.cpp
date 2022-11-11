@@ -85,7 +85,7 @@ namespace Engine
     {
         auto pointLightData = GetPointLightData();
 
-        auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_StaticMesh");
+        auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_Mesh");
 
         if (pointLightData.has_value())
         {

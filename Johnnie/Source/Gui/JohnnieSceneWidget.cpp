@@ -20,10 +20,23 @@ WJohnnieSceneWidget::WJohnnieSceneWidget()
 			PrepareStaticMeshSubtab(StaticMesh);
 		}
 	});
+	
+	SceneDelegates::Get()->OnSkeletalMeshLoaded.AddLambda([this](ASkeletalMesh* SkeletalMesh)
+	{
+		if (SkeletalMesh->GetFilePath() != JohnnieGlobals::PlatformModelFilePath)
+		{
+			PrepareSkeletalMeshSubtab(SkeletalMesh);
+		}
+	});
 
 	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath) 
 	{
-		ClearStaticMeshSubtabContent();
+		ClearMeshSubtabContent();
+	});
+	
+	JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath) 
+	{
+		ClearMeshSubtabContent();
 	});
 }
 
@@ -35,7 +48,15 @@ void WJohnnieSceneWidget::OnRenderGui(void)
 	{
 		OnRenderRenderingSubtab();
 		OnRenderLightingSubtab();
-		OnRenderMeshSubtab();
+		
+		if (m_LoadedStaticMesh != nullptr)
+		{
+			OnRenderStaticMeshSubtab();
+		}
+		else if (m_LoadedSkeletalMesh != nullptr)
+		{
+			OnRenderSkeletalMeshSubtab();
+		}
 	}
 	ImGui::End();
 }
@@ -180,10 +201,15 @@ void WJohnnieSceneWidget::OnRenderRenderingSubtab()
 	}
 }
 
-void WJohnnieSceneWidget::OnRenderMeshSubtab()
+void WJohnnieSceneWidget::OnRenderStaticMeshSubtab()
 {
 	if (m_MeshSubtabName.has_value())
 	{
+		if (m_MeshSubtabName.value() != "Static Mesh")
+		{
+			return;
+		}
+
 		if (ImGui::CollapsingHeader(m_MeshSubtabName.value().c_str()))
 		{
 			ImGui::TextUnformatted("Transform");
@@ -244,6 +270,75 @@ void WJohnnieSceneWidget::OnRenderMeshSubtab()
 	}
 }
 
+void WJohnnieSceneWidget::OnRenderSkeletalMeshSubtab()
+{
+	if (m_MeshSubtabName.has_value())
+	{
+		if (m_MeshSubtabName.value() != "Skeletal Mesh")
+		{
+			return;
+		}
+
+		if (ImGui::CollapsingHeader(m_MeshSubtabName.value().c_str()))
+		{
+			ImGui::TextUnformatted("Transform");
+			ImGui::Separator();
+
+			if (ImGui::BeginTable("TransformTable", 3, ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersOuterV))
+			{
+				ImGui::TableNextRow();
+				for (uint16_t columnIdx = 0; columnIdx < 3; ++columnIdx)
+				{
+					ImGui::TableSetColumnIndex(columnIdx);
+
+					if (columnIdx == 0)
+					{
+						ImGui::InputFloat("X", &m_LoadedSkeletalMesh->GetLocation().x);
+					}
+					if (columnIdx == 1)
+					{
+						ImGui::InputFloat("Y", &m_LoadedSkeletalMesh->GetLocation().y);
+					}
+					if (columnIdx == 2)
+					{
+						ImGui::InputFloat("Z", &m_LoadedSkeletalMesh->GetLocation().z);
+					}
+				}
+				ImGui::EndTable();
+			}
+			ImGui::Dummy(ImVec2(0, 1.f));
+
+			static float meshScale;
+			meshScale = m_LoadedSkeletalMesh->GetScale().x;
+
+			ImGui::SliderFloat("Scale", &meshScale, 0.001f, 1.f);
+
+			m_LoadedSkeletalMesh->SetScale(glm::vec3(meshScale));
+
+			ImGui::Dummy(ImVec2(0, 4.f));
+
+			if (m_MaterialSlotWidgets.size() > 0)
+			{
+				std::string materialsHeader = "Materials [" + std::to_string(m_MaterialSlotWidgets.size()) + "]";
+
+				ImGui::Separator();
+				ImGui::Text(materialsHeader.c_str());
+				ImGui::Separator();
+				
+				for (int16_t idx = 0; idx < m_MaterialSlotWidgets.size(); idx++)
+				{
+					std::string slotName = "Slot " + std::to_string(idx);
+					if (ImGui::TreeNode(slotName.c_str()))
+					{
+						m_MaterialSlotWidgets[idx].OnRenderGui();
+						ImGui::TreePop();
+					}
+				}
+			}
+		}
+	}
+}
+
 void WJohnnieSceneWidget::PrepareStaticMeshSubtab(AStaticMesh* StaticMesh)
 {
 	m_MeshSubtabName = "Static Mesh";
@@ -260,15 +355,33 @@ void WJohnnieSceneWidget::PrepareStaticMeshSubtab(AStaticMesh* StaticMesh)
 	}
 }
 
+void WJohnnieSceneWidget::PrepareSkeletalMeshSubtab(ASkeletalMesh* SkeletalMesh)
+{
+	m_MeshSubtabName = "Skeletal Mesh";
+	m_LoadedSkeletalMesh = SkeletalMesh;
+
+	m_MaterialSlotWidgets.clear();
+
+	for (int8_t idx = 0; idx < SkeletalMesh->GetNumMaterials(); ++idx)
+	{
+		if (Material* material = SkeletalMesh->GetMaterialInSlot(idx))
+		{
+			m_MaterialSlotWidgets.emplace_back(MaterialSlotWidget(material));
+		}
+	}
+}
+
 void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)
 {
 	Renderer::Get()->SetWireframeMode(Enabled);
 }
 
-void WJohnnieSceneWidget::ClearStaticMeshSubtabContent(void)
+void WJohnnieSceneWidget::ClearMeshSubtabContent(void)
 {
 	m_MaterialSlotWidgets.clear();
+
 	m_LoadedStaticMesh = nullptr;
+	m_LoadedSkeletalMesh = nullptr;
 }
 
 MaterialSlotWidget::MaterialSlotWidget(Material* MaterialRef)

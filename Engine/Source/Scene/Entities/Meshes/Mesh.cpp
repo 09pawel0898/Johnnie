@@ -61,7 +61,7 @@ namespace Engine
 		else
 		{
 			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
-				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_StaticMesh");
+				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_Mesh");
 		}
 	}
 
@@ -195,7 +195,7 @@ namespace Engine
 		RHIVertexBufferElement aBoneID		= RHIVertexBufferElement(RHIElementType::Int4, "aBoneIDs");
 		RHIVertexBufferElement aWeight		= RHIVertexBufferElement(RHIElementType::Float4, "aWeights");
 		 
-		auto VBO = RHIVertexBuffer::Create(AnimatedVertices.data(), AnimatedVertices.size() * sizeof(RHIAnimatedVertex));
+		auto VBO = RHIVertexBuffer::Create(AnimatedVertices.data(), (uint32_t)(AnimatedVertices.size() * sizeof(RHIAnimatedVertex)));
 		  
 		RHIVertexBufferLayout Layout = { aPosition, aNormal, aTexUV, aTangent,aBoneID, aWeight };
 		VBO->SetLayout(MakeUnique< RHIVertexBufferLayout>(MoveTemp(Layout)));
@@ -226,7 +226,7 @@ namespace Engine
 		auto renderWithAssignedMaterial =
 			[this, &shaderManager, &ModelMat](Material* Material)
 		{
-			auto& meshShader = shaderManager.GetResource("Shader_SkinnedMeshBoneInfluence");
+			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
 			if (!Renderer::Get()->bIsRenderingShadowMap)
 			{

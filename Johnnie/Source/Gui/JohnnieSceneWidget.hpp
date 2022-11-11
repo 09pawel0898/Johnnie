@@ -51,6 +51,8 @@ private:
 	bool m_bPointLightMeshVisible{ false };
 	
 	AStaticMesh* m_LoadedStaticMesh{ nullptr };
+	ASkeletalMesh* m_LoadedSkeletalMesh{ nullptr };
+
 	std::weak_ptr<ADirectionalLight>	m_ManagedDirectionalLight;
 	ImColor								m_DirectionalLightColor;
 	float m_DirectionalLightAngle{ 0.f };
@@ -75,10 +77,13 @@ public:
 private:
 	void OnRenderLightingSubtab();
 	void OnRenderRenderingSubtab();
-	void OnRenderMeshSubtab();
+	void OnRenderStaticMeshSubtab();
+	void OnRenderSkeletalMeshSubtab();
 
 	void PrepareStaticMeshSubtab(AStaticMesh* StaticMesh);
-	void ClearStaticMeshSubtabContent(void);
+	void PrepareSkeletalMeshSubtab(ASkeletalMesh* SkeletalMesh);
+
+	void ClearMeshSubtabContent(void);
 
 	void SetRendererWireframemode(bool Enabled);
 };

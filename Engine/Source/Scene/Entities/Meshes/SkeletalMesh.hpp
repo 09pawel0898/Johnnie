@@ -66,5 +66,7 @@ namespace Engine
         Material* GetMaterialInSlot(uint8_t SlotIndex);
         size_t GetNumMaterials(void) const;
         void SetMaterialForSlot(uint8_t SlotIndex, TSharedPtr<Material> Material);
+
+        std::string const& GetFilePath(void) const;
     };
 }

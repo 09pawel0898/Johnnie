@@ -13,8 +13,6 @@ out vec3 Normal;
 out vec3 FragWorldPos;
 out mat3 TBN;
 out vec4 ShadowCoord;
-flat out ivec4 BoneIDs;
-out vec4 Weights;
 
 uniform mat4 uProjMat;
 uniform mat4 uViewMat;
@@ -100,9 +98,6 @@ in vec3 Normal;
 in vec3 FragWorldPos;
 in mat3 TBN; 
 in vec4 ShadowCoord;
-
-flat in ivec4 BoneIDs;
-in vec4 Weights;
 
 //uniform vec3 uFogColor;
 

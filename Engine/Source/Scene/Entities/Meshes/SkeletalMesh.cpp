@@ -171,6 +171,11 @@ namespace Engine
 		m_Materials[SlotIndex] = Material;
 	}
 
+	std::string const& ASkeletalMesh::GetFilePath(void) const
+	{
+		return m_ModelFilePath;
+	}
+
 	size_t ASkeletalMesh::GetNumMaterials(void) const
 	{
 		return m_Materials.size();
