@@ -13,7 +13,7 @@
 
 namespace Engine::RHI
 {
-	OpenGLTexture2D::OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType)
+	OpenGLTexture2D::OpenGLTexture2D(std::string_view FilePath, RHIMapTextureType TextureType)
 		:	RHITexture2D(FilePath,TextureType)
 	{
 		if (!LoadTextureFromFile())
@@ -22,7 +22,7 @@ namespace Engine::RHI
 		}
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType)
+	OpenGLTexture2D::OpenGLTexture2D(const void* PixelsData, uint32_t Width, uint32_t Height, RHIMapTextureType TextureType)
 		:	RHITexture2D(PixelsData, TextureType,Width, Height)
 	{
 		CreateTextureFromPixelData(PixelsData, Width, Height);

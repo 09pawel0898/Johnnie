@@ -35,15 +35,20 @@ namespace Engine
 		return m_bIsModelImported;
 	}
 
-	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHITextureType RHITextureType)
+	std::string const& AssetImporter::GetRootDirectory(void)
 	{
-		static std::unordered_map<RHI::RHITextureType, aiTextureType> map =
+		return m_RootDirectory;
+	}
+
+	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHIMapTextureType RHIMapTextureType)
+	{
+		static std::unordered_map<RHI::RHIMapTextureType, aiTextureType> map =
 		{
-			{RHI::RHITextureType::Diffuse,	aiTextureType_DIFFUSE	},
-			{RHI::RHITextureType::Specular,	aiTextureType_SPECULAR	},
-			{RHI::RHITextureType::Normal,	aiTextureType_NORMALS	},
+			{RHI::RHIMapTextureType::DiffuseMap,	aiTextureType_DIFFUSE	},
+			{RHI::RHIMapTextureType::SpecularMap,	aiTextureType_SPECULAR	},
+			{RHI::RHIMapTextureType::NormalMap,	aiTextureType_NORMALS	},
 		};
-		return map[RHITextureType];
+		return map[RHIMapTextureType];
 	}
 
 	StaticModelImporter::StaticModelImporter()
@@ -70,6 +75,8 @@ namespace Engine
 						| aiProcess_JoinIdenticalVertices
 						| aiProcess_CalcTangentSpace;
 
+		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
+
 		m_ImportModelFuture = std::async(	std::launch::async, 
 											std::bind(&SkeletalModelImporter::AsyncImportModel_Internal, this, std::placeholders::_1,std::placeholders::_2),
 											FilePath,
@@ -85,7 +92,7 @@ namespace Engine
 			LOG(Assimp, Error, "{0}", m_AssimpImporter.GetErrorString());
 			return;
 		}
-		//m_Directory = FilePath.substr(0, FilePath.find_last_of('\\'));
+
 		if (TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock())
 		{
 			SkeletalMesh->InitializeMaterialSlots(Scene->mNumMaterials);
@@ -192,8 +199,8 @@ namespace Engine
 
 			if (AiMesh->mNormals)
 			{
-				aiVector3D const& Normal = AiMesh->mNormals[i];
-				Vertex.Normal = { Normal.x, Normal.y, Normal.z };
+				aiVector3D const& NormalMap = AiMesh->mNormals[i];
+				Vertex.NormalMap = { NormalMap.x, NormalMap.y, NormalMap.z };
 			}
 
 			if (AiMesh->mTangents)

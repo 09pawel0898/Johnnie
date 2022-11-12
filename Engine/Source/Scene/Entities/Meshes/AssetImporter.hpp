@@ -45,6 +45,8 @@ namespace Engine
 	class AssetImporter
 	{
 	protected:
+		std::string			m_RootDirectory;
+
 		Assimp::Importer	m_AssimpImporter;
 		std::future<void>	m_ImportModelFuture;
 
@@ -65,9 +67,10 @@ namespace Engine
 
 		bool HasEmbededTextures(void);
 		bool IsModelAlreadyLoaded(void);
+		std::string const& GetRootDirectory(void);
 	};
 
-	class StaticModelImporter : public AssetImporter
+	class StaticModelImporter final : public AssetImporter
 	{
 	private:
 
@@ -77,7 +80,7 @@ namespace Engine
 		void AsyncImportModel(std::string_view FilePath) override;
 	};
 
-	class SkeletalModelImporter : public AssetImporter
+	class SkeletalModelImporter final : public AssetImporter
 	{
 	private:
 		TWeakPtr<ASkeletalMesh>	m_SkeletalMesh;
@@ -106,6 +109,6 @@ namespace Engine
 	};
 
 
-	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHITextureType RHITextureType);
+	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHIMapTextureType RHIMapTextureType);
 }
 

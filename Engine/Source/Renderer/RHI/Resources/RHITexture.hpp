@@ -8,16 +8,16 @@ namespace Engine::RHI
 	class RHITexture : public RHIResource
 	{
 	protected:
-		RHITextureType m_TextureType;
+		RHIMapTextureType m_TextureType;
 		std::string_view m_FilePath;
 		int32_t m_Width;
 		int32_t m_Height;
 
-		RHITexture(std::string_view FilePath, RHITextureType TextureType)
+		RHITexture(std::string_view FilePath, RHIMapTextureType TextureType)
 			:	m_FilePath(FilePath), m_TextureType(TextureType)
 		{}
 		
-		RHITexture(const void* PixelsData, RHITextureType TextureType, uint32_t Width, uint32_t Height)
+		RHITexture(const void* PixelsData, RHIMapTextureType TextureType, uint32_t Width, uint32_t Height)
 			:	m_TextureType(TextureType), m_Width(Width), m_Height(Height)
 		{}
 	
@@ -35,8 +35,8 @@ namespace Engine::RHI
 		int32_t GetWidth(void) const			{	return m_Width;			}
 		int32_t GetHeight(void) const			{	return m_Height;		}
 
-		RHITextureType GetType(void) const		{	return m_TextureType;	}
-		void SetType(RHITextureType Type)		{ m_TextureType = Type;		}	
+		RHIMapTextureType GetType(void) const		{	return m_TextureType;	}
+		void SetType(RHIMapTextureType Type)		{ m_TextureType = Type;		}	
 	public:
 		virtual void Bind(uint8_t TextureSlotID) = 0;
 		virtual void Unbind(void) = 0;
@@ -48,19 +48,19 @@ namespace Engine::RHI
 	class RHITexture2D : public RHITexture
 	{
 	public:
-		RHITexture2D(std::string_view FilePath, RHITextureType TextureType)
+		RHITexture2D(std::string_view FilePath, RHIMapTextureType TextureType)
 			:	RHITexture(FilePath, TextureType)
 		{}
 		
-		RHITexture2D(const void* PixelsData, RHITextureType TextureType, uint32_t Width, uint32_t Height)
+		RHITexture2D(const void* PixelsData, RHIMapTextureType TextureType, uint32_t Width, uint32_t Height)
 			:	RHITexture(PixelsData, TextureType, Width,Height)
 		{}
 
 	public:
 		[[nodiscard]]
-		static TUniquePtr<RHITexture2D> Create(std::string_view FilePath, RHITextureType TextureType = RHITextureType::BasicTexture2D);
+		static TUniquePtr<RHITexture2D> Create(std::string_view FilePath, RHIMapTextureType TextureType = RHIMapTextureType::BasicTexture2D);
 		
 		[[nodiscard]]
-		static TUniquePtr<RHITexture2D> Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType = RHITextureType::BasicTexture2D);
+		static TUniquePtr<RHITexture2D> Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHIMapTextureType TextureType = RHIMapTextureType::BasicTexture2D);
 	};
 }

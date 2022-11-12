@@ -19,7 +19,7 @@ private:
 	ImVec4 m_BaseColor{ ImVec4() };
 
 	ImGui::FileBrowser m_FileBrowser{};
-	RHITextureType m_TextureTypeFileBrowserOpenedFor = RHITextureType::BasicTexture2D;
+	RHIMapTextureType m_TextureTypeFileBrowserOpenedFor = RHIMapTextureType::BasicTexture2D;
 
 public:
 	MaterialSlotWidget(Material* MaterialRef);

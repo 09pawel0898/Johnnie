@@ -143,10 +143,10 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				ImGui::SliderFloat("Ambient", &lightData.Ambient, 0.0f, 1.0f);
 
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Diffuse", &lightData.Diffuse, 0.0f, 1.0f);
+				ImGui::SliderFloat("Diffuse", &lightData.DiffuseMap, 0.0f, 1.0f);
 
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
+				ImGui::SliderFloat("Specular", &lightData.SpecularMap, 0.0f, 1.0f);
 
 				ImGui::Separator();
 			}
@@ -178,10 +178,10 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 					ImGuiColorEditFlags_NoSmallPreview);
 				
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Diffuse", &lightData.Diffuse, 0.0f, 1.0f);
+				ImGui::SliderFloat("Diffuse", &lightData.DiffuseMap, 0.0f, 1.0f);
 				
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
+				ImGui::SliderFloat("Specular", &lightData.SpecularMap, 0.0f, 1.0f);
 				
 				ImGui::Separator();
 			}
@@ -404,7 +404,7 @@ void MaterialSlotWidget::RefreshMaterial(void)
 								uniform.BaseColor.y, 
 								uniform.BaseColor.z, 1.0f);
 		
-		m_Specular = (uniform.Specular.r + uniform.Specular.g + uniform.Specular.b) / 3.f;
+		m_Specular = (uniform.SpecularMap.r + uniform.SpecularMap.g + uniform.SpecularMap.b) / 3.f;
 		m_Shininess = (int32_t)std::log2(uniform.Shiness);
 	}
 }
@@ -452,7 +452,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					if (ImGui::Button("Load Diffuse Map", ImVec2(120, 20)))
 					{
 						m_FileBrowser.Open();
-						m_TextureTypeFileBrowserOpenedFor = RHITextureType::Diffuse;
+						m_TextureTypeFileBrowserOpenedFor = RHIMapTextureType::DiffuseMap;
 					}
 					ImGui::Dummy(ImVec2(0.f, 23.f));
 
@@ -512,7 +512,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					if (ImGui::Button("Load Specular Map", ImVec2(133, 20)))
 					{
 						m_FileBrowser.Open();
-						m_TextureTypeFileBrowserOpenedFor = RHITextureType::Specular;
+						m_TextureTypeFileBrowserOpenedFor = RHIMapTextureType::SpecularMap;
 					}
 					ImGui::Dummy(ImVec2(0.f, 23.f));
 
@@ -571,7 +571,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					if (ImGui::Button("Load Normal Map", ImVec2(133, 20)))
 					{
 						m_FileBrowser.Open();
-						m_TextureTypeFileBrowserOpenedFor = RHITextureType::Normal;
+						m_TextureTypeFileBrowserOpenedFor = RHIMapTextureType::NormalMap;
 					}
 					ImGui::Dummy(ImVec2(0.f, 23.f));
 
@@ -600,19 +600,19 @@ void MaterialSlotWidget::OnRenderGui(void)
 		
 		auto loadedTexture = Renderer::Get()->GetTexture2DManager().GetResource(selectedFileName);
 
-		if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Diffuse)
+		if (m_TextureTypeFileBrowserOpenedFor == RHIMapTextureType::DiffuseMap)
 		{
-			loadedTexture->SetType(RHITextureType::Diffuse);
+			loadedTexture->SetType(RHIMapTextureType::DiffuseMap);
 			m_MaterialRef->SetDiffuseTexture(std::move(loadedTexture));
 		}
-		else if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Specular)
+		else if (m_TextureTypeFileBrowserOpenedFor == RHIMapTextureType::SpecularMap)
 		{
-			loadedTexture->SetType(RHITextureType::Specular);
+			loadedTexture->SetType(RHIMapTextureType::SpecularMap);
 			m_MaterialRef->SetSpecularTexture(std::move(loadedTexture));
 		}
-		else if (m_TextureTypeFileBrowserOpenedFor == RHITextureType::Normal)
+		else if (m_TextureTypeFileBrowserOpenedFor == RHIMapTextureType::NormalMap)
 		{
-			loadedTexture->SetType(RHITextureType::Normal);
+			loadedTexture->SetType(RHIMapTextureType::NormalMap);
 			m_MaterialRef->SetNormalTexture(std::move(loadedTexture));
 		}
 

@@ -15,7 +15,7 @@ namespace Engine::RHI
 	struct RHIVertex
 	{
 		glm::vec3 Position;
-		glm::vec3 Normal;
+		glm::vec3 NormalMap;
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 	};
@@ -23,7 +23,7 @@ namespace Engine::RHI
 	struct RHIAnimatedVertex
 	{
 		glm::vec3 Position;
-		glm::vec3 Normal;
+		glm::vec3 NormalMap;
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 
@@ -41,13 +41,13 @@ namespace Engine::RHI
 		BGRA
 	};
 
-	enum class RHITextureType : uint8_t
+	enum class RHIMapTextureType : uint8_t
 	{
 		BasicTexture2D = 0,
-		Diffuse,
-		Specular,
-		Normal
+		DiffuseMap,
+		SpecularMap,
+		NormalMap
 	};
 
-	std::string GetUniformNameByTextureType(RHITextureType TextureType);
+	std::string GetUniformNameByTextureType(RHIMapTextureType TextureType);
 }

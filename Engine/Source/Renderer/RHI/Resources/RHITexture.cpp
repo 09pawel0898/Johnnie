@@ -7,7 +7,7 @@
 
 namespace Engine::RHI
 {
-	TUniquePtr<RHITexture2D> RHITexture2D::Create(std::string_view FilePath, RHITextureType TextureType)
+	TUniquePtr<RHITexture2D> RHITexture2D::Create(std::string_view FilePath, RHIMapTextureType TextureType)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{
@@ -16,7 +16,7 @@ namespace Engine::RHI
 		return nullptr;
 	}
 
-	TUniquePtr<RHITexture2D> RHITexture2D::Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType)
+	TUniquePtr<RHITexture2D> RHITexture2D::Create(const void* PixelsData, uint32_t Width, uint32_t Height, RHIMapTextureType TextureType)
 	{
 		switch (Renderer::Get()->GetApiType())
 		{

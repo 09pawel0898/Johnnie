@@ -101,7 +101,7 @@ namespace Engine
             if (Mesh_->mNormals)
             {
                 aiVector3D const& normal = Mesh_->mNormals[i];
-                vertex.Normal = { normal.x, normal.y, normal.z };
+                vertex.NormalMap = { normal.x, normal.y, normal.z };
             }
             
             if (Mesh_->mTangents)
@@ -195,9 +195,9 @@ namespace Engine
         {
             std::vector<TSharedPtr<RHITexture2D>> materialTextures;
 
-            std::vector<TSharedPtr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHITextureType::Diffuse);
-            std::vector<TSharedPtr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHITextureType::Specular);
-            std::vector<TSharedPtr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHITextureType::Normal);
+            std::vector<TSharedPtr<RHITexture2D>> diffuseMaps  = LoadMaterialTextures(Material_, RHIMapTextureType::DiffuseMap);
+            std::vector<TSharedPtr<RHITexture2D>> specularMaps = LoadMaterialTextures(Material_, RHIMapTextureType::SpecularMap);
+            std::vector<TSharedPtr<RHITexture2D>> normalMaps   = LoadMaterialTextures(Material_, RHIMapTextureType::NormalMap);
                 
             materialTextures.insert(materialTextures.end(),     std::make_move_iterator(diffuseMaps.begin()),   std::make_move_iterator(diffuseMaps.end()));
             materialTextures.insert(materialTextures.end(),     std::make_move_iterator(specularMaps.begin()),  std::make_move_iterator(specularMaps.end()));
@@ -214,7 +214,7 @@ namespace Engine
         }
     }
     
-    std::vector<TSharedPtr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHITextureType Type)
+    std::vector<TSharedPtr<RHITexture2D>> AStaticMesh::LoadMaterialTextures(aiMaterial* Material, RHIMapTextureType Type)
     {
         std::vector<TSharedPtr<RHITexture2D>> textures;
         

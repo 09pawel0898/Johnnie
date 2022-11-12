@@ -25,14 +25,14 @@ namespace Engine::RHI
 		return RHIElementSizes.at(ElementType);
 	}
 
-	std::string GetUniformNameByTextureType(RHITextureType TextureType)
+	std::string GetUniformNameByTextureType(RHIMapTextureType TextureType)
 	{
-		static std::unordered_map<RHITextureType, std::string> RHITextureUniformNames =
+		static std::unordered_map<RHIMapTextureType, std::string> RHITextureUniformNames =
 		{
-			{RHITextureType::BasicTexture2D,	"uTexture"},
-			{RHITextureType::Diffuse,			"uMaterial.TextureDiffuse"},
-			{RHITextureType::Specular,			"uMaterial.TextureSpecular"},
-			{RHITextureType::Normal,			"uMaterial.TextureNormalMap"}
+			{RHIMapTextureType::BasicTexture2D,	"uTexture"},
+			{RHIMapTextureType::DiffuseMap,			"uMaterial.TextureDiffuse"},
+			{RHIMapTextureType::SpecularMap,			"uMaterial.TextureSpecular"},
+			{RHIMapTextureType::NormalMap,			"uMaterial.TextureNormalMap"}
 		};
 		return RHITextureUniformNames[TextureType];
 	}
@@ -41,7 +41,7 @@ namespace Engine::RHI
 	{
 		Position	= Rhs.Position;
 		Tangent		= Rhs.Tangent;
-		Normal		= Rhs.Normal;
+		NormalMap		= Rhs.NormalMap;
 		TexUV		= Rhs.TexUV;
 
 		return *this;

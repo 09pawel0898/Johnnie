@@ -16,8 +16,8 @@ namespace Engine
 		glm::vec3 WorldLocation;
 
 		float Ambient = 0.5f;
-		float Diffuse = 1.0f;
-		float Specular = 0.75f;
+		float DiffuseMap = 1.0f;
+		float SpecularMap = 0.75f;
 		
 		float Constant = 1.f;
 		float Linear = 0.09f;

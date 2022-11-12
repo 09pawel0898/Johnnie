@@ -66,9 +66,9 @@ namespace Engine
 		return false;
 	}
 
-	void Material::SetSpecular(glm::vec3 Specular)
+	void Material::SetSpecular(glm::vec3 SpecularMap)
 	{
-		m_Uniform.Specular = Specular;
+		m_Uniform.SpecularMap = SpecularMap;
 		m_Uniform.UseSpecularMap = false;
 	}
 
@@ -87,17 +87,17 @@ namespace Engine
 		return m_Uniform.IsEmmisive;
 	}
 
-	void Material::SetTextureByType(RHITextureType TextureType, TSharedPtr<RHITexture2D> Texture)
+	void Material::SetTextureByType(RHIMapTextureType TextureType, TSharedPtr<RHITexture2D> Texture)
 	{
-		if (TextureType == RHITextureType::Diffuse)
+		if (TextureType == RHIMapTextureType::DiffuseMap)
 		{
 			SetDiffuseTexture(Texture);
 		}
-		else if (TextureType == RHITextureType::Specular)
+		else if (TextureType == RHIMapTextureType::SpecularMap)
 		{
 			SetSpecularTexture(Texture);
 		}
-		else if (TextureType == RHITextureType::Normal)
+		else if (TextureType == RHIMapTextureType::NormalMap)
 		{
 			SetNormalTexture(Texture);
 		}
@@ -111,7 +111,7 @@ namespace Engine
 		if (!IsMaterialEmissive())
 		{
 			// Setting material uniform parameters //
-			Shader->SetFloat3("uMaterial.Specular", m_Uniform.Specular);
+			Shader->SetFloat3("uMaterial.Specular", m_Uniform.SpecularMap);
 			Shader->SetFloat("uMaterial.Shiness",	m_Uniform.Shiness);
 
 			Shader->SetInt("uMaterial.UseDiffuseMap",	(int32_t)m_Uniform.UseDiffuseMap);

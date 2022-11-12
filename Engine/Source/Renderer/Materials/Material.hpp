@@ -27,7 +27,7 @@ namespace Engine
 		glm::vec3 BaseColor{ 0.47f,0.47f,0.47f };
 		bool UseDiffuseMap{ false };
 
-		glm::vec3 Specular{ 0.08f, 0.08f, 0.08f };
+		glm::vec3 SpecularMap{ 0.08f, 0.08f, 0.08f };
 		bool UseSpecularMap{ false };
 
 		bool UseNormalMap{ false };
@@ -38,8 +38,8 @@ namespace Engine
 
 		MaterialUniform() = default;
 
-		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& Specular, float Shiness)
-			:	BaseColor(BaseColor), Specular(Specular), Shiness(Shiness)
+		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& SpecularMap, float Shiness)
+			:	BaseColor(BaseColor), SpecularMap(SpecularMap), Shiness(Shiness)
 		{}
 	};
 
@@ -69,7 +69,7 @@ namespace Engine
 		void SetDiffuseTexture(TSharedPtr<RHITexture2D> DiffuseMapTexture);
 		bool SetUseDiffuseTexture(bool Use);
 
-		void SetSpecular(glm::vec3 Specular);
+		void SetSpecular(glm::vec3 SpecularMap);
 		void SetSpecularTexture(TSharedPtr<RHITexture2D> SpecularTexture);
 		bool SetUseSpecularTexture(bool Use);
 
@@ -81,7 +81,7 @@ namespace Engine
 		void SetMaterialEmissive(bool IsMaterialEmissive);
 		bool IsMaterialEmissive(void) const;
 
-		void SetTextureByType(RHITextureType TextureType, TSharedPtr<RHITexture2D> Texture);
+		void SetTextureByType(RHIMapTextureType TextureType, TSharedPtr<RHITexture2D> Texture);
 
 	public:
 		MaterialUniform const& GetMaterialUniform(void) const;

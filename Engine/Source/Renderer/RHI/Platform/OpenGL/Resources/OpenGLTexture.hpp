@@ -10,8 +10,8 @@ namespace Engine::RHI
 		uint32_t m_ID = 0;
 
 	public:
-		OpenGLTexture2D(std::string_view FilePath, RHITextureType TextureType);
-		OpenGLTexture2D(const void* PixelsData, uint32_t Width, uint32_t Height, RHITextureType TextureType);
+		OpenGLTexture2D(std::string_view FilePath, RHIMapTextureType TextureType);
+		OpenGLTexture2D(const void* PixelsData, uint32_t Width, uint32_t Height, RHIMapTextureType TextureType);
 
 		~OpenGLTexture2D();
 

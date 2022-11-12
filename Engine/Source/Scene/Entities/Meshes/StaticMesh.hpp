@@ -56,7 +56,7 @@ namespace Engine
         TSharedPtr<Mesh> ProcessMesh(aiMesh* Mesh_, const aiScene* Scene);
         void ProcessMaterial(aiMaterial* Material_, uint32_t MaterialIdx);
 
-        std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHITextureType Type);
+        std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(aiMaterial* Material, RHIMapTextureType Type);
 
     public:
         AStaticMesh(std::string const& FilePath, OnStaticMeshAsyncLoadingFinishedDelegate OnLoadingFinished = OnStaticMeshAsyncLoadingFinishedDelegate(), glm::vec3 const& WorldLocation = glm::vec3(0.f,0.f,0.f));
