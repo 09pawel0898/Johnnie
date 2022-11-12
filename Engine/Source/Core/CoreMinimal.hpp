@@ -32,6 +32,8 @@ template<class T> T& ClassMacro_Impl(const T* t);
 /** Should define console log sink by default */
 #define PROFILE_RESULT_LOG 0
 
+//#define DEBUG_MODEL_IMPORTER
+
 namespace Engine
 {
     struct ID

@@ -20,7 +20,7 @@ namespace Engine::RHI
 		glm::vec3 Tangent;
 	};
 	
-	struct RHIAnimatedVertex
+	struct RHISkinnedVertex
 	{
 		glm::vec3 Position;
 		glm::vec3 NormalMap;
@@ -30,7 +30,9 @@ namespace Engine::RHI
 		int32_t	BoneIDs[4] = { 0 };
 		float	Weights[4] = { 0.f };
 
-		RHIAnimatedVertex& operator=(RHIVertex const& Rhs);
+		explicit RHISkinnedVertex(RHIVertex const& Vertex);
+
+		RHISkinnedVertex& operator=(RHIVertex const& Rhs);
 	};
 
 	enum class RHIInternalTextureFormat : uint8_t

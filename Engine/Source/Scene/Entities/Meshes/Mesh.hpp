@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Core/CoreMinimal.hpp"
+
 #include "Renderer/RHI/RHITypes.hpp"
 #include "Renderer/Materials/Material.hpp"
 #include "Renderer/RendererStatistics.hpp"
+
+#include "SkeletalMeshHelpers.hpp"
 
 #include <variant>
 #include <map>
@@ -50,7 +53,7 @@ namespace Engine
 		virtual ~Mesh();
 
 		/** Drawing */
-		virtual void Draw(glm::mat4 const& ModelMat) const;
+		void Draw(glm::mat4 const& ModelMat) const;
 		
 		/** Stats */
 		MeshStatistics& GetMeshStatistics(void);
@@ -123,42 +126,18 @@ namespace Engine
 		return m_MeshStatistics;
 	}
 
-	struct VertexBoneData
-	{
-	private:
-		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
-	public:
-		int32_t	BoneIDs[s_MaxBonesPerVertex] = { 0 };
-		float	Weights[s_MaxBonesPerVertex] = { 0.f };
-
-		uint16_t Index = 0;
-
-	public:
-		VertexBoneData() = default;
-
-		void AddBoneData(uint32_t GlobalVertexID, uint32_t BoneID, float Weight);
-	};
-
-	struct SkeletonData
-	{
-		std::vector<VertexBoneData> VertexToBones;
-		std::vector<uint32_t> MeshBaseVertex;
-		std::map<std::string, uint32_t> BoneNameIndexMap;
-	};
-
 	class SkinnedMesh : public Mesh
 	{
 	private:
-		std::vector<VertexBoneData> m_LazyBoneInfluenceData;
+		std::vector<VertexBoneInfluenceData> m_LazyBoneInfluenceData;
 
 	public:
-		SkinnedMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<VertexBoneData>&& BoneData);
+		SkinnedMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<VertexBoneInfluenceData>&& BoneData);
 
 	private:
-		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<VertexBoneData> const& BoneData);
+		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<VertexBoneInfluenceData> const& BoneData);
 	
 	public:
 		virtual void EvaluateMesh(void) override;
-		virtual void Draw(glm::mat4 const& ModelMat) const override;
 	};
 }

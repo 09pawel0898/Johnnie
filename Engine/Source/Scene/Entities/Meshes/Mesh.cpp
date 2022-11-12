@@ -162,7 +162,7 @@ namespace Engine
 		m_HardMaterialReference = MoveTemp(Material);
 	}
 
-	SkinnedMesh::SkinnedMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<VertexBoneData>&& BoneData)
+	SkinnedMesh::SkinnedMesh(std::vector<RHIVertex>&& Vertices, std::vector<uint32_t>&& Indices, std::vector<VertexBoneInfluenceData>&& BoneData)
 	{
 		m_bIsMeshLazyEvaluated = true;
 
@@ -171,19 +171,18 @@ namespace Engine
 		m_LazyBoneInfluenceData = MoveTemp(BoneData);
 	}
 
-	void SkinnedMesh::SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<VertexBoneData> const& BoneData)
+	void SkinnedMesh::SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indices, std::vector<VertexBoneInfluenceData> const& BoneData)
 	{ 
-		std::vector<RHIAnimatedVertex> AnimatedVertices;
+		std::vector<RHISkinnedVertex> AnimatedVertices;
 
 		for (uint32_t idx = 0 ; idx < Vertices.size() ;idx++)
 		{
-			RHIAnimatedVertex v;
-			v = Vertices[idx]; 
+			RHISkinnedVertex SkinnedVertex = RHISkinnedVertex(Vertices[idx]);
 			 
-			std::memcpy(&v.BoneIDs, BoneData[idx].BoneIDs, sizeof(int32_t) * 4);
-			std::memcpy(&v.Weights, BoneData[idx].Weights, sizeof(float) * 4);
+			std::memcpy(&SkinnedVertex.BoneIDs, BoneData[idx].BoneIDs, sizeof(int32_t) * 4);
+			std::memcpy(&SkinnedVertex.Weights, BoneData[idx].Weights, sizeof(float) * 4);
 		
-			AnimatedVertices.emplace_back(MoveTemp(v));
+			AnimatedVertices.emplace_back(MoveTemp(SkinnedVertex));
 		}  
 		    
 		m_VAO = RHIVertexArray::Create();
@@ -195,10 +194,11 @@ namespace Engine
 		RHIVertexBufferElement aBoneID		= RHIVertexBufferElement(RHIElementType::Int4, "aBoneIDs");
 		RHIVertexBufferElement aWeight		= RHIVertexBufferElement(RHIElementType::Float4, "aWeights");
 		 
-		auto VBO = RHIVertexBuffer::Create(AnimatedVertices.data(), (uint32_t)(AnimatedVertices.size() * sizeof(RHIAnimatedVertex)));
+		auto VBO = RHIVertexBuffer::Create(	AnimatedVertices.data(), 
+											(uint32_t)(AnimatedVertices.size() * sizeof(RHISkinnedVertex)));
 		  
 		RHIVertexBufferLayout Layout = { aPosition, aNormal, aTexUV, aTangent,aBoneID, aWeight };
-		VBO->SetLayout(MakeUnique< RHIVertexBufferLayout>(MoveTemp(Layout)));
+		VBO->SetLayout(MakeUnique<RHIVertexBufferLayout>(MoveTemp(Layout)));
 
 		TUniquePtr<RHIIndexBuffer> IBO = RHIIndexBuffer::Create(Indices);
 
@@ -211,54 +211,12 @@ namespace Engine
 		if (IsMeshLazyEvaluated() && !IsManualEvaluationPerformed())
 		{
 			SetupMesh(m_LazyVertices, m_LazyIndices,m_LazyBoneInfluenceData);
+
 			m_LazyVertices.clear();
 			m_LazyIndices.clear();
 			m_LazyBoneInfluenceData.clear();
 
 			m_bEvaluated = true;
 		}
-	}
-
-	void SkinnedMesh::Draw(glm::mat4 const& ModelMat) const
-	{
-		auto& shaderManager = Renderer::Get()->GetShaderManager();
-
-		auto renderWithAssignedMaterial =
-			[this, &shaderManager, &ModelMat](Material* Material)
-		{
-			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
-
-			if (!Renderer::Get()->bIsRenderingShadowMap)
-			{
-				Material->Bind(meshShader);
-			}
-			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
-		};
-
-		if (m_bUseHardMaterialReference)
-		{
-			if (auto hardMaterialRef = m_HardMaterialReference.lock())
-			{
-				renderWithAssignedMaterial(hardMaterialRef.get());
-			}
-		}
-		else if (auto staticMeshSlotMaterial = GetMaterialFromStaticMeshSlot(m_MaterialIndex))
-		{
-			renderWithAssignedMaterial(staticMeshSlotMaterial);
-		}
-		else
-		{
-			auto& meshShader = GetShaderForMesh(false);
-
-			if (!Renderer::Get()->bIsRenderingShadowMap)
-			{
-				DefaultMaterials::BasicWhite->Bind(meshShader);
-			}
-			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
-		}
-
-		RendererStatistics& rendererStats = Renderer::GetMutableRendererStats();
-		rendererStats.MeshesCount++;
-		rendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
 	}
 }

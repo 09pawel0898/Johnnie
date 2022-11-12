@@ -57,6 +57,12 @@ namespace Engine
 	public:
 		AssetImporter() = default;
 
+		AssetImporter(AssetImporter const&) = delete;
+		AssetImporter(AssetImporter&&) = delete;
+
+		AssetImporter& operator=(AssetImporter const&) = delete;
+		AssetImporter& operator=(AssetImporter&&) = delete;
+
 	public:
 		Assimp::Importer& GetImporter(void);
 		Assimp::Importer const& GetImporter(void) const;
@@ -67,6 +73,7 @@ namespace Engine
 
 		bool HasEmbededTextures(void);
 		bool IsModelAlreadyLoaded(void);
+
 		std::string const& GetRootDirectory(void);
 	};
 
@@ -86,10 +93,10 @@ namespace Engine
 		TWeakPtr<ASkeletalMesh>	m_SkeletalMesh;
 		
 		ModelView				m_ModelView;
-		SkeletonData			m_SkeletonData;
+		ModelSkeletonData		m_SkeletonData;
 
 	public:
-		SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
+		explicit SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
 		void AsyncImportModel(std::string_view FilePath) override;
 
@@ -97,15 +104,19 @@ namespace Engine
 		void AsyncImportModel_Internal(std::string_view FilePath, uint32_t Flags);
 
 		void ParseScene(const aiScene* Scene);
-		void ParseMeshes(const aiScene* Scene);
+
+
 		void PreprocessMeshes(const aiScene* Scene);
 		void PreprocessSingleMesh(uint16_t Index, const aiMesh* AiMesh);
+
+		void ParseMeshes(const aiScene* Scene);
 		void ParseSingleMesh(uint16_t Index, const aiMesh* AiMesh);
 		TSharedPtr<SkinnedMesh> ParseSingleMeshData(uint16_t Index, const aiMesh* AiMesh);
+
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
+
 		uint32_t GetBoneID(const aiBone* Bone);
-	
 	};
 
 

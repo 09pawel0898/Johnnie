@@ -37,11 +37,19 @@ namespace Engine::RHI
 		return RHITextureUniformNames[TextureType];
 	}
 
-	RHIAnimatedVertex& RHIAnimatedVertex::operator=(RHIVertex const& Rhs)
+	RHISkinnedVertex::RHISkinnedVertex(RHIVertex const& Vertex)
+	{
+		Position	= Vertex.Position;
+		Tangent		= Vertex.Tangent;
+		NormalMap	= Vertex.NormalMap;
+		TexUV		= Vertex.TexUV;
+	}
+
+	RHISkinnedVertex& RHISkinnedVertex::operator=(RHIVertex const& Rhs)
 	{
 		Position	= Rhs.Position;
 		Tangent		= Rhs.Tangent;
-		NormalMap		= Rhs.NormalMap;
+		NormalMap	= Rhs.NormalMap;
 		TexUV		= Rhs.TexUV;
 
 		return *this;
