@@ -6,10 +6,12 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
+#include "Core/Application/Application.hpp"
 #include "Utilities/VariantUtility.hpp"
 
 #include "StaticMesh.hpp"
 #include "SkeletalMesh.hpp"
+#include "AssetImporter.hpp"
 
 namespace Engine
 {
@@ -74,6 +76,8 @@ namespace Engine
 		{
 			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
+			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
+
 			if(!Renderer::Get()->bIsRenderingShadowMap)
 			{
 				Material->Bind(meshShader);
@@ -88,13 +92,15 @@ namespace Engine
 				renderWithAssignedMaterial(hardMaterialRef.get());
 			}
 		}
-		else if (auto staticMeshSlotMaterial = GetMaterialFromStaticMeshSlot(m_MaterialIndex))
+		else if (auto staticMeshSlotMaterial = GetMaterialFromOwnerActorSlot(m_MaterialIndex))
 		{
 			renderWithAssignedMaterial(staticMeshSlotMaterial);
 		}
 		else
 		{
 			auto& meshShader = GetShaderForMesh(false);
+
+			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
 			if (!Renderer::Get()->bIsRenderingShadowMap)
 			{
@@ -140,7 +146,7 @@ namespace Engine
 		m_VAO->AddVertexBuffer(MoveTemp(vbo));
 	}
 
-	Material* Mesh::GetMaterialFromStaticMeshSlot(uint8_t Index) const
+	Material* Mesh::GetMaterialFromOwnerActorSlot(uint8_t Index) const
 	{
 		return std::visit(
 			[this](auto const& MeshOwner) -> Material*
@@ -218,5 +224,80 @@ namespace Engine
 
 			m_bEvaluated = true;
 		}
+	}
+
+	void SkinnedMesh::Draw(glm::mat4 const& ModelMat) const
+	{
+		auto& shaderManager = Renderer::Get()->GetShaderManager();
+
+		auto renderWithAssignedMaterial =
+			[this, &shaderManager, &ModelMat](Material* Material)
+		{
+			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
+
+			meshShader->Bind();
+			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
+		
+			// update bone data
+			std::visit(MakeInlineVisitor(
+				[this,&meshShader](TWeakPtr<ASkeletalMesh> const& MeshOwner)
+				{
+					TSharedPtr<ASkeletalMesh> SkeletalMeshOwner = MeshOwner.lock(); 
+					if (SkeletalMeshOwner)
+					{
+						const TSharedPtr<AssetImporter>& AssetImporter = SkeletalMeshOwner->GetImporter();
+						if (AssetImporter)
+						{
+							SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(AssetImporter.get());
+							if (SkelModelImporter)
+							{
+								std::vector<glm::mat4> BoneTransforms;
+
+								double AnimTimer = Application::Get()->GetTimeSinceStartInSeconds();
+
+								SkelModelImporter->GetBoneTransforms((float)AnimTimer, BoneTransforms);
+								meshShader->SetMat4Array("uBones", BoneTransforms.data(), BoneTransforms.size());
+							}
+						}
+					}
+				},
+				[this](TWeakPtr<AStaticMesh> const& MeshOwner){}
+				)
+			, m_OwnerActor);
+
+
+			if (!Renderer::Get()->bIsRenderingShadowMap)
+			{
+				Material->Bind(meshShader);
+			}
+			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
+		};
+
+		if (m_bUseHardMaterialReference)
+		{
+			if (auto hardMaterialRef = m_HardMaterialReference.lock())
+			{
+				renderWithAssignedMaterial(hardMaterialRef.get());
+			}
+		}
+		else if (auto staticMeshSlotMaterial = GetMaterialFromOwnerActorSlot(m_MaterialIndex))
+		{
+			renderWithAssignedMaterial(staticMeshSlotMaterial);
+		}
+		else
+		{
+			auto& meshShader = GetShaderForMesh(false);
+			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
+
+			if (!Renderer::Get()->bIsRenderingShadowMap)
+			{
+				DefaultMaterials::BasicWhite->Bind(meshShader);
+			}
+			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
+		}
+
+		RendererStatistics& rendererStats = Renderer::GetMutableRendererStats();
+		rendererStats.MeshesCount++;
+		rendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
 	}
 }

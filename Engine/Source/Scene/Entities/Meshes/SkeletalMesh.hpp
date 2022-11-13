@@ -62,5 +62,6 @@ namespace Engine
 
     public:
         std::string const& GetFilePath(void) const;
+        TSharedPtr<AssetImporter> const& GetImporter(void) const;
     };
 }

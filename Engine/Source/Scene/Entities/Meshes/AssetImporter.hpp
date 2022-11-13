@@ -95,6 +95,8 @@ namespace Engine
 		ModelView				m_ModelView;
 		ModelSkeletonData		m_SkeletonData;
 
+		glm::mat4				m_GlobalInverseTransform;
+
 	public:
 		explicit SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
@@ -117,6 +119,20 @@ namespace Engine
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
 
 		uint32_t GetBoneID(const aiBone* Bone);
+
+		void ReadNodeHierarchy(float AnimationTimeInTicks, const aiNode* Node, glm::mat4 const& ParentTransformMatrix);
+
+		const aiNodeAnim* FindNodeAnim(const aiAnimation* Animation, std::string const& NodeName);
+		uint32_t FindPosition(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+		uint32_t FindRotation(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+		uint32_t FindScaling(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+
+		void CalculateInterpolatedScaling(aiVector3D& OutScale, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+		void CalculateInterpolatedRotation(aiQuaternion& OutQuat, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+		void CalculateInterpolatedLocation(aiVector3D& OutLocation, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
+
+	public:
+		void GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices);
 	};
 
 

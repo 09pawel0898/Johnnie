@@ -75,12 +75,14 @@ namespace Engine::Core
 		/** Statistics */
 		bool		m_bRunning = true;
 		double		m_DeltaTime = 0.0;
+		double		m_TimeSinceStartInSeconds = 0.0;
 		double		m_FPS = 0.0;
 		double 		m_FPSLIMIT = 9999.0;
 
 	public:
 		void SetFPSLimit(unsigned FpsLimit) { m_FPSLIMIT = FpsLimit; }
 		double GetDT(void) const { return m_DeltaTime; }
+		double GetTimeSinceStartInSeconds(void) { return m_TimeSinceStartInSeconds;  };
 		double GetFPS(void) const { return m_FPS; }
 
 	public:

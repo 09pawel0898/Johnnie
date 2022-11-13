@@ -20,9 +20,35 @@ uniform mat4 uModelMat;
 uniform mat3 uNormalMat;
 uniform mat4 uDepthBiasMVP;
 
+// Skeleton Data //
+
+const int MAX_BONES = 100;
+const int MAX_BONES_INFLUENCED_VERTEX = 4;
+
+uniform bool uIsSkinnedMesh;
+uniform mat4 uBones[MAX_BONES];
+
 void main()
 {
-	gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
+	if(uIsSkinnedMesh)
+	{
+		mat4 BoneTransform = mat4(1.0);
+	
+		for(int idx = 0 ; idx < MAX_BONES_INFLUENCED_VERTEX ; idx++)
+		{
+			if(aWeights[idx] != 0.0)
+			{
+				BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
+			}
+		}
+		
+		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
+		gl_Position = uProjMat * uViewMat * uModelMat * TransformedPosition;
+	}
+	else
+	{
+		gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
+	}
 	
 	vec3 T = normalize(vec3(uModelMat * vec4(aTangent,   0.0)));
 	vec3 N = normalize(vec3(uModelMat * vec4(aNormal,    0.0)));

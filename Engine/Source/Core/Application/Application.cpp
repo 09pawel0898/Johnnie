@@ -51,6 +51,8 @@ namespace Engine::Core
 
             if (m_DeltaTime >= maxPeriod)
             {
+                m_TimeSinceStartInSeconds += m_DeltaTime;
+
                 m_FPS = (1.0 / m_DeltaTime);
                 tLastUpdate = tFrameStart;
 

@@ -53,7 +53,7 @@ namespace Engine
 		virtual ~Mesh();
 
 		/** Drawing */
-		void Draw(glm::mat4 const& ModelMat) const;
+		virtual void Draw(glm::mat4 const& ModelMat) const;
 		
 		/** Stats */
 		MeshStatistics& GetMeshStatistics(void);
@@ -88,7 +88,7 @@ namespace Engine
 	protected:
 		void SetupMesh(std::vector<RHIVertex> const& Vertices, std::vector<uint32_t> const& Indicesbs);
 
-		Material* GetMaterialFromStaticMeshSlot(uint8_t Index) const;
+		Material* GetMaterialFromOwnerActorSlot(uint8_t Index) const;
 	};
 
 	FORCEINLINE void Mesh::SetStaticMeshOwner(TSharedPtr<AStaticMesh> const& Owner)
@@ -139,5 +139,7 @@ namespace Engine
 	
 	public:
 		virtual void EvaluateMesh(void) override;
+
+		virtual void Draw(glm::mat4 const& ModelMat) const override;
 	};
 }

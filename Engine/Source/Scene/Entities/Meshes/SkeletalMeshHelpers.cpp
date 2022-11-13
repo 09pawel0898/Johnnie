@@ -31,4 +31,16 @@ namespace Engine
 #endif
 		Index++;
 	}
+
+	BoneData::BoneData(glm::mat4 const& OffsetMatrix)
+		:	OffsetMatrix(OffsetMatrix)
+	{
+		FinalTransformation = glm::mat4(0);
+	}
+
+	BoneData::BoneData(glm::mat4&& OffsetMatrix) noexcept
+		:	OffsetMatrix(MoveTemp(OffsetMatrix))
+	{
+		FinalTransformation = glm::mat4(0);
+	}
 }

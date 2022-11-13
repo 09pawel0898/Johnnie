@@ -225,6 +225,25 @@ namespace Engine::RHI
         glUniformMatrix4fv(location, 1, GL_FALSE, &Value[0][0]);
     }
 
+    void OpenGLShader::SetMat4Array(std::string_view Name, glm::mat4* Values, uint32_t Count)
+    {
+        for (uint8_t idx = 0; idx < Count; idx++)
+        {
+            char CellName[128];
+            memset(CellName, 0, sizeof(CellName));
+
+            char Format[20] = { '\0' };
+            memcpy(Format, Name.data(), Name.size());
+            strcat_s(Format, "[%d]");
+
+            snprintf(CellName, sizeof(CellName), Format, idx);
+
+            GLint location = glGetUniformLocation(m_ID, CellName);
+
+            glUniformMatrix4fv(location, 1, GL_FALSE, &(Values[idx][0][0]));
+        }
+    }
+
     void OpenGLShader::SetMat3(std::string_view Name, glm::mat3 const& Value)
     {
         GLint location = glGetUniformLocation(m_ID, Name.data());

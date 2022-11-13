@@ -4,6 +4,7 @@
 
 #include <map>
 #include <vector>
+#include <glm/glm.hpp>
 
 namespace Engine
 {
@@ -27,6 +28,15 @@ namespace Engine
 		void AddBoneData(uint32_t GlobalVertexID, uint32_t BoneID, float Weight);
 	};
 
+	struct BoneData
+	{
+		glm::mat4 OffsetMatrix;
+		glm::mat4 FinalTransformation;
+
+		explicit BoneData(glm::mat4 const& OffsetMatrix);
+		explicit BoneData(glm::mat4&& OffsetMatrix) noexcept;
+	};
+
 	struct ModelSkeletonData
 	{
 		/** Contains information about which bones influence each vertex. Size is equal to vertices count in loaded model */
@@ -37,5 +47,9 @@ namespace Engine
 
 		/** Maps imported by assimp bone names to indexes */
 		std::map<std::string, uint32_t>			BoneNameIndexMap;
+
+		/** */
+		std::vector<BoneData>					BonesData;
 	};
+
 }

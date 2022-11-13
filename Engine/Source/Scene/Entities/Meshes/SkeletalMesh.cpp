@@ -23,9 +23,14 @@ namespace Engine
 		{
 			const glm::mat4 modelMat = GetModelMat();
 
+			int id = 0;
+
 			for (auto& mesh : m_SubMeshes)
 			{
+				//if(id == 4)
 				mesh->Draw(modelMat);
+				
+				id++;
 			}
 		}
 	}
@@ -101,5 +106,10 @@ namespace Engine
 	std::string const& ASkeletalMesh::GetFilePath(void) const
 	{
 		return m_ModelFilePath;
+	}
+	
+	TSharedPtr<AssetImporter> const& ASkeletalMesh::GetImporter(void) const
+	{
+		return m_ModelImporter;
 	}
 }

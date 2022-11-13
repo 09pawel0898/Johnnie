@@ -40,6 +40,7 @@ namespace Engine::RHI
 		virtual void SetFloat3(std::string_view Name, glm::vec3 const& Value) override;
 		virtual void SetFloat4(std::string_view Name, glm::vec4 const& Value) override;
 		virtual void SetMat4(std::string_view Name, glm::mat4 const& Value) override;
+		virtual void SetMat4Array(std::string_view Name, glm::mat4* Values, uint32_t Count) override;
 		virtual void SetMat3(std::string_view Name, glm::mat3 const& Value) override;
 		virtual void SetInt(std::string_view Name, int32_t Value) override;
 		virtual void SetIntArray(std::string_view Name, int32_t* Values, uint32_t Count) override;
