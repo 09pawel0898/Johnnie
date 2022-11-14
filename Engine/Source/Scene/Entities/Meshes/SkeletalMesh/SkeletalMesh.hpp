@@ -1,10 +1,10 @@
 #pragma once
 
-#include "Mesh.hpp"
+#include "../Mesh.hpp"
 #include "Scene/Entities/Primitives/Actor.hpp"
 #include "Utilities/Delegates.hpp"
 #include "Renderer/Materials/Material.hpp"
-#include "MaterialHelpers.hpp"
+#include "../MaterialHelpers.hpp"
 
 #include <future>
 

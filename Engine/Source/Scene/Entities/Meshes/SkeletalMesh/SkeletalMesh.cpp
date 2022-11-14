@@ -2,7 +2,7 @@
 
 #include "SkeletalMesh.hpp"
 #include "Log/Log.hpp"
-#include "AssetImporter.hpp"
+#include "../AssetImporter.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 #include "Scene/SceneDeleates.hpp"
 

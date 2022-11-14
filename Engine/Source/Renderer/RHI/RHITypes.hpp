@@ -27,7 +27,7 @@ namespace Engine::RHI
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 
-		int32_t	BoneIDs[4] = { 0 };
+		int32_t	BoneIDs[4] = { -1 };
 		float	Weights[4] = { 0.f };
 
 		explicit RHISkinnedVertex(RHIVertex const& Vertex);

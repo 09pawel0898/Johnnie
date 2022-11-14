@@ -6,7 +6,7 @@
 #include "Renderer/Materials/Material.hpp"
 #include "Renderer/RendererStatistics.hpp"
 
-#include "SkeletalMeshHelpers.hpp"
+#include "SkeletalMesh/SkeletalMeshHelpers.hpp"
 
 #include <variant>
 #include <map>

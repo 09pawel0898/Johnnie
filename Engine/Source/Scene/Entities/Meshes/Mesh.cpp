@@ -10,7 +10,7 @@
 #include "Utilities/VariantUtility.hpp"
 
 #include "StaticMesh.hpp"
-#include "SkeletalMesh.hpp"
+#include "SkeletalMesh/SkeletalMesh.hpp"
 #include "AssetImporter.hpp"
 
 namespace Engine

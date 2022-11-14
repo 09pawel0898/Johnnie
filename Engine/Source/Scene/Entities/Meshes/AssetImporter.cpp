@@ -5,7 +5,7 @@
 #include "Log/Log.hpp"
 #include "Utilities/GLMUtility.hpp"
 
-#include "SkeletalMesh.hpp"
+#include "SkeletalMesh/SkeletalMesh.hpp"
 
 namespace Engine
 {
@@ -433,7 +433,7 @@ namespace Engine
 			}
 			else
 			{
-				LOG(Assimp, Trace, "Not found node anim for name {0}", NodeName);
+				//LOG(Assimp, Trace, "Not found node anim for name {0}", NodeName);
 			}
 		}
 

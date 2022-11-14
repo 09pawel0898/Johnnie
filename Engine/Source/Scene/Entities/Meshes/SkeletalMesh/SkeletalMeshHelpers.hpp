@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <glm/glm.hpp>
+//#include <glm/gtx/quaternion.hpp>
 
 struct aiNode;
 
@@ -19,7 +20,7 @@ namespace Engine
 		uint16_t Index = 0;
 
 		/** Contains IDs of bones that invluence this vertex */
-		int32_t	BoneIDs[s_MaxBonesPerVertex] = { 0 };
+		int32_t	BoneIDs[s_MaxBonesPerVertex] = { -1 };
 
 		/** Contains influence weights for associated bone IDs in BoneIDs array */
 		float	Weights[s_MaxBonesPerVertex] = { 0.f };
@@ -67,4 +68,21 @@ namespace Engine
 		std::map<std::string, NodeData>			RequiredNodes;
 	};
 
+	//struct KeyPosition
+	//{
+	//	glm::vec3 Position;
+	//	float TimeStamp;
+	//};
+	//
+	//struct KeyRotation
+	//{
+	//	glm::quat Rotation;
+	//	float TimeStamp;
+	//};
+	//
+	//struct KeyScale
+	//{
+	//	glm::vec3 scale;
+	//	float TimeStamp;
+	//};
 }
