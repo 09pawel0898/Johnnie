@@ -110,6 +110,7 @@ namespace Engine
 		{
 			m_bHasEmbeddedTextures = true;
 		}
+		InitializeRequiredNodes(Scene->mRootNode);
 
 		ParseMeshes(Scene);
 	}
@@ -284,6 +285,8 @@ namespace Engine
 
 	void SkeletalModelImporter::ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone)
 	{
+		MarkRequiredNodesForBone(Bone);
+
 		uint32_t BoneID = GetBoneID(Bone);
 
 #ifdef DEBUG_MODEL_IMPORTER
@@ -334,7 +337,7 @@ namespace Engine
 			const float TimeInTicks = AnimationTimeInSeconds * TicksPerSecond;
 			const float AnimationTimeTicks = fmod(TimeInTicks, (float)Scene->mAnimations[0]->mDuration); // loop animation
 
-			ReadNodeHierarchy(AnimationTimeTicks, GetScene()->mRootNode, glm::mat4(1));
+			ReadNodeHierarchy(AnimationTimeTicks, GetScene()->mRootNode,glm::mat4(1.f) );
 		}
 		else
 		{
@@ -349,10 +352,37 @@ namespace Engine
 		}
 	}
 
+	void SkeletalModelImporter::MarkRequiredNodesForBone(const aiBone* Bone)
+	{
+		std::string NodeName = Bone->mName.C_Str();
+
+		const aiNode* Parent = nullptr;
+
+		do
+		{
+			auto FoundNodeData = m_SkeletonData.RequiredNodes.find(NodeName);
+
+			if (FoundNodeData == m_SkeletonData.RequiredNodes.end())
+			{
+				CheckMsg(false, "Can't find bone in the hierarchy.");
+			}
+
+			FoundNodeData->second.IsRequired = true;
+
+			Parent = FoundNodeData->second.Node->mParent;
+			
+			if (Parent)
+			{
+				NodeName = std::string(Parent->mName.C_Str());
+			}
+		} while (Parent);
+	}
+
 	void SkeletalModelImporter::ReadNodeHierarchy(float AnimationTimeInTicks, const aiNode* Node, glm::mat4 const& ParentTransformMatrix)
 	{
 		std::string const& NodeName = Node->mName.data;
-		glm::mat4 NodeTransformation = Utility::AiMat4ToGlmMat4(Node->mTransformation);
+		//glm::mat4 NodeTransformation = Utility::AiMat4ToGlmMat4(Node->mTransformation);
+		glm::mat4 NodeTransformation = glm::mat4(1.f);
 		
 		const aiScene* Scene = GetScene();
 
@@ -379,13 +409,13 @@ namespace Engine
 
 				aiMatrix4x4 RM = aiMatrix4x4(Rotation.GetMatrix());
 
-				glm::mat4 RotationMatrix = glm::mat4(1.f);
+				//glm::mat4 RotationMatrix = glm::mat4(1.f);
 
 				
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleX, glm::vec3(1.0f, 0.0f, 0.0f));
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleY, glm::vec3(0.0f, 1.0f, 0.0f));
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleZ, glm::vec3(0.0f, 0.0f, 1.0f));
-				//glm::mat4 RotationMatrix = Utility::AiQuatToGlmRotationMatrix(Rotation);
+				glm::mat4 RotationMatrix = Utility::AiQuatToGlmRotationMatrix(Rotation);
 				//glm::mat4 RotationMatrix = Utility::AiMat3ToGlmMat4(Rotation.GetMatrix());
 
 				// Interpolate translation and generate translation transformation matrix
@@ -399,6 +429,11 @@ namespace Engine
 				
 				// Combine the above transformations
 				NodeTransformation = Utility::AiMat4ToGlmMat4(TM * RM * SM);
+				//NodeTransformation = TranslationMatrix * RotationMatrix * ScaleMatrix;
+			}
+			else
+			{
+				LOG(Assimp, Trace, "Not found node anim for name {0}", NodeName);
 			}
 		}
 
@@ -412,7 +447,18 @@ namespace Engine
 
 		for (uint32_t idx = 0; idx < Node->mNumChildren; idx ++)
 		{
-			ReadNodeHierarchy(AnimationTimeInTicks, Node->mChildren[idx], GlobalTransformation);
+			std::string ChildName = Node->mChildren[idx]->mName.data;
+			
+			auto FoundRequiredNode = m_SkeletonData.RequiredNodes.find(ChildName);
+			if (FoundRequiredNode == m_SkeletonData.RequiredNodes.end())
+			{
+				CheckMsg(false, "Child node couldn't be found in the hierarchy.");
+			}
+			
+			if (FoundRequiredNode->second.IsRequired)
+			{
+				ReadNodeHierarchy(AnimationTimeInTicks, Node->mChildren[idx], GlobalTransformation);
+			}
 		}
 	}
 
@@ -434,7 +480,7 @@ namespace Engine
 	{
 		Check(NodeAnim->mNumPositionKeys > 0);
 
-		for (uint32_t idx = 0; idx < NodeAnim->mNumPositionKeys - 1; idx++) 
+		for (uint32_t idx = 0; idx < NodeAnim->mNumPositionKeys; idx++) 
 		{
 			float TimeForKey = (float)NodeAnim->mPositionKeys[idx + 1].mTime;
 
@@ -561,5 +607,19 @@ namespace Engine
 		const aiVector3D& End = NodeAnim->mPositionKeys[NextPositionIndex].mValue;
 		aiVector3D Delta = End - Start;
 		OutLocation = Start + Factor * Delta;
+	}
+	
+	void SkeletalModelImporter::InitializeRequiredNodes(const aiNode* Node)
+	{
+		std::string NodeName = Node->mName.C_Str();
+
+		NodeData NodeData{ Node };
+
+		m_SkeletonData.RequiredNodes[NodeName] = NodeData;
+
+		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
+		{
+			InitializeRequiredNodes(Node->mChildren[idx]);
+		}
 	}
 }

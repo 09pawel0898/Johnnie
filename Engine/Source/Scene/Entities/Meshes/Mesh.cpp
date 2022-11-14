@@ -222,7 +222,7 @@ namespace Engine
 			m_LazyIndices.clear();
 			m_LazyBoneInfluenceData.clear();
 
-			m_bEvaluated = true;
+			m_bEvaluated = true; 
 		}
 	}
 

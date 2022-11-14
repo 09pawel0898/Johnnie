@@ -22,7 +22,7 @@ uniform mat4 uDepthBiasMVP;
 
 // Skeleton Data //
 
-const int MAX_BONES = 100;
+const int MAX_BONES = 200;
 const int MAX_BONES_INFLUENCED_VERTEX = 4;
 
 uniform bool uIsSkinnedMesh;
@@ -36,10 +36,7 @@ void main()
 	
 		for(int idx = 0 ; idx < MAX_BONES_INFLUENCED_VERTEX ; idx++)
 		{
-			if(aWeights[idx] != 0.0)
-			{
-				BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
-			}
+			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
 		
 		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);

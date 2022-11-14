@@ -6,12 +6,14 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+struct aiNode;
+
 namespace Engine
 {
 	class VertexBoneInfluenceData
 	{
 	private:
-		static constexpr inline int8_t s_MaxBonesPerVertex = 10;
+		static constexpr inline int8_t s_MaxBonesPerVertex = 4;
 
 	public:
 		uint16_t Index = 0;
@@ -37,6 +39,17 @@ namespace Engine
 		explicit BoneData(glm::mat4&& OffsetMatrix) noexcept;
 	};
 
+	struct NodeData
+	{
+		const aiNode*	Node = nullptr;
+		bool			IsRequired = false;
+
+		NodeData() = default;
+		NodeData(const aiNode* Node)
+			:	Node(Node)
+		{}
+	};
+
 	struct ModelSkeletonData
 	{
 		/** Contains information about which bones influence each vertex. Size is equal to vertices count in loaded model */
@@ -50,6 +63,8 @@ namespace Engine
 
 		/** */
 		std::vector<BoneData>					BonesData;
+
+		std::map<std::string, NodeData>			RequiredNodes;
 	};
 
 }

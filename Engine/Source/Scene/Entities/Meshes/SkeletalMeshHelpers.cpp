@@ -20,8 +20,10 @@ namespace Engine
 		{
 			return;
 		}
+		if (Index > 3)
+			return;
 
-		CheckMsg(Index != s_MaxBonesPerVertex, "Program not supports so many vertices influenced by one bone.");
+		//CheckMsg(Index != s_MaxBonesPerVertex, "Program not supports so many vertices influenced by one bone.");
 
 		BoneIDs[Index] = BoneID;
 		Weights[Index] = Weight;

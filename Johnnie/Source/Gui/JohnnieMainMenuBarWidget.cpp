@@ -106,5 +106,5 @@ void WJohnnieMainMenuBarWidget::NotifyFileBrowserAssetSelected()
 
 void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
 {
-	m_FileBrowser.SetTypeFilters({".obj",".fbx",".md5mesh"});
+	m_FileBrowser.SetTypeFilters({".obj",".fbx",".md5mesh",".dae"});
 }

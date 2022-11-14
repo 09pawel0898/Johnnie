@@ -131,8 +131,12 @@ namespace Engine
 		void CalculateInterpolatedRotation(aiQuaternion& OutQuat, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
 		void CalculateInterpolatedLocation(aiVector3D& OutLocation, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
 
+		void InitializeRequiredNodes(const aiNode* Root);
+
 	public:
 		void GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices);
+		void MarkRequiredNodesForBone(const aiBone* Bone);
+	
 	};
 
 
