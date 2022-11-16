@@ -72,7 +72,8 @@ namespace Engine
 						| aiProcess_OptimizeMeshes
 						| aiProcess_GenNormals
 						| aiProcess_JoinIdenticalVertices
-						| aiProcess_CalcTangentSpace;
+						| aiProcess_CalcTangentSpace
+						;
 
 		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
 
@@ -111,6 +112,9 @@ namespace Engine
 			m_bHasEmbeddedTextures = true;
 		}
 		InitializeRequiredNodes(Scene->mRootNode);
+
+		aiMatrix4x4 RootTransformation = Scene->mRootNode->mTransformation;
+		m_RootScale = glm::vec3(RootTransformation[0][0] * 2, RootTransformation[1][1] * 2, RootTransformation[2][2] * 2);
 
 		ParseMeshes(Scene);
 	}
@@ -327,6 +331,49 @@ namespace Engine
 		return BoneID;
 	}
 
+	aiNode* SkeletalModelImporter::GetRootBone(aiNode* SceneRootNode)
+	{
+		ProcessNode(SceneRootNode);
+
+		//m_GlobalInverseTransform = glm::inverse(Utility::AiMat4ToGlmMat4(m_RootBone->mTransformation));
+
+		return m_RootBone;
+	}
+
+	void SkeletalModelImporter::ProcessNode(aiNode* Node)
+	{
+		if (m_RootBone != nullptr)
+		{
+			return;
+		}
+
+		auto IsBone = [this](std::string const& NodeName) -> bool
+		{
+			return (m_SkeletonData.BoneNameIndexMap.find(NodeName) != m_SkeletonData.BoneNameIndexMap.end()) ? true : false;
+		};
+
+		std::string NodeName = Node->mName.C_Str();
+
+		if (IsBone(NodeName))
+		{
+			if (Node->mParent == nullptr) // Root node
+			{
+				return;
+			}
+
+			std::string ParentName = Node->mParent->mName.C_Str();
+			if (!IsBone(ParentName))
+			{
+				m_RootBone = Node;
+			}
+		}
+
+		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
+		{
+			ProcessNode(Node->mChildren[idx]);
+		}
+	}
+
 	void SkeletalModelImporter::GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices)
 	{
 		const aiScene* Scene = GetScene();
@@ -337,11 +384,15 @@ namespace Engine
 			const float TimeInTicks = AnimationTimeInSeconds * TicksPerSecond;
 			const float AnimationTimeTicks = fmod(TimeInTicks, (float)Scene->mAnimations[0]->mDuration); // loop animation
 
-			ReadNodeHierarchy(AnimationTimeTicks, GetScene()->mRootNode,glm::mat4(1.f) );
+			aiNode* r = GetScene()->mRootNode;
+			aiMatrix4x4 m = r->mTransformation;
+
+			ReadNodeHierarchy(AnimationTimeTicks, GetRootBone(GetScene()->mRootNode),glm::mat4(1.f) );
+			//ReadNodeHierarchy(AnimationTimeTicks, GetScene()->mRootNode,glm::mat4(1.f) );
 		}
 		else
 		{
-			ReadNodeHierarchy(0.f, GetScene()->mRootNode, glm::mat4(1));
+			ReadNodeHierarchy(0.f, GetRootBone(GetScene()->mRootNode), glm::mat4(1));
 		}
 
 		OutTransformMatrices.resize(m_SkeletonData.BonesData.size());
@@ -381,8 +432,9 @@ namespace Engine
 	void SkeletalModelImporter::ReadNodeHierarchy(float AnimationTimeInTicks, const aiNode* Node, glm::mat4 const& ParentTransformMatrix)
 	{
 		std::string const& NodeName = Node->mName.data;
-		//glm::mat4 NodeTransformation = Utility::AiMat4ToGlmMat4(Node->mTransformation);
-		glm::mat4 NodeTransformation = glm::mat4(1.f);
+		
+		glm::mat4 NodeTransformation = Utility::AiMat4ToGlmMat4(Node->mTransformation);
+		//glm::mat4 NodeTransformation = glm::mat4(1.f);
 		
 		const aiScene* Scene = GetScene();
 
@@ -395,13 +447,13 @@ namespace Engine
 				const glm::mat4 Identity = glm::mat4(1);
 
 				// Interpolate scaling and generate scaling transformation matrix
-				aiVector3D Scaling;
-				CalculateInterpolatedScaling(Scaling, AnimationTimeInTicks, NodeAnim);
+				aiVector3D Scaling = aiVector3D(1.f,1.f,1.f);
+				//CalculateInterpolatedScaling(Scaling, AnimationTimeInTicks, NodeAnim);
 
 				aiMatrix4x4 SM;
 				aiMatrix4x4::Scaling(Scaling, SM);
 
-				glm::mat4 ScaleMatrix = glm::scale(Identity,glm::vec3(Scaling.x, Scaling.y, Scaling.z));
+				glm::mat4 ScaleMatrix = Identity;// glm::scale(Identity, glm::vec3(Scaling.x, Scaling.y, Scaling.z));
 			
 				// Interpolate rotation and generate rotation transformation matrix
 				aiQuaternion Rotation;
@@ -410,12 +462,10 @@ namespace Engine
 				aiMatrix4x4 RM = aiMatrix4x4(Rotation.GetMatrix());
 
 				//glm::mat4 RotationMatrix = glm::mat4(1.f);
-
-				
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleX, glm::vec3(1.0f, 0.0f, 0.0f));
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleY, glm::vec3(0.0f, 1.0f, 0.0f));
 				//RotationMatrix = glm::rotate(RotationMatrix, AngleZ, glm::vec3(0.0f, 0.0f, 1.0f));
-				glm::mat4 RotationMatrix = Utility::AiQuatToGlmRotationMatrix(Rotation);
+				//glm::mat4 RotationMatrix = Utility::AiQuatToGlmRotationMatrix(Rotation);
 				//glm::mat4 RotationMatrix = Utility::AiMat3ToGlmMat4(Rotation.GetMatrix());
 
 				// Interpolate translation and generate translation transformation matrix
@@ -433,7 +483,7 @@ namespace Engine
 			}
 			else
 			{
-				//LOG(Assimp, Trace, "Not found node anim for name {0}", NodeName);
+				//LOG(Assimp, Trace, "Not found node anim for name {0}", NodeName); 
 			}
 		}
 
@@ -442,7 +492,9 @@ namespace Engine
 		if (m_SkeletonData.BoneNameIndexMap.find(NodeName) != m_SkeletonData.BoneNameIndexMap.end()) 
 		{
 			uint32_t BoneIndex = m_SkeletonData.BoneNameIndexMap[NodeName];
-			m_SkeletonData.BonesData[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation * m_SkeletonData.BonesData[BoneIndex].OffsetMatrix;
+
+			m_SkeletonData.BonesData[BoneIndex].FinalTransformation = m_GlobalInverseTransform * GlobalTransformation  * m_SkeletonData.BonesData[BoneIndex].OffsetMatrix;
+			//m_SkeletonData.BonesData[BoneIndex].FinalTransformation = glm::scale(m_SkeletonData.BonesData[BoneIndex].FinalTransformation, GetRootScale());
 		}
 
 		for (uint32_t idx = 0; idx < Node->mNumChildren; idx ++)

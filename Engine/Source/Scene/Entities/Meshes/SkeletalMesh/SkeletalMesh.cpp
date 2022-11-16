@@ -52,6 +52,22 @@ namespace Engine
 		ImportModel();
 	}
 
+	glm::mat4 ASkeletalMesh::GetModelMat(void) const
+	{
+		glm::mat4 modelMat = glm::mat4(1.0f);
+
+		modelMat = glm::translate(modelMat, m_Location);
+
+		modelMat = glm::rotate(modelMat, m_Rotation.x, glm::vec3(1.0f, 0.0f, 0.0f));
+		modelMat = glm::rotate(modelMat, m_Rotation.y, glm::vec3(0.0f, 1.0f, 0.0f));
+		modelMat = glm::rotate(modelMat, m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
+
+		modelMat = glm::scale(modelMat, m_Scale);
+		//modelMat = glm::scale(modelMat, m_ModelImporter->GetRootScale());
+
+		return modelMat;
+	}
+
 	void ASkeletalMesh::ImportModel()
 	{
 		m_ModelImporter = MakeShared<SkeletalModelImporter>(shared_from_this());

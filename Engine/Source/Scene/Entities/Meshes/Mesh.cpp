@@ -237,6 +237,8 @@ namespace Engine
 
 			meshShader->Bind();
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
+
+
 		
 			// update bone data
 			std::visit(MakeInlineVisitor(
@@ -254,9 +256,14 @@ namespace Engine
 								std::vector<glm::mat4> BoneTransforms;
 
 								double AnimTimer = Application::Get()->GetTimeSinceStartInSeconds();
-
+								
 								SkelModelImporter->GetBoneTransforms((float)AnimTimer, BoneTransforms);
 								meshShader->SetMat4Array("uBones", BoneTransforms.data(), BoneTransforms.size());
+
+								glm::mat4 t = glm::mat4(1.f);
+								t = glm::scale(t, SkelModelImporter->GetRootScale());
+								meshShader->SetMat4("uFixedScaleMatrix", t);
+
 							}
 						}
 					}

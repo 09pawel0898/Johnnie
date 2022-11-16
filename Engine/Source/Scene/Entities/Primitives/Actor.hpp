@@ -12,7 +12,7 @@ namespace Engine
 {
 	class Actor : public Object, public IDrawable//, std::enable_shared_from_this<Actor>
 	{
-	private:
+	protected:
 		glm::vec3 m_Location	= { 0.f,0.f,0.f };
 		glm::vec3 m_Rotation	= { 0.f,0.f,0.f };
 		glm::vec3 m_Scale		= { 1.f,1.f,1.f };
@@ -31,7 +31,7 @@ namespace Engine
 		glm::vec3 const& GetScale(void) const;
 		void SetScale(glm::vec3 const& Scale);
 
-		glm::mat4 GetModelMat(void) const;
+		virtual glm::mat4 GetModelMat(void) const;
 
 	private:
 		/** Rendering */

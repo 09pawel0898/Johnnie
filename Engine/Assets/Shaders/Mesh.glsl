@@ -27,6 +27,7 @@ const int MAX_BONES_INFLUENCED_VERTEX = 4;
 
 uniform bool uIsSkinnedMesh;
 uniform mat4 uBones[MAX_BONES];
+uniform mat4 uFixedScaleMatrix;
 
 void main()
 {
@@ -38,6 +39,8 @@ void main()
 		{
 			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
+		
+		BoneTransform = uFixedScaleMatrix * BoneTransform;
 		
 		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
 		gl_Position = uProjMat * uViewMat * uModelMat * TransformedPosition;

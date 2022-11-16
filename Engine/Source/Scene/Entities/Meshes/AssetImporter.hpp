@@ -54,6 +54,8 @@ namespace Engine
 		bool				m_bHasEmbeddedTextures{ false };
 		bool				m_bIsModelImported{ false };
 
+		glm::vec3			m_RootScale = glm::vec3(1.f,1.f,1.f );
+
 	public:
 		AssetImporter() = default;
 
@@ -67,6 +69,11 @@ namespace Engine
 		Assimp::Importer& GetImporter(void);
 		Assimp::Importer const& GetImporter(void) const;
 		const aiScene* GetScene(void);
+		
+		glm::vec3 GetRootScale(void) const
+		{
+			return m_RootScale;
+		}
 
 	public:
 		virtual void AsyncImportModel(std::string_view FilePath) = 0;
@@ -119,6 +126,9 @@ namespace Engine
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
 
 		uint32_t GetBoneID(const aiBone* Bone);
+		aiNode* GetRootBone(aiNode* SceneRootNode);
+		void ProcessNode(aiNode* Node);
+		aiNode* m_RootBone = nullptr;
 
 		void ReadNodeHierarchy(float AnimationTimeInTicks, const aiNode* Node, glm::mat4 const& ParentTransformMatrix);
 
@@ -136,7 +146,6 @@ namespace Engine
 	public:
 		void GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices);
 		void MarkRequiredNodesForBone(const aiBone* Bone);
-	
 	};
 
 

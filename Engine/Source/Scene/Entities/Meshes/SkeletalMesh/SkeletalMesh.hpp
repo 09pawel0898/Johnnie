@@ -46,9 +46,11 @@ namespace Engine
     public:
         virtual void Draw(void) const override;
         
-        void OnTick(double DeltaTime) override;
+        virtual void OnTick(double DeltaTime) override;
 
-        void OnConstruct(void) override;
+        virtual void OnConstruct(void) override;
+        
+        virtual glm::mat4 GetModelMat(void) const override;
 
     private:
         void ImportModel(void);
