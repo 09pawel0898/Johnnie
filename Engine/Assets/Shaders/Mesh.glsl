@@ -30,7 +30,7 @@ uniform mat4 uBones[MAX_BONES];
 uniform mat4 uFixedScaleMatrix;
 
 void main()
-{
+{	
 	if(uIsSkinnedMesh)
 	{
 		mat4 BoneTransform = mat4(1.0);
@@ -40,14 +40,18 @@ void main()
 			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
 		
-		BoneTransform = uFixedScaleMatrix * BoneTransform;
+		//BoneTransform = uFixedScaleMatrix * BoneTransform;
 		
 		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
 		gl_Position = uProjMat * uViewMat * uModelMat * TransformedPosition;
+		FragWorldPos = vec3(uModelMat * TransformedPosition);
+		ShadowCoord = uDepthBiasMVP * TransformedPosition;
 	}
 	else
 	{
 		gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
+		FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
+		ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
 	}
 	
 	vec3 T = normalize(vec3(uModelMat * vec4(aTangent,   0.0)));
@@ -60,8 +64,7 @@ void main()
 	
 	Normal = uNormalMat * aNormal;
 	TexCoord = aTexUV;
-	FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
-	ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
+	
 	
 	// Fog Calculation
 	//vec4 positionRelativeToCam = mat4(1.0) * (uModelMat * vec4(aPosition,1.0));

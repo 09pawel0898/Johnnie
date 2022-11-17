@@ -26,7 +26,7 @@ void main()
 			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
 		
-		BoneTransform = uFixedScaleMatrix * BoneTransform;
+		//BoneTransform = uFixedScaleMatrix * BoneTransform;
 		
 		vec4 TransformedPosition = BoneTransform * vec4(aPos,1.0);
 		gl_Position = uDepthMVP * TransformedPosition;

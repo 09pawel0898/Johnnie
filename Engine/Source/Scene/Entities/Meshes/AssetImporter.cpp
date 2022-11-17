@@ -9,8 +9,145 @@
 
 namespace Engine
 {
+
+	namespace Utility
+	{
+		void TraverseNodes(aiNode* node, float ScaleFactor, unsigned int nested_node_id = 0);
+		void ApplyScaling(aiNode* currentNode, float ScaleFactor);
+
+		void ScaleScene(const aiScene* pScene,float ScaleFactor = 1.f) 
+		{
+			if (ScaleFactor == 1.0f) {
+				return; // nothing to scale
+			}
+
+			Check(ScaleFactor != 0);
+			Check(nullptr != pScene);
+			Check(nullptr != pScene->mRootNode);
+
+			if (nullptr == pScene) {
+				return;
+			}
+
+			if (nullptr == pScene->mRootNode) {
+				return;
+			}
+
+			// Process animations and update position transform to new unit system
+			for (unsigned int animationID = 0; animationID < pScene->mNumAnimations; animationID++)
+			{
+				aiAnimation* animation = pScene->mAnimations[animationID];
+
+				for (unsigned int animationChannel = 0; animationChannel < animation->mNumChannels; animationChannel++)
+				{
+					aiNodeAnim* anim = animation->mChannels[animationChannel];
+
+					for (unsigned int posKey = 0; posKey < anim->mNumPositionKeys; posKey++)
+					{
+						aiVectorKey& vectorKey = anim->mPositionKeys[posKey];
+						vectorKey.mValue *= ScaleFactor;
+					}
+				}
+			}
+
+			for (unsigned int meshID = 0; meshID < pScene->mNumMeshes; meshID++)
+			{
+				aiMesh* mesh = pScene->mMeshes[meshID];
+
+				// Reconstruct mesh vertices to the new unit system
+				for (unsigned int vertexID = 0; vertexID < mesh->mNumVertices; vertexID++)
+				{
+					aiVector3D& vertex = mesh->mVertices[vertexID];
+					vertex *= ScaleFactor;
+				}
+
+
+				// bone placement / scaling
+				for (unsigned int boneID = 0; boneID < mesh->mNumBones; boneID++)
+				{
+					// Reconstruct matrix by transform rather than by scale
+					// This prevent scale values being changed which can
+					// be meaningful in some cases
+					// like when you want the modeller to see 1:1 compatibility.
+					aiBone* bone = mesh->mBones[boneID];
+
+					aiVector3D pos, scale;
+					aiQuaternion rotation;
+
+					bone->mOffsetMatrix.Decompose(scale, rotation, pos);
+
+					aiMatrix4x4 translation;
+					aiMatrix4x4::Translation(pos * ScaleFactor, translation);
+
+					aiMatrix4x4 scaling;
+					aiMatrix4x4::Scaling(aiVector3D(scale), scaling);
+
+					aiMatrix4x4 RotMatrix = aiMatrix4x4(rotation.GetMatrix());
+
+					bone->mOffsetMatrix = translation * RotMatrix * scaling;
+				}
+
+
+				// animation mesh processing
+				// convert by position rather than scale.
+				for (unsigned int animMeshID = 0; animMeshID < mesh->mNumAnimMeshes; animMeshID++)
+				{
+					aiAnimMesh* animMesh = mesh->mAnimMeshes[animMeshID];
+
+					for (unsigned int vertexID = 0; vertexID < animMesh->mNumVertices; vertexID++)
+					{
+						aiVector3D& vertex = animMesh->mVertices[vertexID];
+						vertex *= ScaleFactor;
+					}
+				}
+			}
+
+			TraverseNodes(pScene->mRootNode, ScaleFactor);
+		}
+
+		void TraverseNodes(aiNode* node, float ScaleFactor, unsigned int nested_node_id) 
+		{
+			ApplyScaling(node, ScaleFactor);
+
+			for (size_t i = 0; i < node->mNumChildren; i++)
+			{
+				// recurse into the tree until we are done!
+				TraverseNodes(node->mChildren[i], nested_node_id + 1);
+			}
+		}
+
+		void ApplyScaling(aiNode* currentNode, float ScaleFactor) 
+		{
+			if (nullptr != currentNode) 
+			{
+				// Reconstruct matrix by transform rather than by scale
+				// This prevent scale values being changed which can
+				// be meaningful in some cases
+				// like when you want the modeller to
+				// see 1:1 compatibility.
+
+				aiVector3D pos, scale;
+				aiQuaternion rotation;
+				currentNode->mTransformation.Decompose(scale, rotation, pos);
+
+				aiMatrix4x4 translation;
+				aiMatrix4x4::Translation(pos * ScaleFactor, translation);
+
+				aiMatrix4x4 scaling;
+
+				// note: we do not use mScale here, this is on purpose.
+				aiMatrix4x4::Scaling(scale, scaling);
+
+				aiMatrix4x4 RotMatrix = aiMatrix4x4(rotation.GetMatrix());
+
+				currentNode->mTransformation = translation * RotMatrix * scaling;
+			}
+		}
+
+	}
 	Assimp::Importer& AssetImporter::GetImporter(void)
 	{
+		
 		return m_AssimpImporter;
 	}
 
@@ -97,6 +234,7 @@ namespace Engine
 		{
 			SkeletalMesh->InitializeMaterialSlots(Scene->mNumMaterials);
 		}
+		Utility::ScaleScene(Scene, 0.020f);
 
 		m_GlobalInverseTransform = glm::inverse(Utility::AiMat4ToGlmMat4(Scene->mRootNode->mTransformation));
 		
@@ -384,9 +522,6 @@ namespace Engine
 			const float TimeInTicks = AnimationTimeInSeconds * TicksPerSecond;
 			const float AnimationTimeTicks = fmod(TimeInTicks, (float)Scene->mAnimations[0]->mDuration); // loop animation
 
-			aiNode* r = GetScene()->mRootNode;
-			aiMatrix4x4 m = r->mTransformation;
-
 			ReadNodeHierarchy(AnimationTimeTicks, GetRootBone(GetScene()->mRootNode),glm::mat4(1.f) );
 			//ReadNodeHierarchy(AnimationTimeTicks, GetScene()->mRootNode,glm::mat4(1.f) );
 		}
@@ -434,7 +569,7 @@ namespace Engine
 		std::string const& NodeName = Node->mName.data;
 		
 		glm::mat4 NodeTransformation = Utility::AiMat4ToGlmMat4(Node->mTransformation);
-		//glm::mat4 NodeTransformation = glm::mat4(1.f);
+		//glm::mat4 NodeTransformation = glm::mat4(.1f);
 		
 		const aiScene* Scene = GetScene();
 
