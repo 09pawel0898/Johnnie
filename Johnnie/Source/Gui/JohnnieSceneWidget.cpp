@@ -150,7 +150,11 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 
 				ImGui::Separator();
 
-				ImGui::Image((void*)(intptr_t)Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), ImVec2(256, 256));
+				ImGui::Checkbox("Cast Shadows", &Renderer::Get()->GetShadowsSettings().bRenderShadows);
+				ImGui::SliderFloat("Shadow Intensity", &Renderer::Get()->GetShadowsSettings().ShadowsIntensity, 0.1f, 1.f);
+
+				// DEBUG ShadowMap Texture
+				// ImGui::Image((void*)(intptr_t)Renderer::Get()->GetFramebuffer("ShadowMap")->GetDepthAttachmentID(), ImVec2(256, 256));
 			}
 			ImGui::TreePop();
 		}
@@ -215,11 +219,11 @@ void WJohnnieSceneWidget::OnRenderRenderingSubtab()
 					{
 						if (bVisualizeBoneInfluence)
 						{
-							RHI->SetRenderingFlag(R_BoneInfuence);
+							Renderer::Get()->SetRenderingFlag(R_BoneInfuence);
 						}
 						else
 						{
-							RHI->ClearRenderingFlag(R_BoneInfuence);
+							Renderer::Get()->ClearRenderingFlag(R_BoneInfuence);
 						}
 					}
 					ImGui::TreePop();
@@ -406,11 +410,11 @@ void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)
 
 	if (Enabled)
 	{
-		RHI->SetRenderingFlag(R_Wireframe);
+		Renderer::Get()->SetRenderingFlag(R_Wireframe);
 	}
 	else
 	{
-		RHI->ClearRenderingFlag(R_Wireframe);
+		Renderer::Get()->ClearRenderingFlag(R_Wireframe);
 	}
 }
 

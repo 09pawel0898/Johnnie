@@ -28,9 +28,7 @@ namespace Engine
 
 			for (auto& mesh : m_SubMeshes)
 			{
-				//if(id == 4)
 				mesh->Draw(modelMat);
-				
 				id++;
 			}
 		}
@@ -63,7 +61,6 @@ namespace Engine
 		modelMat = glm::rotate(modelMat, m_Rotation.z, glm::vec3(0.0f, 0.0f, 1.0f));
 
 		modelMat = glm::scale(modelMat, m_Scale);
-		//modelMat = glm::scale(modelMat, m_ModelImporter->GetRootScale());
 
 		return modelMat;
 	}

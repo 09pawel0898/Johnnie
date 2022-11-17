@@ -69,7 +69,7 @@ namespace Engine
 
 	void Renderer::Draw(TSharedPtr<RHIShader> const& Shader, TSharedPtr<RHIVertexArray> const& VertexArray, glm::mat4 const& ModelMat)
 	{
-		if(!GetRHI()->HasFlag(R_ShadowMap))
+		if(!HasFlag(R_ShadowMap))
 		{
 			auto const& camera = CameraController::Get()->GetCamera();
 			Shader->Bind();
@@ -114,6 +114,11 @@ namespace Engine
 	void Renderer::OnEndRenderingFrame(void)
 	{
 		s_RendererStats.UpdateStats();
+	}
+
+	void Renderer::OnRenderingFlagsUpdated(RenderingFlags Flags)
+	{
+		GetRHI()->SetWireframeMode(Flags & R_Wireframe);
 	}
 
 	RHIShaderManager& Renderer::GetShaderManager(void) const

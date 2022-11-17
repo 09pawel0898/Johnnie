@@ -6,6 +6,7 @@
 #include "Utilities/Singleton.hpp"
 #include "RendererStatistics.hpp"
 #include "Core/Application/Application.hpp"
+#include "Utilities/FlagOperators.hpp"
 
 namespace Engine
 {
@@ -19,8 +20,27 @@ namespace Engine
 	using namespace RHI;
 	using namespace Core;
 
+	enum RenderingFlags
+	{
+		R_None			= 0,
+		R_Wireframe		= 1 << 0,
+		R_BoneInfuence	= 1 << 1,
+		R_ShadowMap		= 1 << 2
+	};
+
+	struct ShadowsSettings
+	{
+	public:
+		bool	bRenderShadows{ true };
+		float	ShadowsIntensity = 0.55f;
+	};
+
 	class Renderer final : public MSingleton<Renderer>
 	{
+	private:
+		RenderingFlags	m_RenderingFlags = R_None;
+		ShadowsSettings	m_ShadowsSettings;
+
 	public:
 		static void Init(RenderingAPI RenderingAPI);
 
@@ -45,6 +65,8 @@ namespace Engine
 		void OnBeginRenderingFrame(void);
 		void OnEndRenderingFrame(void);
 
+		void OnRenderingFlagsUpdated(RenderingFlags Flags);
+
 	public:
 		/** Resource Management */
 
@@ -62,5 +84,51 @@ namespace Engine
 	public:
 		static RendererStatistics const& GetRendererStats(void);
 		static RendererStatistics& GetMutableRendererStats(void);
+
+
+	public:
+		void SetRenderingFlags(RenderingFlags Flags);
+
+		RenderingFlags GetRenderingFlags(void) const;
+
+		void SetRenderingFlag(RenderingFlags Flag);
+		void ClearRenderingFlag(RenderingFlags Flag);
+		bool HasFlag(RenderingFlags Flag) const;
+
+	public:
+		ShadowsSettings& GetShadowsSettings(void);
 	};
+
+	FORCEINLINE void Renderer::SetRenderingFlags(RenderingFlags Flags)
+	{
+		m_RenderingFlags = Flags;
+		OnRenderingFlagsUpdated(Flags);
+	}
+
+	FORCEINLINE void Renderer::SetRenderingFlag(RenderingFlags Flag)
+	{
+		m_RenderingFlags |= Flag;
+		OnRenderingFlagsUpdated(m_RenderingFlags);
+	}
+
+	FORCEINLINE void Renderer::ClearRenderingFlag(RenderingFlags Flag)
+	{
+		m_RenderingFlags &= ~Flag;
+		OnRenderingFlagsUpdated(m_RenderingFlags);
+	}
+
+	FORCEINLINE RenderingFlags Renderer::GetRenderingFlags(void) const
+	{
+		return m_RenderingFlags;
+	}
+
+	FORCEINLINE bool Renderer::HasFlag(RenderingFlags Flag) const
+	{
+		return Flag & m_RenderingFlags;
+	}
+
+	FORCEINLINE ShadowsSettings& Renderer::GetShadowsSettings(void)
+	{
+		return m_ShadowsSettings;
+	}
 }

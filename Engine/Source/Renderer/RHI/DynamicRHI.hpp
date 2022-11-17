@@ -5,8 +5,6 @@
 #include "Resources/RHIResourceManager.hpp"
 #include "Resources/RHIFrameBuffer.hpp"
 
-#include "Utilities/FlagOperators.hpp"
-
 #include <glm/glm.hpp>
 
 namespace Engine::RHI
@@ -17,13 +15,6 @@ namespace Engine::RHI
 		D3D11,
 		D3D12,
 		Vulkan
-	};
-
-	enum RHIRenderingFlags
-	{
-		R_Wireframe			= 1 << 0,
-		R_BoneInfuence		= 1 << 1,
-		R_ShadowMap			= 1 << 3
 	};
 
 	class DynamicRHI
@@ -45,8 +36,7 @@ namespace Engine::RHI
 
 	protected:
 		RenderingAPI		m_RHIType;
-		RHIRenderingFlags	m_RenderingFlags;
-		
+
 	public:
 		RenderingAPI GetType(void) const
 		{
@@ -97,16 +87,6 @@ namespace Engine::RHI
 		void SetBoundMaterialUUID(AUUID const& UUID);
 		AUUID GetBoundMaterialUUID(void) const;
 
-	public:
-		void SetRenderingFlags(RHIRenderingFlags Flags);
-		void SetRenderingFlag(RHIRenderingFlags Flag);
-		void ClearRenderingFlag(RHIRenderingFlags Flag);
-		RHIRenderingFlags GetRenderingFlags(void) const;
-		bool HasFlag(RHIRenderingFlags Flag) const;
-
-	protected:
-		virtual void OnRenderingFlagsUpdated(void) = 0;
-
 		virtual void SetWireframeMode(bool Enable) = 0;
 	};
 
@@ -123,33 +103,5 @@ namespace Engine::RHI
 	FORCEINLINE MaterialManager& DynamicRHI::GetMaterialManager(void)
 	{
 		return m_MaterialManager;
-	}
-
-	FORCEINLINE void DynamicRHI::SetRenderingFlags(RHIRenderingFlags Flags)
-	{
-		m_RenderingFlags = Flags;
-		OnRenderingFlagsUpdated();
-	}
-
-	FORCEINLINE void DynamicRHI::SetRenderingFlag(RHIRenderingFlags Flag)
-	{
-		m_RenderingFlags |= Flag;
-		OnRenderingFlagsUpdated();
-	}
-
-	FORCEINLINE void DynamicRHI::ClearRenderingFlag(RHIRenderingFlags Flag)
-	{
-		m_RenderingFlags &= ~Flag;
-		OnRenderingFlagsUpdated();
-	}
-
-	FORCEINLINE RHIRenderingFlags DynamicRHI::GetRenderingFlags(void) const
-	{
-		return m_RenderingFlags;
-	}
-	
-	FORCEINLINE bool DynamicRHI::HasFlag(RHIRenderingFlags Flag) const
-	{
-		return Flag & m_RenderingFlags;
 	}
 }

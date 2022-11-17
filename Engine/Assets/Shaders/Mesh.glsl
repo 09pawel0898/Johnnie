@@ -127,6 +127,9 @@ uniform Material uMaterial;
 uniform vec3 uCameraPosition;
 uniform sampler2D uTextureShadowMap;
 
+uniform bool uCastShadows;
+uniform float uShadowIntensity;
+
 vec3 CalculateDirectionalLight(DirectionalLight Light, vec3 Normal, vec3 ViewDir, float Shadow)
 {
 	vec3 lightDir;
@@ -299,8 +302,12 @@ void main()
 	}
 	
 	// Apply shadow effect
-	float Shadow = ShadowCalculation(ShadowCoord, NormalVec);  
+	float Shadow = 0.f;
 	
+	if(uCastShadows)
+	{
+		Shadow = ShadowCalculation(ShadowCoord, NormalVec) * uShadowIntensity;  
+	}
 	
 	//float visibility = 1.0;
 	//float temp = clamp(dot(NormalVec,uDirectionalLight.Direction),0.0,1.0);

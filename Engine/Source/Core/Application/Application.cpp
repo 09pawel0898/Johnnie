@@ -70,8 +70,6 @@ namespace Engine::Core
         TUniquePtr<RHIFrameBuffer>& worldFrameBuffer            = renderer->GetFramebuffer("RenderWorld");
         TUniquePtr<RHIFrameBuffer>& worldResolvedFrameBuffer    = renderer->GetFramebuffer("RenderWorld_Resolved");
 
-        Renderer::Get()->GetFramebuffer("ShadowMap");
-
         PROFILE_SCOPE("RendererStats_FrameDuration");
 
         {
@@ -79,15 +77,16 @@ namespace Engine::Core
             m_EngineLayer.OnTick(m_DeltaTime);
         }
 
+        if(renderer->GetShadowsSettings().bRenderShadows)
         {
             PROFILE_SCOPE("RendererStats_RenderShadowMap");
 
-            renderer->GetRHI()->SetRenderingFlag(R_ShadowMap);
+            renderer->SetRenderingFlag(R_ShadowMap);
             
             shadowMapFrameBuffer->Bind();
             m_EngineLayer.OnRender();
 
-            renderer->GetRHI()->ClearRenderingFlag(R_ShadowMap);
+            renderer->ClearRenderingFlag(R_ShadowMap);
         }
 
         Renderer::Get()->OnBeginRenderingFrame();

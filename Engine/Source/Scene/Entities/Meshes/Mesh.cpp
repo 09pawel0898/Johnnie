@@ -52,7 +52,7 @@ namespace Engine
 		auto& RHI = Renderer::Get()->GetRHI();
 		auto& ShaderManager = Renderer::Get()->GetShaderManager();
 
-		RHIRenderingFlags Flags = RHI->GetRenderingFlags();
+		RenderingFlags Flags = Renderer::Get()->GetRenderingFlags();
 
 		if (Flags & R_ShadowMap)
 		{
@@ -80,7 +80,10 @@ namespace Engine
 
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
-			if(!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
+			meshShader->SetFloat("uCastShadows", Renderer::Get()->GetShadowsSettings().bRenderShadows);
+			meshShader->SetFloat("uShadowIntensity", Renderer::Get()->GetShadowsSettings().ShadowsIntensity);
+
+			if(!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
 				Material->Bind(meshShader);
 			}
@@ -104,7 +107,7 @@ namespace Engine
 
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
-			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
+			if (!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
 				DefaultMaterials::BasicWhite->Bind(meshShader);
 			}
@@ -234,7 +237,7 @@ namespace Engine
 		auto& RHI			= Renderer::Get()->GetRHI();
 		auto& ShaderManager = Renderer::Get()->GetShaderManager();
 
-		RHIRenderingFlags Flags = RHI->GetRenderingFlags();
+		RenderingFlags Flags = Renderer::Get()->GetRenderingFlags();
 
 		if (Flags & R_ShadowMap)
 		{
@@ -262,9 +265,9 @@ namespace Engine
 
 			meshShader->Bind();
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
+			meshShader->SetFloat("uCastShadows", Renderer::Get()->GetShadowsSettings().bRenderShadows);
+			meshShader->SetFloat("uShadowIntensity", Renderer::Get()->GetShadowsSettings().ShadowsIntensity);
 
-
-		
 			// update bone data
 			std::visit(MakeInlineVisitor(
 				[this,&meshShader](TWeakPtr<ASkeletalMesh> const& MeshOwner)
@@ -298,7 +301,7 @@ namespace Engine
 			, m_OwnerActor);
 
 
-			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
+			if (!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
 				Material->Bind(meshShader);
 			}
@@ -321,7 +324,7 @@ namespace Engine
 			auto& meshShader = GetShaderForMesh(false);
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
 
-			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
+			if (!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
 				DefaultMaterials::BasicWhite->Bind(meshShader);
 			}

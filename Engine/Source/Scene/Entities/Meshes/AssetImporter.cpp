@@ -9,34 +9,36 @@
 
 namespace Engine
 {
-
 	namespace Utility
 	{
-		void TraverseNodes(aiNode* node, float ScaleFactor, unsigned int nested_node_id = 0);
-		void ApplyScaling(aiNode* currentNode, float ScaleFactor);
+		static void ScaleScene(const aiScene* Scene, float ScaleFactor = 1.f);
 
-		void ScaleScene(const aiScene* pScene,float ScaleFactor = 1.f) 
+		static void TraverseNodes(aiNode* Node, float ScaleFactor, unsigned int NestedNodeID = 0);
+		
+		static void ApplyScaling(aiNode* CurrentNode, float ScaleFactor);
+		
+		static void ScaleScene(const aiScene* Scene,float ScaleFactor)
 		{
 			if (ScaleFactor == 1.0f) {
 				return; // nothing to scale
 			}
 
 			Check(ScaleFactor != 0);
-			Check(nullptr != pScene);
-			Check(nullptr != pScene->mRootNode);
+			Check(nullptr != Scene);
+			Check(nullptr != Scene->mRootNode);
 
-			if (nullptr == pScene) {
+			if (nullptr == Scene) {
 				return;
 			}
 
-			if (nullptr == pScene->mRootNode) {
+			if (nullptr == Scene->mRootNode) {
 				return;
 			}
 
 			// Process animations and update position transform to new unit system
-			for (unsigned int animationID = 0; animationID < pScene->mNumAnimations; animationID++)
+			for (unsigned int animationID = 0; animationID < Scene->mNumAnimations; animationID++)
 			{
-				aiAnimation* animation = pScene->mAnimations[animationID];
+				aiAnimation* animation = Scene->mAnimations[animationID];
 
 				for (unsigned int animationChannel = 0; animationChannel < animation->mNumChannels; animationChannel++)
 				{
@@ -50,9 +52,9 @@ namespace Engine
 				}
 			}
 
-			for (unsigned int meshID = 0; meshID < pScene->mNumMeshes; meshID++)
+			for (unsigned int meshID = 0; meshID < Scene->mNumMeshes; meshID++)
 			{
-				aiMesh* mesh = pScene->mMeshes[meshID];
+				aiMesh* mesh = Scene->mMeshes[meshID];
 
 				// Reconstruct mesh vertices to the new unit system
 				for (unsigned int vertexID = 0; vertexID < mesh->mNumVertices; vertexID++)
@@ -102,45 +104,37 @@ namespace Engine
 				}
 			}
 
-			TraverseNodes(pScene->mRootNode, ScaleFactor);
+			TraverseNodes(Scene->mRootNode, ScaleFactor);
 		}
 
-		void TraverseNodes(aiNode* node, float ScaleFactor, unsigned int nested_node_id) 
+		static void TraverseNodes(aiNode* Node, float ScaleFactor, unsigned int NestedNodeID)
 		{
-			ApplyScaling(node, ScaleFactor);
+			ApplyScaling(Node, ScaleFactor);
 
-			for (size_t i = 0; i < node->mNumChildren; i++)
+			for (size_t i = 0; i < Node->mNumChildren; i++)
 			{
-				// recurse into the tree until we are done!
-				TraverseNodes(node->mChildren[i], nested_node_id + 1);
+				TraverseNodes(Node->mChildren[i],ScaleFactor, NestedNodeID + 1);
 			}
 		}
 
-		void ApplyScaling(aiNode* currentNode, float ScaleFactor) 
+		static void ApplyScaling(aiNode* CurrentNode, float ScaleFactor)
 		{
-			if (nullptr != currentNode) 
+			if (nullptr != CurrentNode) 
 			{
-				// Reconstruct matrix by transform rather than by scale
-				// This prevent scale values being changed which can
-				// be meaningful in some cases
-				// like when you want the modeller to
-				// see 1:1 compatibility.
-
 				aiVector3D pos, scale;
 				aiQuaternion rotation;
-				currentNode->mTransformation.Decompose(scale, rotation, pos);
+				CurrentNode->mTransformation.Decompose(scale, rotation, pos);
 
 				aiMatrix4x4 translation;
 				aiMatrix4x4::Translation(pos * ScaleFactor, translation);
 
 				aiMatrix4x4 scaling;
 
-				// note: we do not use mScale here, this is on purpose.
 				aiMatrix4x4::Scaling(scale, scaling);
 
 				aiMatrix4x4 RotMatrix = aiMatrix4x4(rotation.GetMatrix());
 
-				currentNode->mTransformation = translation * RotMatrix * scaling;
+				CurrentNode->mTransformation = translation * RotMatrix * scaling;
 			}
 		}
 

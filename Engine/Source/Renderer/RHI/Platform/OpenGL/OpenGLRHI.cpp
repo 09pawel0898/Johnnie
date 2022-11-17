@@ -2,6 +2,7 @@
 
 #include "OpenGLRHI.hpp"
 #include "Resources/OpenGLBuffers.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -116,11 +117,6 @@ namespace Engine::RHI
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-	}
-
-	void OpenGLRHI::OnRenderingFlagsUpdated(void)
-	{
-		SetWireframeMode(m_RenderingFlags & R_Wireframe);
 	}
 
 	void OpenGLRHI::SetClearColor(const glm::vec4& Color)
