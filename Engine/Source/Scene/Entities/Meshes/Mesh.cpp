@@ -72,7 +72,7 @@ namespace Engine
 	void Mesh::Draw(glm::mat4 const& ModelMat) const
 	{  
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
-
+		
 		auto renderWithAssignedMaterial = 
 		[this,&shaderManager, &ModelMat](Material* Material)
 		{
