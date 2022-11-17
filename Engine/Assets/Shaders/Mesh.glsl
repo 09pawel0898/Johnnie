@@ -40,8 +40,6 @@ void main()
 			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
 		
-		//BoneTransform = uFixedScaleMatrix * BoneTransform;
-		
 		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
 		gl_Position = uProjMat * uViewMat * uModelMat * TransformedPosition;
 		
@@ -56,7 +54,6 @@ void main()
 		ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
 	}
 	
-	
 	vec3 T = normalize(vec3(uModelMat * vec4(aTangent,   0.0)));
 	vec3 N = normalize(vec3(uModelMat * vec4(aNormal,    0.0)));
 	T = normalize(T - dot(T,N) * N);
@@ -67,11 +64,6 @@ void main()
 	
 	Normal = uNormalMat * aNormal;
 	TexCoord = aTexUV;
-	
-	
-	// Fog Calculation
-	//vec4 positionRelativeToCam = mat4(1.0) * (uModelMat * vec4(aPosition,1.0));
-	
 }
 
 #shader fragment
@@ -130,9 +122,6 @@ in vec3 Normal;
 in vec3 FragWorldPos;
 in mat3 TBN; 
 in vec4 ShadowCoord;
-
-//uniform vec3 uFogColor;
-
 
 uniform Material uMaterial;
 uniform vec3 uCameraPosition;
@@ -248,7 +237,7 @@ float ShadowCalculation(vec4 FragPosLightSpace, vec3 Normal)
 	
 	//float closestDepth = texture(uTextureShadowMap, FragPosLightSpace.xy).x; 
     
-    //float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    //float Shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 	
 	vec2 poissonDisk[8] = vec2[]
 	(
@@ -262,60 +251,59 @@ float ShadowCalculation(vec4 FragPosLightSpace, vec3 Normal)
 		vec2( -0.8, 0.33 )
 	);
 	
-	float shadow = 0.0;
+	float Shadow = 0.0;
 	
 	for (int i=0;i<8;i++)
 	{
 		float closestDepth = texture(uTextureShadowMap, FragPosLightSpace.xy + poissonDisk[i]/700.0).x; 
 		if(currentDepth - bias > closestDepth)
 		{
-			shadow += 0.125;
+			Shadow += 0.125;
 		}
 	}
-    return shadow;
+    return Shadow;
 }
 
-const float fogDensity = 0.071;
-const float fogGradient = 10.0;
+const float FogDensity = 0.071;
+const float FogGradient = 10.0;
 
 vec3 mixFixed(vec3 v1, vec3 v2,float a)
 {
-    vec3 result;
-    result.x = v1.x * v1.x * (1 - a) + v2.x * v2.x * a;
-    result.y = v1.y * v1.y  * (1 - a) + v2.y * v2.y * a;
-    result.z = v1.z * v1.z  * (1 - a) + v2.z * v2.z * a;
+    vec3 PixelColor;
+    PixelColor.x = v1.x * v1.x * (1 - a) + v2.x * v2.x * a;
+    PixelColor.y = v1.y * v1.y  * (1 - a) + v2.y * v2.y * a;
+    PixelColor.z = v1.z * v1.z  * (1 - a) + v2.z * v2.z * a;
 
-    result.x = sqrt(result.x);
-    result.y = sqrt(result.y);
-    result.z = sqrt(result.z);
+    PixelColor.x = sqrt(PixelColor.x);
+    PixelColor.y = sqrt(PixelColor.y);
+    PixelColor.z = sqrt(PixelColor.z);
    
-    return result;
+    return PixelColor;
 }
 
 void main()
 {
-	vec3 norm;
-	vec3 viewDir;
-
+	vec3 NormalVec;
+	vec3 ViewDir;
 	
 	if(uMaterial.UseNormalMap)
 	{
-		norm = texture(uMaterial.TextureNormalMap, TexCoord).rgb;
-		norm = normalize(norm * 2.0 - 1.0);
-		viewDir = TBN * normalize(uCameraPosition - FragWorldPos);
+		NormalVec = texture(uMaterial.TextureNormalMap, TexCoord).rgb;
+		NormalVec = normalize(NormalVec * 2.0 - 1.0);
+		ViewDir = TBN * normalize(uCameraPosition - FragWorldPos);
 	}
 	else
 	{
-		norm = normalize(Normal);
-		viewDir = normalize(uCameraPosition - FragWorldPos);	
+		NormalVec = normalize(Normal);
+		ViewDir = normalize(uCameraPosition - FragWorldPos);	
 	}
 	
-	float shadow = ShadowCalculation(ShadowCoord, norm);  
+	// Apply shadow effect
+	float Shadow = ShadowCalculation(ShadowCoord, NormalVec);  
 	
-	vec3 result = CalculateDirectionalLight(uDirectionalLight,norm,viewDir,shadow);
 	
 	//float visibility = 1.0;
-	//float temp = clamp(dot(norm,uDirectionalLight.Direction),0.0,1.0);
+	//float temp = clamp(dot(NormalVec,uDirectionalLight.Direction),0.0,1.0);
 	//
 	//float bias = 0.005 * tan(acos(temp));
 	//bias = clamp(bias,0.0,0.01);
@@ -335,21 +323,24 @@ void main()
 	//		visibility-=0.2;
 	//	}
 	//}
-	//result *= visibility;
+	//PixelColor *= visibility;
 	
+	// Apply directional light influence
+	vec3 PixelColor = CalculateDirectionalLight(uDirectionalLight,NormalVec,ViewDir,Shadow);
+	
+	// Apply point light influence
 	for(int i=0; i < uNumPointLights; i++)
 	{
-		result += CalculatePointLight(uPointLights[i],norm,FragWorldPos,viewDir,shadow);
+		PixelColor += CalculatePointLight(uPointLights[i],NormalVec,FragWorldPos,ViewDir,Shadow);
 	}
 	
+	// Apply fog effect
 	vec3 uFogColor = vec3(0.101, 0.105, 0.109);
-	//vec3 uFogColor = vec3(1.0, 1.0, 1.0);
-	// apply fog effect
-
-	float distanceFromCamera = length(FragWorldPos.xyz);
-	float FogVisibility = exp(-pow((distanceFromCamera * fogDensity),fogGradient));
-	FogVisibility = clamp(FogVisibility,0.0,1.0);
-	result = mixFixed(uFogColor,result,FogVisibility);
 	
-	FragColor = vec4(result,1.0);
+	float DistanceFromOrigin = length(FragWorldPos.xyz);
+	float FogVisibility = exp(-pow((DistanceFromOrigin * FogDensity),FogGradient));
+	FogVisibility = clamp(FogVisibility,0.0,1.0);
+	PixelColor = mixFixed(uFogColor,PixelColor,FogVisibility);
+	
+	FragColor = vec4(PixelColor,1.0);
 }

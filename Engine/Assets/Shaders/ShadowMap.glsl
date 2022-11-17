@@ -2,8 +2,7 @@
 
 #version 460 core
 
-layout(location = 0) in vec3 aPos;
-
+layout(location = 0) in vec3 aPosition;
 layout (location = 4) in ivec4 aBoneIDs;
 layout (location = 5) in vec4 aWeights;
 
@@ -26,14 +25,12 @@ void main()
 			BoneTransform += uBones[aBoneIDs[idx]] * aWeights[idx];
 		}
 		
-		//BoneTransform = uFixedScaleMatrix * BoneTransform;
-		
-		vec4 TransformedPosition = BoneTransform * vec4(aPos,1.0);
+		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
 		gl_Position = uDepthMVP * TransformedPosition;
 	}
 	else
 	{
-		gl_Position =  uDepthMVP * vec4(aPos,1);
+		gl_Position =  uDepthMVP * vec4(aPosition,1);
 	}
 }
 

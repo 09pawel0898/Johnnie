@@ -26,7 +26,7 @@ void JohnnieScene::OnTick(double DeltaTime)
 {	
 	static double step = 0.0;
 	step += DeltaTime;
-	
+
 	float lightX = (float)(3.0f * sin(step));
 	float lightY = 2.f;
 	float lightZ = (float)(1.5f * cos(step));
