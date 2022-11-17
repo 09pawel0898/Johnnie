@@ -52,7 +52,7 @@ void JohnnieScene::InitGui(void)
 		m_SkeletalMesh = nullptr;
 		
 		m_StaticMesh = NewActor<AStaticMesh>(FileName);
-		m_StaticMesh->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+		m_StaticMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
 	});
 	
 	JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.AddLambda([this](std::string const& FileName)
@@ -60,7 +60,7 @@ void JohnnieScene::InitGui(void)
 		m_StaticMesh = nullptr;
 		
 		m_SkeletalMesh = NewActor<ASkeletalMesh>(FileName);
-		m_SkeletalMesh->SetScale(glm::vec3(0.02f, 0.02f, 0.02f));
+		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
 	});
 }
 
@@ -84,16 +84,20 @@ void JohnnieScene::InitCamera(void)
 {
 	m_Camera = NewActor<AFloatingCamera>(45.0f, (float)(1280 / 720), 0.1f, 100.0f, glm::vec3(-3.550f, 2.431f, 3.814f));
 
-	m_Camera->SetRotation(glm::vec3(0.f, -7.49f, 670.62f));
+	m_Camera->SetRotation(glm::vec3(0.f, -16.29f, 653.89f));
+	m_Camera->SetLocation(glm::vec3(-3.95f,5.88f, 8.52f));
+
+	//m_Camera->SetRotation(glm::vec3(0, -47.5, 668));
+	//m_Camera->SetLocation(glm::vec3(-18,24,24));
 	CameraController::Get()->SetViewTarget(m_Camera);
 }
 
 void JohnnieScene::InitScene(void)
 {
 	m_Platform = NewActor<AStaticMesh>(JohnnieGlobals::PlatformModelFilePath, OnStaticMeshAsyncLoadingFinishedDelegate::CreateRaw(this,&JohnnieScene::InitPlatformMaterial));
-
+	
 	m_Platform->SetLocation(glm::vec3(0.f, -0.1f, 0.f));
-	m_Platform->SetScale(glm::vec3(12.f, 1.f, 12.f));
+	m_Platform->SetScale(glm::vec3(20.f, 1.f, 20.f));
 }
 
 void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
@@ -101,6 +105,7 @@ void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
 	if (Material* material = Platform->GetMaterialInSlot(0))
 	{
 		material->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
+		//material->SetBaseColor(glm::vec3(0.8f, 0.105f, 0.109f));
 		material->SetSpecular(glm::vec3(0.f));
 	}
 }

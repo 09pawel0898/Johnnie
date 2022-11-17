@@ -44,15 +44,18 @@ void main()
 		
 		vec4 TransformedPosition = BoneTransform * vec4(aPosition,1.0);
 		gl_Position = uProjMat * uViewMat * uModelMat * TransformedPosition;
+		
 		FragWorldPos = vec3(uModelMat * TransformedPosition);
 		ShadowCoord = uDepthBiasMVP * TransformedPosition;
 	}
 	else
 	{
 		gl_Position = uProjMat * uViewMat * uModelMat * vec4(aPosition,1.0);
+		
 		FragWorldPos = vec3(uModelMat * vec4(aPosition,1.0));
 		ShadowCoord = uDepthBiasMVP * vec4(aPosition,1.0);
 	}
+	
 	
 	vec3 T = normalize(vec3(uModelMat * vec4(aTangent,   0.0)));
 	vec3 N = normalize(vec3(uModelMat * vec4(aNormal,    0.0)));
@@ -272,7 +275,7 @@ float ShadowCalculation(vec4 FragPosLightSpace, vec3 Normal)
     return shadow;
 }
 
-const float fogDensity = 0.091;
+const float fogDensity = 0.071;
 const float fogGradient = 10.0;
 
 vec3 mixFixed(vec3 v1, vec3 v2,float a)
