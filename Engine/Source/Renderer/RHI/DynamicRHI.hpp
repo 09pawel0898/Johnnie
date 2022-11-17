@@ -5,6 +5,8 @@
 #include "Resources/RHIResourceManager.hpp"
 #include "Resources/RHIFrameBuffer.hpp"
 
+#include "Utilities/FlagOperators.hpp"
+
 #include <glm/glm.hpp>
 
 namespace Engine::RHI
@@ -15,6 +17,13 @@ namespace Engine::RHI
 		D3D11,
 		D3D12,
 		Vulkan
+	};
+
+	enum RHIRenderingFlags
+	{
+		R_Wireframe			= 1 << 0,
+		R_BoneInfuence		= 1 << 1,
+		R_ShadowMap			= 1 << 3
 	};
 
 	class DynamicRHI
@@ -35,9 +44,9 @@ namespace Engine::RHI
 		static TUniquePtr<DynamicRHI> Create(RenderingAPI RenderingAPI);
 
 	protected:
-		RenderingAPI m_RHIType;
-		bool m_bWireframeMode{ false };
-
+		RenderingAPI		m_RHIType;
+		RHIRenderingFlags	m_RenderingFlags;
+		
 	public:
 		RenderingAPI GetType(void) const
 		{
@@ -64,10 +73,9 @@ namespace Engine::RHI
 		/** RHI Methods */
 
 		virtual void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height) = 0;
-		virtual void SetWireframeMode(bool Enable) = 0;
 		virtual void SetClearColor(const glm::vec4& Color) = 0;
 		virtual void Clear(void) = 0;
-
+		
 		virtual void DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) = 0;
 		virtual void DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) = 0;
 		
@@ -75,12 +83,6 @@ namespace Engine::RHI
 		TUniquePtr<RHIFrameBuffer>& GetFramebuffer(std::string_view FramebufferName);
 		void BindFramebuffer(std::string_view FramebufferName);
 		virtual void BindDefaultFramebuffer(void) = 0;
-
-
-		bool IsWireframeMode(void) const
-		{
-			return m_bWireframeMode;
-		}
 
 	public:
 		/** Shaders / Materials binding management */
@@ -94,6 +96,18 @@ namespace Engine::RHI
 
 		void SetBoundMaterialUUID(AUUID const& UUID);
 		AUUID GetBoundMaterialUUID(void) const;
+
+	public:
+		void SetRenderingFlags(RHIRenderingFlags Flags);
+		void SetRenderingFlag(RHIRenderingFlags Flag);
+		void ClearRenderingFlag(RHIRenderingFlags Flag);
+		RHIRenderingFlags GetRenderingFlags(void) const;
+		bool HasFlag(RHIRenderingFlags Flag) const;
+
+	protected:
+		virtual void OnRenderingFlagsUpdated(void) = 0;
+
+		virtual void SetWireframeMode(bool Enable) = 0;
 	};
 
 	FORCEINLINE RHITexture2DManager& DynamicRHI::GetTexture2DManager(void)
@@ -109,5 +123,33 @@ namespace Engine::RHI
 	FORCEINLINE MaterialManager& DynamicRHI::GetMaterialManager(void)
 	{
 		return m_MaterialManager;
+	}
+
+	FORCEINLINE void DynamicRHI::SetRenderingFlags(RHIRenderingFlags Flags)
+	{
+		m_RenderingFlags = Flags;
+		OnRenderingFlagsUpdated();
+	}
+
+	FORCEINLINE void DynamicRHI::SetRenderingFlag(RHIRenderingFlags Flag)
+	{
+		m_RenderingFlags |= Flag;
+		OnRenderingFlagsUpdated();
+	}
+
+	FORCEINLINE void DynamicRHI::ClearRenderingFlag(RHIRenderingFlags Flag)
+	{
+		m_RenderingFlags &= ~Flag;
+		OnRenderingFlagsUpdated();
+	}
+
+	FORCEINLINE RHIRenderingFlags DynamicRHI::GetRenderingFlags(void) const
+	{
+		return m_RenderingFlags;
+	}
+	
+	FORCEINLINE bool DynamicRHI::HasFlag(RHIRenderingFlags Flag) const
+	{
+		return Flag & m_RenderingFlags;
 	}
 }

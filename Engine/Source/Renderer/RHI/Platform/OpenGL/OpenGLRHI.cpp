@@ -116,7 +116,11 @@ namespace Engine::RHI
 		{
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		}
-		m_bWireframeMode = Enabled;
+	}
+
+	void OpenGLRHI::OnRenderingFlagsUpdated(void)
+	{
+		SetWireframeMode(m_RenderingFlags & R_Wireframe);
 	}
 
 	void OpenGLRHI::SetClearColor(const glm::vec4& Color)

@@ -22,8 +22,6 @@ namespace Engine
 	class Renderer final : public MSingleton<Renderer>
 	{
 	public:
-		bool bIsRenderingShadowMap{ false };
-
 		static void Init(RenderingAPI RenderingAPI);
 
 		static void Shutdown(void);
@@ -46,8 +44,6 @@ namespace Engine
 		
 		void OnBeginRenderingFrame(void);
 		void OnEndRenderingFrame(void);
-
-		void SetWireframeMode(bool Enabled);
 
 	public:
 		/** Resource Management */

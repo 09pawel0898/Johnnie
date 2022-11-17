@@ -82,12 +82,12 @@ namespace Engine::Core
         {
             PROFILE_SCOPE("RendererStats_RenderShadowMap");
 
-            renderer->bIsRenderingShadowMap = true;
-
+            renderer->GetRHI()->SetRenderingFlag(R_ShadowMap);
+            
             shadowMapFrameBuffer->Bind();
             m_EngineLayer.OnRender();
 
-            renderer->bIsRenderingShadowMap = false;
+            renderer->GetRHI()->ClearRenderingFlag(R_ShadowMap);
         }
 
         Renderer::Get()->OnBeginRenderingFrame();

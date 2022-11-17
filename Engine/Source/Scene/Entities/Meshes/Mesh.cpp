@@ -49,21 +49,23 @@ namespace Engine
 
 	static TSharedPtr<RHIShader>& GetShaderForMesh(bool IsMaterialEmmissive)
 	{
-		auto& shaderManager = Renderer::Get()->GetShaderManager();
+		auto& RHI = Renderer::Get()->GetRHI();
+		auto& ShaderManager = Renderer::Get()->GetShaderManager();
 
-		if (Renderer::Get()->bIsRenderingShadowMap)
+		RHIRenderingFlags Flags = RHI->GetRenderingFlags();
+
+		if (Flags & R_ShadowMap)
 		{
-			return shaderManager.GetResource("Shader_ShadowMap");
+			return ShaderManager.GetResource("Shader_ShadowMap");
 		}
-		if (IsMaterialEmmissive)
+		else if (Flags & R_Wireframe)
 		{
-			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
-				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_EmissiveMesh");
+			return ShaderManager.GetResource("Shader_Wireframe");
 		}
 		else
 		{
-			return Renderer::Get()->GetRHI()->IsWireframeMode() ?
-				shaderManager.GetResource("Shader_Wireframe") : shaderManager.GetResource("Shader_Mesh");
+			return (IsMaterialEmmissive) ?  ShaderManager.GetResource("Shader_EmissiveMesh") :
+											ShaderManager.GetResource("Shader_Mesh");
 		}
 	}
 
@@ -78,7 +80,7 @@ namespace Engine
 
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
-			if(!Renderer::Get()->bIsRenderingShadowMap)
+			if(!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
 			{
 				Material->Bind(meshShader);
 			}
@@ -102,7 +104,7 @@ namespace Engine
 
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
-			if (!Renderer::Get()->bIsRenderingShadowMap)
+			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
 			{
 				DefaultMaterials::BasicWhite->Bind(meshShader);
 			}
@@ -226,6 +228,29 @@ namespace Engine
 		}
 	}
 
+
+	static TSharedPtr<RHIShader>& GetShaderForSkeletalMesh()
+	{
+		auto& RHI			= Renderer::Get()->GetRHI();
+		auto& ShaderManager = Renderer::Get()->GetShaderManager();
+
+		RHIRenderingFlags Flags = RHI->GetRenderingFlags();
+
+		if (Flags & R_ShadowMap)
+		{
+			return ShaderManager.GetResource("Shader_ShadowMap");
+		}
+		else if(Flags & R_Wireframe)
+		{
+			return ShaderManager.GetResource("Shader_Wireframe");
+		}
+		else
+		{
+			return (Flags & R_BoneInfuence) ? ShaderManager.GetResource("Shader_SkinnedMeshBoneInfluence") :
+											  ShaderManager.GetResource("Shader_Mesh");
+		}
+	}
+
 	void SkinnedMesh::Draw(glm::mat4 const& ModelMat) const
 	{
 		auto& shaderManager = Renderer::Get()->GetShaderManager();
@@ -233,7 +258,7 @@ namespace Engine
 		auto renderWithAssignedMaterial =
 			[this, &shaderManager, &ModelMat](Material* Material)
 		{
-			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
+			auto& meshShader = GetShaderForSkeletalMesh();
 
 			meshShader->Bind();
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
@@ -273,7 +298,7 @@ namespace Engine
 			, m_OwnerActor);
 
 
-			if (!Renderer::Get()->bIsRenderingShadowMap)
+			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
 			{
 				Material->Bind(meshShader);
 			}
@@ -296,7 +321,7 @@ namespace Engine
 			auto& meshShader = GetShaderForMesh(false);
 			meshShader->SetInt("uIsSkinnedMesh", (int32_t)true);
 
-			if (!Renderer::Get()->bIsRenderingShadowMap)
+			if (!Renderer::Get()->GetRHI()->HasFlag(R_ShadowMap))
 			{
 				DefaultMaterials::BasicWhite->Bind(meshShader);
 			}

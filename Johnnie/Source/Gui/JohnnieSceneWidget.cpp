@@ -200,6 +200,33 @@ void WJohnnieSceneWidget::OnRenderRenderingSubtab()
 		{
 			SetRendererWireframemode(m_bWireframeMode);
 		}
+
+		if (m_MeshSubtabName.has_value())
+		{
+			if (m_MeshSubtabName.value() == "Skeletal Mesh")
+			{
+				if (ImGui::TreeNode("Skeletal Mesh Rendering"))
+				{
+					static bool bVisualizeBoneInfluence{ false };
+
+					auto& RHI = Renderer::Get()->GetRHI();
+
+					if (ImGui::Checkbox("Show Bone Influence",&bVisualizeBoneInfluence))
+					{
+						if (bVisualizeBoneInfluence)
+						{
+							RHI->SetRenderingFlag(R_BoneInfuence);
+						}
+						else
+						{
+							RHI->ClearRenderingFlag(R_BoneInfuence);
+						}
+					}
+					ImGui::TreePop();
+				}
+			}
+		}
+		
 	}
 }
 
@@ -375,7 +402,16 @@ void WJohnnieSceneWidget::PrepareSkeletalMeshSubtab(ASkeletalMesh* SkeletalMesh)
 
 void WJohnnieSceneWidget::SetRendererWireframemode(bool Enabled)
 {
-	Renderer::Get()->SetWireframeMode(Enabled);
+	auto& RHI = Renderer::Get()->GetRHI();
+
+	if (Enabled)
+	{
+		RHI->SetRenderingFlag(R_Wireframe);
+	}
+	else
+	{
+		RHI->ClearRenderingFlag(R_Wireframe);
+	}
 }
 
 void WJohnnieSceneWidget::ClearMeshSubtabContent(void)

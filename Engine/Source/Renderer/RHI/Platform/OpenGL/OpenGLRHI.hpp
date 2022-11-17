@@ -17,19 +17,22 @@ namespace Engine::RHI
 		virtual void Init(void) override;
 		virtual void Shutdown(void) override {}
 
-		virtual void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height) override;
+	public:
+		virtual void OnRenderingFlagsUpdated(void) override;
 
-		virtual void SetWireframeMode(bool Enabled) override;
+		virtual void SetViewport(uint32_t X, uint32_t Y, uint32_t Width, uint32_t Height) override;
 
 		virtual void SetClearColor(const glm::vec4& Color) override;
 
 		virtual void Clear(void) override;
-
 
 		virtual void DrawLines(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t VertexCount = 0) override;
 
 		virtual void DrawIndexed(TSharedPtr<RHIVertexArray> const& VertexArray, uint32_t IndexCount = 0) override;
 
 		virtual void BindDefaultFramebuffer(void) override;
+
+	private:
+		virtual void SetWireframeMode(bool Enabled) override;
 	};
 }
