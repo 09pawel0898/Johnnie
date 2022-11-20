@@ -16,7 +16,7 @@ struct aiBone;
 
 namespace Engine
 {
-    class AssetImporter;
+    class ModelImporter;
     class ASkeletalMesh;
 
     DECLARE_DELEGATE(OnSkeletalMeshAsyncLoadingFinishedDelegate, ASkeletalMesh*);
@@ -29,7 +29,7 @@ namespace Engine
     private:
         std::string m_ModelFilePath;
 
-        TSharedPtr<AssetImporter>                   m_ModelImporter{ nullptr };
+        TSharedPtr<ModelImporter>                   m_ModelImporter{ nullptr };
         OnSkeletalMeshAsyncLoadingFinishedDelegate  m_OnAsyncLoadingFinishedDelegate;
         
         std::vector<TSharedPtr<SkinnedMesh>>        m_SubMeshes;
@@ -64,6 +64,6 @@ namespace Engine
 
     public:
         std::string const& GetFilePath(void) const;
-        TSharedPtr<AssetImporter> const& GetImporter(void) const;
+        TSharedPtr<ModelImporter> const& GetImporter(void) const;
     };
 }

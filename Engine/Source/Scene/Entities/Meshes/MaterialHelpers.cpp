@@ -19,14 +19,14 @@ namespace Engine
 		Emplace_N_MaterialSlots(NumMaterials);
 	}
 
-	void MaterialsContainer::SetModelImporter(TSharedPtr<AssetImporter> const& ModelImporter)
+	void MaterialsContainer::SetModelImporter(TSharedPtr<ModelImporter> const& ModelImporter)
 	{
 		m_ModelImporter = ModelImporter;
 	}
 
 	void MaterialsContainer::LoadMaterialFromModelForIndex(aiMaterial* Mat, uint32_t MaterialIdx)
 	{
-		TSharedPtr<AssetImporter> ModelImporter = m_ModelImporter.lock();
+		TSharedPtr<ModelImporter> ModelImporter = m_ModelImporter.lock();
 		if (!ModelImporter)
 		{
 			CheckMsg(false, "Failed to parse material data from model importer, importer was nullptr. Forgot to call SetModelImporter?");
@@ -73,7 +73,7 @@ namespace Engine
 		m_NumMaterials = N;
 	}
 
-	std::vector<TSharedPtr<RHITexture2D>> MaterialsContainer::LoadMaterialTextures(TSharedPtr<AssetImporter> const& ModelImporter, aiMaterial* Material, RHIMapTextureType Type)
+	std::vector<TSharedPtr<RHITexture2D>> MaterialsContainer::LoadMaterialTextures(TSharedPtr<ModelImporter> const& ModelImporter, aiMaterial* Material, RHIMapTextureType Type)
 	{
 		std::vector<TSharedPtr<RHITexture2D>> TexturesOfRequestedType;
 

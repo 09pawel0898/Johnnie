@@ -122,7 +122,7 @@ namespace Engine
 		return m_ModelFilePath;
 	}
 	
-	TSharedPtr<AssetImporter> const& ASkeletalMesh::GetImporter(void) const
+	TSharedPtr<ModelImporter> const& ASkeletalMesh::GetImporter(void) const
 	{
 		return m_ModelImporter;
 	}

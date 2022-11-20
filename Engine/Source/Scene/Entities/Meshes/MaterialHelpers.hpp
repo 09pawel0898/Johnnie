@@ -9,7 +9,7 @@ struct aiScene;
 namespace Engine
 {
 	class Material;
-	class AssetImporter;
+	class ModelImporter;
 
 	namespace RHI
 	{
@@ -26,13 +26,13 @@ namespace Engine
 		std::vector<TSharedPtr<Material>>	m_Materials;
 		std::vector<bool>					m_MaterialProcessed;
 
-		TWeakPtr<AssetImporter>				m_ModelImporter;
+		TWeakPtr<ModelImporter>				m_ModelImporter;
 
 	public:
 		MaterialsContainer() = default;
 
 	public:
-		void SetModelImporter(TSharedPtr<AssetImporter> const& ModelImporter);
+		void SetModelImporter(TSharedPtr<ModelImporter> const& ModelImporter);
 
 		void InitializeMaterialSlots(uint8_t NumMaterials);
 
@@ -50,6 +50,6 @@ namespace Engine
 	private:
 		void Emplace_N_MaterialSlots(uint8_t N);
 
-		std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(TSharedPtr<AssetImporter> const& ModelImporter, aiMaterial* Material, RHIMapTextureType Type);
+		std::vector<TSharedPtr<RHITexture2D>> LoadMaterialTextures(TSharedPtr<ModelImporter> const& ModelImporter, aiMaterial* Material, RHIMapTextureType Type);
 	};
 }

@@ -17,11 +17,14 @@ namespace Engine
 	class ASkeletalMesh;
 	class Mesh;
 	class SkinnedMesh;
+	class Animation;
+	struct AnimatedNodeData;
 
 	enum class AssetImporterType : uint8_t
 	{
 		StaticModel,
-		SkeletalModel
+		SkeletalModel,
+		Animation
 	};
 
 	struct ModelView
@@ -46,16 +49,9 @@ namespace Engine
 	{
 	protected:
 		std::string			m_RootDirectory;
-
-		Assimp::Importer	m_AssimpImporter;
-		std::future<void>	m_ImportModelFuture;
-
+		Assimp::Importer	m_AssimpImporter = Assimp::Importer();
 		AssetImporterType	m_ImporterType;
-		bool				m_bHasEmbeddedTextures{ false };
-		bool				m_bIsModelImported{ false };
-
-		glm::vec3			m_RootScale = glm::vec3(1.f,1.f,1.f );
-
+		
 	public:
 		AssetImporter() = default;
 
@@ -70,6 +66,19 @@ namespace Engine
 		Assimp::Importer const& GetImporter(void) const;
 		const aiScene* GetScene(void);
 		
+		std::string const& GetRootDirectory(void);
+	};
+
+	class ModelImporter : public AssetImporter
+	{
+	protected:
+		bool		m_bHasEmbeddedTextures{ false };
+		bool		m_bIsModelImported{ false };
+		glm::vec3	m_RootScale = glm::vec3(1.f, 1.f, 1.f);
+		
+		std::future<void>	m_ImportModelFuture;
+	
+	public:
 		glm::vec3 GetRootScale(void) const
 		{
 			return m_RootScale;
@@ -80,11 +89,9 @@ namespace Engine
 
 		bool HasEmbededTextures(void);
 		bool IsModelAlreadyLoaded(void);
-
-		std::string const& GetRootDirectory(void);
 	};
 
-	class StaticModelImporter final : public AssetImporter
+	class StaticModelImporter final : public ModelImporter
 	{
 	private:
 
@@ -94,7 +101,7 @@ namespace Engine
 		void AsyncImportModel(std::string_view FilePath) override;
 	};
 
-	class SkeletalModelImporter final : public AssetImporter
+	class SkeletalModelImporter final : public ModelImporter
 	{
 	private:
 		TWeakPtr<ASkeletalMesh>	m_SkeletalMesh;
@@ -123,9 +130,9 @@ namespace Engine
 		TSharedPtr<SkinnedMesh> ParseSingleMeshData(uint16_t Index, const aiMesh* AiMesh);
 
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
-		void ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone);
+		void ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData);
 
-		uint32_t GetBoneID(const aiBone* Bone);
+		uint32_t GetBoneID(const aiBone* AnimatedBoneData);
 		aiNode* GetRootBone(aiNode* SceneRootNode);
 		void ProcessNode(aiNode* Node);
 		aiNode* m_RootBone = nullptr;
@@ -145,10 +152,40 @@ namespace Engine
 
 	public:
 		void GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices);
-		void MarkRequiredNodesForBone(const aiBone* Bone);
+		void MarkRequiredNodesForBone(const aiBone* AnimatedBoneData);
 	};
 
-
 	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHIMapTextureType RHIMapTextureType);
-}
 
+	DECLARE_MULTICAST_DELEGATE(OnAnimationsAsyncLoadingFinishedDelegate, std::vector<TUniquePtr<Animation>>&&);
+	DECLARE_MULTICAST_DELEGATE(OnAnimationAsyncLoadingFinishedDelegate, TUniquePtr<Animation>&&);
+
+	class AnimationImporter : public AssetImporter
+	{
+	private:
+		std::mutex m_LoadedAnimationsLock;
+		std::vector<TUniquePtr<Animation>>	m_LoadedAnimations;
+
+		std::variant<	OnAnimationAsyncLoadingFinishedDelegate, 
+						OnAnimationsAsyncLoadingFinishedDelegate> m_OnAsyncLoadingFinished;
+
+		std::future<void> m_ReadSceneFuture;
+		std::vector< std::future<void>> m_ImportAnimationFutures;
+
+		
+	public:
+		AnimationImporter() = default;
+
+		void AsyncImportFirstAnimation(std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationAsyncLoadingFinishedDelegate());
+		void AsyncImportAllAnimations(std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationsAsyncLoadingFinishedDelegate());
+
+	private:
+		void AsyncImportScene_Internal(std::string_view FilePath, bool ImportAllAnimations);
+		void AsyncImportAnimation_Internal(const aiAnimation* AiAnimation);
+
+		void ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation);
+		void ReadHeirarchyData(AnimatedNodeData* AnimatedNode, const aiNode* Node);
+
+		void NotifyLoadingFinished(void);
+	};
+}

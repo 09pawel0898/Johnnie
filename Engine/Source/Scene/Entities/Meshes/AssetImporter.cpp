@@ -4,6 +4,8 @@
 #include "AssetImporter.hpp"
 #include "Log/Log.hpp"
 #include "Utilities/GLMUtility.hpp"
+#include "Utilities/VariantUtility.hpp"
+#include "SkeletalMesh/Animation.hpp"
 
 #include "SkeletalMesh/SkeletalMesh.hpp"
 
@@ -155,12 +157,12 @@ namespace Engine
 		return m_AssimpImporter.GetScene();
 	}
 
-	bool AssetImporter::HasEmbededTextures(void)
+	bool ModelImporter::HasEmbededTextures(void)
 	{
 		return m_bHasEmbeddedTextures;
 	}
 
-	bool AssetImporter::IsModelAlreadyLoaded(void)
+	bool ModelImporter::IsModelAlreadyLoaded(void)
 	{
 		return m_bIsModelImported;
 	}
@@ -419,11 +421,11 @@ namespace Engine
 		}
 	}
 
-	void SkeletalModelImporter::ParseSingleBone(uint16_t MeshIndex, const aiBone* Bone)
+	void SkeletalModelImporter::ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData)
 	{
-		MarkRequiredNodesForBone(Bone);
+		MarkRequiredNodesForBone(AnimatedBoneData);
 
-		uint32_t BoneID = GetBoneID(Bone);
+		uint32_t BoneID = GetBoneID(AnimatedBoneData);
 
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "Bone {0} ID {1}, NumVerticesAffected {2}", Bone->mName.C_Str(), BoneID, Bone->mNumWeights)	
@@ -431,12 +433,12 @@ namespace Engine
 
 		if (BoneID == m_SkeletonData.BonesData.size())
 		{
-			m_SkeletonData.BonesData.emplace_back(BoneData(Utility::AiMat4ToGlmMat4(Bone->mOffsetMatrix)));
+			m_SkeletonData.BonesData.emplace_back(BoneData(Utility::AiMat4ToGlmMat4(AnimatedBoneData->mOffsetMatrix)));
 		}
 
-		for (unsigned long long idx = 0; idx < Bone->mNumWeights; idx++)
+		for (unsigned long long idx = 0; idx < AnimatedBoneData->mNumWeights; idx++)
 		{
-			const aiVertexWeight& VertexWeight = Bone->mWeights[idx];
+			const aiVertexWeight& VertexWeight = AnimatedBoneData->mWeights[idx];
 			
 			uint32_t GlobalVertexID = m_SkeletonData.MeshBaseVertex[MeshIndex] + VertexWeight.mVertexId;
 			Check(GlobalVertexID < m_SkeletonData.VertexBoneInfluenceData.size());
@@ -445,10 +447,10 @@ namespace Engine
 		}
 	}
 
-	uint32_t SkeletalModelImporter::GetBoneID(const aiBone* Bone)
+	uint32_t SkeletalModelImporter::GetBoneID(const aiBone* AnimatedBoneData)
 	{
 		uint32_t BoneID = 0;
-		std::string BoneName = Bone->mName.C_Str();
+		std::string BoneName = AnimatedBoneData->mName.C_Str();
 
 		if (m_SkeletonData.BoneNameIndexMap.find(BoneName) != m_SkeletonData.BoneNameIndexMap.end())
 		{
@@ -532,9 +534,9 @@ namespace Engine
 		}
 	}
 
-	void SkeletalModelImporter::MarkRequiredNodesForBone(const aiBone* Bone)
+	void SkeletalModelImporter::MarkRequiredNodesForBone(const aiBone* AnimatedBoneData)
 	{
-		std::string NodeName = Bone->mName.C_Str();
+		std::string NodeName = AnimatedBoneData->mName.C_Str();
 
 		const aiNode* Parent = nullptr;
 
@@ -802,5 +804,135 @@ namespace Engine
 		{
 			InitializeRequiredNodes(Node->mChildren[idx]);
 		}
+	}
+	
+	void AnimationImporter::AsyncImportFirstAnimation(std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
+	{
+		m_OnAsyncLoadingFinished = MoveTemp(OnAsyncLoadingFinished);
+		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
+
+		m_ReadSceneFuture = std::async(	std::launch::async,
+										std::bind(&AnimationImporter::AsyncImportScene_Internal, this, std::placeholders::_1, std::placeholders::_2),
+										FilePath,false);
+	}
+
+	void AnimationImporter::AsyncImportAllAnimations(std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
+	{
+		m_OnAsyncLoadingFinished = MoveTemp(OnAsyncLoadingFinished);
+		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
+
+		m_ReadSceneFuture = std::async(	std::launch::async,
+										std::bind(&AnimationImporter::AsyncImportScene_Internal, this, std::placeholders::_1, std::placeholders::_2),
+										FilePath, false);
+	}
+
+	void AnimationImporter::AsyncImportScene_Internal(std::string_view FilePath, bool ImportAllAnimations)
+	{
+		const uint32_t Flags = aiProcess_Triangulate;
+
+		const aiScene* Scene = m_AssimpImporter.ReadFile(FilePath.data(), Flags);
+
+		if (!Scene || Scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !Scene->mRootNode)
+		{
+			LOG(Assimp, Error, "{0}", m_AssimpImporter.GetErrorString());
+			return;
+		}
+
+		if (!Scene->HasAnimations())
+		{
+			LOG(Assimp, Warning, "Animation import failed. No animation data found in file [{0}]", FilePath);
+			return;
+		}
+
+		uint8_t NumAnimationsToImport = (ImportAllAnimations) ? Scene->mNumAnimations : 1;
+
+		m_ImportAnimationFutures.resize(NumAnimationsToImport);
+		m_LoadedAnimations.reserve(NumAnimationsToImport);
+
+		// Load all animations asynchronously
+		for (uint16_t idx = 0; idx < NumAnimationsToImport; idx++)
+		{
+			const aiAnimation* AnimationToParse = Scene->mAnimations[idx];
+
+			m_ImportAnimationFutures[idx] = std::async(	std::launch::async,
+														std::bind(&AnimationImporter::AsyncImportAnimation_Internal, this, std::placeholders::_1),
+														AnimationToParse);
+		}
+
+		// Wait for all animations to be loaded 
+		for (uint16_t futureIdx = 0; futureIdx < m_ImportAnimationFutures.size(); futureIdx++)
+		{
+			m_ImportAnimationFutures[futureIdx].wait();
+		}
+		NotifyLoadingFinished();
+	}
+
+	void AnimationImporter::AsyncImportAnimation_Internal(const aiAnimation* AiAnimation)
+	{
+		const aiScene* Scene = GetScene();
+
+		{
+			std::scoped_lock lock(m_LoadedAnimationsLock);
+			m_LoadedAnimations.emplace_back(MakeUnique<Animation>());
+		}		
+		
+		TUniquePtr<Animation>& NewAnim = m_LoadedAnimations[m_LoadedAnimations.size()-1];
+
+		NewAnim->m_Duration = (float)AiAnimation->mDuration;
+		NewAnim->m_TicksPerSecond = (float)AiAnimation->mTicksPerSecond;
+
+		ReadHeirarchyData(&NewAnim->m_RootNode, Scene->mRootNode);
+		ReadBonesData(NewAnim.get(),AiAnimation);
+	}
+
+	void AnimationImporter::ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation)
+	{
+		uint16_t BoneCount = 0;
+
+		for (uint16_t idx = 0; idx < AiAnimation->mNumChannels; idx++)
+		{
+			aiNodeAnim* NodeAnim = AiAnimation->mChannels[idx];
+			const std::string BoneName = NodeAnim->mNodeName.data;
+
+			if (Anim->m_BoneInfoMap.find(BoneName) == Anim->m_BoneInfoMap.end())
+			{
+				Anim->m_BoneInfoMap[BoneName].Index = BoneCount;
+				BoneCount++;
+			}
+			Anim->m_Bones.push_back(AnimatedBoneData(	NodeAnim->mNodeName.data,
+														Anim->m_BoneInfoMap[NodeAnim->mNodeName.data].Index, NodeAnim));
+		}
+	}
+
+	void AnimationImporter::ReadHeirarchyData(AnimatedNodeData* AnimatedNode, const aiNode* Node)
+	{
+		Check(Node);
+
+		AnimatedNode->Name				= Node->mName.data;
+		AnimatedNode->Transformation	= Utility::AiMat4ToGlmMat4(Node->mTransformation);
+		AnimatedNode->ChildrenCount		= Node->mNumChildren;
+
+		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
+		{
+			AnimatedNodeData NewNode;
+			ReadHeirarchyData(&NewNode, Node->mChildren[idx]);
+
+			AnimatedNode->Children.emplace_back(MoveTemp(NewNode));
+		}
+	}
+
+	void AnimationImporter::NotifyLoadingFinished(void)
+	{
+		std::visit(MakeInlineVisitor(
+			[this](OnAnimationAsyncLoadingFinishedDelegate& OnAsyncLoadingFinished) 
+			{
+				CheckMsg(m_LoadedAnimations.size() == 1, "Trying to send notification about 1 loaded animation but loaded animations count != 1");
+				OnAsyncLoadingFinished.Broadcast(MoveTemp(m_LoadedAnimations[0]));
+			},
+			[this](OnAnimationsAsyncLoadingFinishedDelegate& OnAsyncLoadingFinished)
+			{
+				CheckMsg(m_LoadedAnimations.size() > 1, "Trying to send notification about > 1 loaded animation but loaded animations count <= 1");
+				OnAsyncLoadingFinished.Broadcast(MoveTemp(m_LoadedAnimations));
+			}), m_OnAsyncLoadingFinished);
 	}
 }

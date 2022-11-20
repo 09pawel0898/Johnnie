@@ -275,7 +275,7 @@ namespace Engine
 					TSharedPtr<ASkeletalMesh> SkeletalMeshOwner = MeshOwner.lock(); 
 					if (SkeletalMeshOwner)
 					{
-						const TSharedPtr<AssetImporter>& AssetImporter = SkeletalMeshOwner->GetImporter();
+						const TSharedPtr<ModelImporter>& AssetImporter = SkeletalMeshOwner->GetImporter();
 						if (AssetImporter)
 						{
 							SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(AssetImporter.get());

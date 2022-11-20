@@ -35,7 +35,7 @@ namespace Engine
     void AStaticMesh::ImportModel(std::string_view FilePath)
     {
         m_ModelImporter = MakeUnique<StaticModelImporter>();
-
+        
         const aiScene* scene = m_ModelImporter->GetImporter().ReadFile( FilePath.data(),
                 aiProcess_Triangulate 
             |   aiProcess_OptimizeMeshes 
