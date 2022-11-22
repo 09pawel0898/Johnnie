@@ -1,7 +1,7 @@
 #include "EnginePCH.hpp"
 
 #include "BasicMeshGenerator.hpp"
-#include "../CoreActor.hpp"
+#include "../CoreEntity.hpp"
 
 namespace Engine
 {

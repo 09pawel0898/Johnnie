@@ -18,19 +18,23 @@ namespace Engine
 	ASkeletalMesh::~ASkeletalMesh()
 	{}
 	
-	void ASkeletalMesh::Draw(void) const
+	void ASkeletalMesh::Draw(void)
 	{
 		if (m_bIsModelReadyToDraw)
 		{
-			const glm::mat4 modelMat = GetModelMat();
+			glm::vec3 PrevScale = GetScale();
 
-			int id = 0;
+			if (GetCurrentBoneTransformations().size() == 0)
+			{
+				SetScale(glm::vec3(PrevScale.x * 50, PrevScale.y * 50, PrevScale.z* 50));
+			}
+			const glm::mat4 modelMat = GetModelMat();
 
 			for (auto& mesh : m_SubMeshes)
 			{
 				mesh->Draw(modelMat);
-				id++;
 			}
+			SetScale(PrevScale);
 		}
 	}
 	

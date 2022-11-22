@@ -8,6 +8,10 @@
 #include <memory.h>
 #include <iostream>
 
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #define BIND_FUNCTION(Func)\
         [this](auto&&... Args) -> decltype(auto) { return this->Func(std::forward<decltype(Args)>(Args)...); }
 

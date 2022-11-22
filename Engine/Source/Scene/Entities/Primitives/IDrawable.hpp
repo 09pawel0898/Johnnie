@@ -7,7 +7,7 @@ namespace Engine
 	public:
 		virtual ~IDrawable() {};
 
-		virtual void Draw(void) const = 0;
+		virtual void Draw(void) = 0;
 		virtual bool IsVisible(void) const = 0;
 	};
 }

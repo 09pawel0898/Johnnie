@@ -225,7 +225,7 @@ namespace Engine::RHI
         glUniformMatrix4fv(location, 1, GL_FALSE, &Value[0][0]);
     }
 
-    void OpenGLShader::SetMat4Array(std::string_view Name, glm::mat4* Values, uint32_t Count)
+    void OpenGLShader::SetMat4Array(std::string_view Name, const glm::mat4* Values, uint32_t Count)
     {
         for (uint8_t idx = 0; idx < Count; idx++)
         {

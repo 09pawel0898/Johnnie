@@ -65,7 +65,7 @@ namespace Engine
         ~AStaticMesh();
 	
     public:
-        virtual void Draw(void) const override;
+        virtual void Draw(void) override;
 		void OnTick(double DeltaTime) override;
         void OnConstruct(void) override;
         TSharedPtr<AStaticMesh> Clone(void);

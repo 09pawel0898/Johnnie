@@ -41,7 +41,7 @@ namespace Engine
 
 	public:
 		virtual void OnTick(double DeltaTime) override {};
-		virtual void Draw(void) const override {};
+		virtual void Draw(void) override {};
 		virtual void OnConstruct(void) {};
 
 	public:

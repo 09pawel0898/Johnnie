@@ -35,6 +35,8 @@ namespace Engine
         std::vector<TSharedPtr<SkinnedMesh>>        m_SubMeshes;
         MaterialsContainer                          m_MaterialsContainer;
 
+        std::vector<glm::mat4>                      m_CurrentBoneTransformations;
+
         bool m_bIsModelReadyToDraw{ false };
         bool m_bIsModelImported{ false };
 
@@ -44,7 +46,7 @@ namespace Engine
         ~ASkeletalMesh();
 
     public:
-        virtual void Draw(void) const override;
+        virtual void Draw(void) override;
         
         virtual void OnTick(double DeltaTime) override;
 
@@ -65,5 +67,25 @@ namespace Engine
     public:
         std::string const& GetFilePath(void) const;
         TSharedPtr<ModelImporter> const& GetImporter(void) const;
+
+        void SetCurrentBoneTransformations(std::vector<glm::mat4> const& BoneTransformations);
+        std::vector<glm::mat4> const& GetCurrentBoneTransformations(void) const;
+
+        bool IsActorReadyToDraw(void) const;
     };
+
+    FORCEINLINE void ASkeletalMesh::SetCurrentBoneTransformations(std::vector<glm::mat4> const& BoneTransformations)
+    {
+        m_CurrentBoneTransformations = BoneTransformations;
+    }
+
+    FORCEINLINE std::vector<glm::mat4> const& ASkeletalMesh::GetCurrentBoneTransformations(void) const
+    {
+        return m_CurrentBoneTransformations;
+    }
+
+    FORCEINLINE bool ASkeletalMesh::IsActorReadyToDraw(void) const
+    {
+        return m_bIsModelReadyToDraw;
+    }
 }

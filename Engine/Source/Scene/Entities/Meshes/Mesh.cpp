@@ -275,25 +275,13 @@ namespace Engine
 					TSharedPtr<ASkeletalMesh> SkeletalMeshOwner = MeshOwner.lock(); 
 					if (SkeletalMeshOwner)
 					{
-						const TSharedPtr<ModelImporter>& AssetImporter = SkeletalMeshOwner->GetImporter();
-						if (AssetImporter)
+						auto& BoneTransformations = SkeletalMeshOwner->GetCurrentBoneTransformations();
+
+						if (BoneTransformations.size() >0)
 						{
-							SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(AssetImporter.get());
-							if (SkelModelImporter)
-							{
-								std::vector<glm::mat4> BoneTransforms;
-
-								double AnimTimer = Application::Get()->GetTimeSinceStartInSeconds();
-								
-								SkelModelImporter->GetBoneTransforms((float)AnimTimer, BoneTransforms);
-								meshShader->SetMat4Array("uBones", BoneTransforms.data(), BoneTransforms.size());
-
-								glm::mat4 t = glm::mat4(1.f);
-								t = glm::scale(t, SkelModelImporter->GetRootScale());
-								meshShader->SetMat4("uFixedScaleMatrix", t);
-
-							}
+							meshShader->SetMat4Array("uBones", BoneTransformations.data(), BoneTransformations.size());
 						}
+						
 					}
 				},
 				[this](TWeakPtr<AStaticMesh> const& MeshOwner){}

@@ -6,13 +6,13 @@ target_link_libraries(${ENGINE_TARGET_NAME} PRIVATE
 	spdlog
 	stb_image
 	stduuid
-	assimp
 )
 
 
 target_link_libraries(${ENGINE_TARGET_NAME} PUBLIC
 	imgui
 	glm
+	assimp
 )
 
 add_subdirectory(Source)

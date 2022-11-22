@@ -5,7 +5,7 @@
 #include "imgui_impl_opengl3.h"
 #include "imgui_filebrowser.h"
 
-#include "Scene/Entities/CoreWidget.hpp"
+#include "Scene/Entities/CoreEntity.hpp"
 #include "ImGui/ImGuiWidgetBase.hpp"
 
 using namespace Engine;

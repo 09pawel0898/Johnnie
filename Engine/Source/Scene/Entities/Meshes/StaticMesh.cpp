@@ -4,7 +4,7 @@
 #include "Renderer/RHI/Resources/RHITexture.hpp"
 #include "Renderer/RHI/Resources/RHIShader.hpp"
 #include "Renderer/Renderer.hpp"
-#include "Scene/Entities/CoreActor.hpp"
+#include "Scene/Entities/CoreEntity.hpp"
 #include "Scene/SceneDeleates.hpp"
 #include "Core/Debug/ProfileMacros.hpp"
 
@@ -248,7 +248,7 @@ namespace Engine
         return textures;
     }
 
-    void AStaticMesh::Draw(void) const
+    void AStaticMesh::Draw(void)
     {
         if(m_bIsModelReadyToDraw)
         {

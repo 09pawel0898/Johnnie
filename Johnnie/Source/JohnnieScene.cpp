@@ -1,6 +1,5 @@
 #include "JohnnieScene.hpp"
 
-#include <Engine/Scene.hpp>
 #include <Engine/Camera.hpp>
 #include <Engine/Utilities.hpp>
 
@@ -33,6 +32,36 @@ void JohnnieScene::OnTick(double DeltaTime)
 	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
 	
 	m_PointLight->SetLocation(lightPos);
+
+	static bool ModelLoaded = false;
+	if(Input::IsKeyPressed(KeyCode::I) && !ModelLoaded)
+	{
+		m_SkeletalMesh = NewActor<ASkeletalMesh>("Assets/Models/RumbaDancing.dae", OnSkeletalMeshAsyncLoadingFinishedDelegate::CreateRaw(this, &JohnnieScene::Test));
+		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
+		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
+
+		ModelLoaded= true;
+	}
+
+	static bool Loaded = false;
+	if(Input::IsKeyPressed(KeyCode::J) && !Loaded)
+	{
+		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Animations/A_Reaction.dae", true);
+		Loaded = true;
+		ModelLoaded = false;
+	}
+	
+	static bool Selected = false;
+	if(Input::IsKeyPressed(KeyCode::K) && !Selected)
+	{
+		for (auto Name : m_Animator->GetAvailableAnimationsNames())
+		{
+			LOG(Core, Trace, "Anim [{0}]", Name.data());
+		}
+
+		m_Animator->SetActiveAnimationName("Animation_0");
+		Selected = true;
+	}
 }
 
 void JohnnieScene::InitGui(void)
@@ -59,8 +88,10 @@ void JohnnieScene::InitGui(void)
 	{
 		m_StaticMesh = nullptr;
 		
-		m_SkeletalMesh = NewActor<ASkeletalMesh>(FileName);
+		m_SkeletalMesh = NewActor<ASkeletalMesh>(FileName, OnSkeletalMeshAsyncLoadingFinishedDelegate::CreateRaw(this,&JohnnieScene::Test));
 		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
+
+		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
 	});
 }
 
@@ -98,6 +129,8 @@ void JohnnieScene::InitScene(void)
 	
 	m_Platform->SetLocation(glm::vec3(0.f, -0.1f, 0.f));
 	m_Platform->SetScale(glm::vec3(20.f, 1.f, 20.f));
+
+	m_Animator = NewObject<OAnimator>();
 }
 
 void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
@@ -107,5 +140,16 @@ void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
 		material->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
 		//material->SetBaseColor(glm::vec3(0.8f, 0.105f, 0.109f));
 		material->SetSpecular(glm::vec3(0.f));
+	}
+}
+
+void JohnnieScene::Test(ASkeletalMesh* SkeletalMesh)
+{
+	static bool ExampleAnimsLoaded = false;
+
+	if (!ExampleAnimsLoaded)
+	{
+		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Models/RumbaDancing.dae", true);
+		ExampleAnimsLoaded = true;
 	}
 }

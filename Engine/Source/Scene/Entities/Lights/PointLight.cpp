@@ -33,7 +33,7 @@ namespace Engine
         SetIntensity(Strength);
     }
 
-    void APointLight::Draw(void) const
+    void APointLight::Draw(void)
     {
         if(IsVisible())
         {

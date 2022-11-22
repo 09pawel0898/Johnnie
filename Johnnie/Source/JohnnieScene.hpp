@@ -33,6 +33,7 @@ private:
 	TSharedPtr<WJohnnieSceneWidget>			m_SceneWidget;
 	TSharedPtr<WJohnnieViewportWidget>		m_ViewportWidget;
 
+private:
 	/** Floating Camera */
 	TSharedPtr<AFloatingCamera>				m_Camera;
 
@@ -45,6 +46,9 @@ private:
 	TSharedPtr<AStaticMesh>					m_Sphere;
 	TSharedPtr<APointLight>					m_PointLight;
 	TSharedPtr<ADirectionalLight>			m_DirectionalLight;
+
+private:
+	TSharedPtr<OAnimator>					m_Animator;
 
 private:
 	/** Scene Interface Impl*/
@@ -60,4 +64,6 @@ private:
 	void InitLighting(void);
 
 	void InitPlatformMaterial(AStaticMesh* Platform);
+
+	void Test(ASkeletalMesh* SkeletalMesh);
 };

@@ -47,7 +47,7 @@ namespace Engine
 	public:
 		void SetBoxMeshVisibility(bool Visible);
 
-		virtual void Draw(void) const override;
+		virtual void Draw(void) override;
 		void OnTick(double DeltaTime) override;
 		virtual void OnConstruct(void) override;
 

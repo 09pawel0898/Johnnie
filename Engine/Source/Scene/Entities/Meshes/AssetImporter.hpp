@@ -18,6 +18,7 @@ namespace Engine
 	class Mesh;
 	class SkinnedMesh;
 	class Animation;
+
 	struct AnimatedNodeData;
 
 	enum class AssetImporterType : uint8_t
@@ -51,7 +52,8 @@ namespace Engine
 		std::string			m_RootDirectory;
 		Assimp::Importer	m_AssimpImporter = Assimp::Importer();
 		AssetImporterType	m_ImporterType;
-		
+		bool m_bIsBusy{ false };
+
 	public:
 		AssetImporter() = default;
 
@@ -64,26 +66,24 @@ namespace Engine
 	public:
 		Assimp::Importer& GetImporter(void);
 		Assimp::Importer const& GetImporter(void) const;
-		const aiScene* GetScene(void);
-		
+		const aiScene* GetScene(void) const;
+		bool IsBusy(void) const;
 		std::string const& GetRootDirectory(void);
 	};
+
+	FORCEINLINE bool AssetImporter::IsBusy(void) const
+	{
+		return m_bIsBusy;
+	}
 
 	class ModelImporter : public AssetImporter
 	{
 	protected:
-		bool		m_bHasEmbeddedTextures{ false };
-		bool		m_bIsModelImported{ false };
-		glm::vec3	m_RootScale = glm::vec3(1.f, 1.f, 1.f);
+		bool m_bHasEmbeddedTextures{ false };
+		bool m_bIsModelImported{ false };
 		
-		std::future<void>	m_ImportModelFuture;
+		std::future<void> m_ImportModelFuture;
 	
-	public:
-		glm::vec3 GetRootScale(void) const
-		{
-			return m_RootScale;
-		}
-
 	public:
 		virtual void AsyncImportModel(std::string_view FilePath) = 0;
 
@@ -107,7 +107,8 @@ namespace Engine
 		TWeakPtr<ASkeletalMesh>	m_SkeletalMesh;
 		
 		ModelView				m_ModelView;
-		ModelSkeletonData		m_SkeletonData;
+		SkinnedMeshData			m_SkinnedMeshData;
+		SkeletonData			m_SkeletonData;
 
 		glm::mat4				m_GlobalInverseTransform;
 
@@ -115,6 +116,7 @@ namespace Engine
 		explicit SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
 		void AsyncImportModel(std::string_view FilePath) override;
+		SkeletonData const& GetSkeletonData(void) const { return m_SkeletonData; };
 
 	private:
 		void AsyncImportModel_Internal(std::string_view FilePath, uint32_t Flags);
@@ -131,40 +133,37 @@ namespace Engine
 
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData);
+		void PrintSkeleton(aiNode* Node, uint16_t Deep = 0);
 
 		uint32_t GetBoneID(const aiBone* AnimatedBoneData);
-		aiNode* GetRootBone(aiNode* SceneRootNode);
-		void ProcessNode(aiNode* Node);
-		aiNode* m_RootBone = nullptr;
-
-		void ReadNodeHierarchy(float AnimationTimeInTicks, const aiNode* Node, glm::mat4 const& ParentTransformMatrix);
-
-		const aiNodeAnim* FindNodeAnim(const aiAnimation* Animation, std::string const& NodeName);
-		uint32_t FindPosition(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-		uint32_t FindRotation(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-		uint32_t FindScaling(float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-
-		void CalculateInterpolatedScaling(aiVector3D& OutScale, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-		void CalculateInterpolatedRotation(aiQuaternion& OutQuat, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-		void CalculateInterpolatedLocation(aiVector3D& OutLocation, float AnimationTimeInTicks, const aiNodeAnim* NodeAnim);
-
+		
 		void InitializeRequiredNodes(const aiNode* Root);
 
 	public:
-		void GetBoneTransforms(float AnimationTimeInSeconds, std::vector<glm::mat4>& OutTransformMatrices);
-		void MarkRequiredNodesForBone(const aiBone* AnimatedBoneData);
+		void MarkRequiredNodesForBone(const aiBone* AiBone);
+		glm::mat4 GetGlobalInverseTransform(void) const
+		{
+			return m_GlobalInverseTransform;
+		}
 	};
 
 	aiTextureType RHITextureTypeToAssimpTextureType(RHI::RHIMapTextureType RHIMapTextureType);
 
-	DECLARE_MULTICAST_DELEGATE(OnAnimationsAsyncLoadingFinishedDelegate, std::vector<TUniquePtr<Animation>>&&);
-	DECLARE_MULTICAST_DELEGATE(OnAnimationAsyncLoadingFinishedDelegate, TUniquePtr<Animation>&&);
+	DECLARE_DELEGATE(OnAnimationsAsyncLoadingFinishedDelegate, std::vector<Animation>&);
+	DECLARE_DELEGATE(OnAnimationAsyncLoadingFinishedDelegate, Animation&);
+
+	class FixedSkeletonData
+	{
+		std::map<std::string, uint32_t>	BoneNameIndexMap;
+		std::vector<BoneData>			BonesData;
+		std::map<std::string, NodeData>	RequiredNodes;
+	};
 
 	class AnimationImporter : public AssetImporter
 	{
 	private:
 		std::mutex m_LoadedAnimationsLock;
-		std::vector<TUniquePtr<Animation>>	m_LoadedAnimations;
+		std::vector<Animation> m_LoadedAnimations;
 
 		std::variant<	OnAnimationAsyncLoadingFinishedDelegate, 
 						OnAnimationsAsyncLoadingFinishedDelegate> m_OnAsyncLoadingFinished;
@@ -172,7 +171,10 @@ namespace Engine
 		std::future<void> m_ReadSceneFuture;
 		std::vector< std::future<void>> m_ImportAnimationFutures;
 
-		
+	public:
+		TWeakPtr<ASkeletalMesh> m_SkeletalMesh;
+		std::map<std::string, uint32_t> m_BoneNameIndexMap;
+
 	public:
 		AnimationImporter() = default;
 
@@ -183,9 +185,14 @@ namespace Engine
 		void AsyncImportScene_Internal(std::string_view FilePath, bool ImportAllAnimations);
 		void AsyncImportAnimation_Internal(const aiAnimation* AiAnimation);
 
+		void PrintSkeleton(aiNode* Node, uint16_t Deep =0);
+
 		void ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation);
 		void ReadHeirarchyData(AnimatedNodeData* AnimatedNode, const aiNode* Node);
 
 		void NotifyLoadingFinished(void);
+
+		aiNode* GetRootBone(aiNode* SceneRootNode);
+		void FindRootBone(aiNode* Node, aiNode** OutResult);
 	};
 }

@@ -1,10 +1,11 @@
 #include "EnginePCH.hpp"
 #include "Animator.hpp"
 #include "SkeletalMeshHelpers.hpp"
+#include "SkeletalMesh.hpp"
 
 namespace Engine
 {
-    Animator::Animator()
+    OAnimator::OAnimator()
     {
         m_CurrentTimeInTicks = 0.f;
         m_ActiveAnimationName = ID::None;
@@ -14,22 +15,29 @@ namespace Engine
         m_FinalBoneTransformations.resize(g_MaxBonesCount);
     }
 
-    void Animator::OnTick(double DeltaTime)
+    void OAnimator::OnTick(double DeltaTime)
     {
         m_DeltaTime = DeltaTime;
 
-        if (IsAnimationActive())
+        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+        
+        if (SkeletalMesh != nullptr && IsAnimationActive())
         {
-            Animation const& Animation = GetActiveAnimation();
+            if (SkeletalMesh->IsActorReadyToDraw())
+            {
+                Animation const& Animation = GetActiveAnimation();
 
-            m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)DeltaTime;
-            m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
-            
-            CalculateBoneTransformations(Animation.GetRootNode(), glm::mat4(1.0f));
+                m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)DeltaTime;
+                m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
+
+                CalculateBoneTransformations(Animation.GetRootNode(), glm::mat4(1.0f));
+
+                SkeletalMesh->SetCurrentBoneTransformations(m_FinalBoneTransformations);
+            }
         }
     }
 
-    void Animator::InitializeLogCategory(void)
+    void OAnimator::InitializeLogCategory(void)
     {
         static bool LoggerInitialized = false;
         if (!LoggerInitialized)
@@ -39,7 +47,7 @@ namespace Engine
         }
     }
 
-    float Animator::SecondsToTicks(float AnimationTimeInSeconds) const
+    float OAnimator::SecondsToTicks(float AnimationTimeInSeconds) const
     {
         if (IsAnimationActive())
         {
@@ -55,7 +63,7 @@ namespace Engine
         return 0.f;
     }
 
-    Animation const& Animator::GetActiveAnimation(void) const
+    Animation const& OAnimator::GetActiveAnimation(void) const
     {
         Check(m_ActiveAnimationName != ID::None);
 
@@ -63,44 +71,120 @@ namespace Engine
         return Anim->second;
     }
 
-    void CalculateBoneTransformations(const AnimatedNodeData* Node, glm::mat4 const& ParentTransform)
+    void OAnimator::CalculateBoneTransformations(const AnimatedNodeData* Node, glm::mat4 const& ParentTransform)
     {
-        //std::string NodeName    = Node->Name;
-        //glm::mat4 nodeTransform = Node->Transformation;
+        std::string NodeName    = Node->Name;
+        glm::mat4 NodeTransform = Node->Transformation;
+        
+        Animation& CurrentAnimation = m_Animations[m_ActiveAnimationName];
+
+        AnimatedBoneData* Bone = CurrentAnimation.FindBone(NodeName);
+        
+        if (Bone)
+        {
+            Bone->Update(m_CurrentTimeInTicks);
+            NodeTransform = Bone->GetLocalTransform();
+        }
+        else
+        {
+            //LOG(Animator, Trace, "Skipping node {0}", Node->Name);
+
+            int x = 0;
+            x += 2;
+        }
+        
+        glm::mat4 globalTransformation = ParentTransform * NodeTransform;
+        
         //
-        //AnimatedBoneData* Bone = m_CurrentAnimation->FindBone(NodeName);
+        std::vector<BoneData> BD;
+        uint32_t ID;
+        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+        if (SkeletalMesh)
+        {
+            SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(SkeletalMesh->GetImporter().get());
+            if (SkelModelImporter)
+            {
+                
+
+                BD = SkelModelImporter->GetSkeletonData().BonesData;
+        
         //
-        //if (Bone)
-        //{
-        //    Bone->Update(m_CurrentTime);
-        //    nodeTransform = Bone->GetLocalTransform();
-        //}
-        //
-        //glm::mat4 globalTransformation = parentTransform * nodeTransform;
-        //
-        //auto boneInfoMap = m_CurrentAnimation->GetBoneIDMap();
-        //if (boneInfoMap.find(nodeName) != boneInfoMap.end())
-        //{
-        //    int index = boneInfoMap[nodeName].id;
-        //    glm::mat4 offset = boneInfoMap[nodeName].offset;
-        //    m_FinalBoneMatrices[index] = globalTransformation * offset;
-        //}
-        //
-        //for (int i = 0; i < node->childrenCount; i++)
-        //    CalculateBoneTransform(&node->children[i], globalTransformation);
+                auto& BoneNameToIndexMap = CurrentAnimation.GetBoneNameToIndexMap();
+        
+                if (BoneNameToIndexMap.find(NodeName) != BoneNameToIndexMap.end())
+                {
+                    std::string s = NodeName;
+                    ID = BoneNameToIndexMap.at(s);
+
+                    glm::mat4 const& OffsetMatrix = BD[ID].OffsetMatrix;
+
+                    m_FinalBoneTransformations[ID] = SkelModelImporter->GetGlobalInverseTransform() * globalTransformation * OffsetMatrix;
+                }
+                for (int16_t idx = 0; idx < Node->ChildrenCount; idx++)
+                {
+                    std::string ChildName = Node->Children[idx].Name;
+
+                    auto FoundRequiredNode = SkelModelImporter->GetSkeletonData().RequiredNodes.find(ChildName);
+                    if (FoundRequiredNode == SkelModelImporter->GetSkeletonData().RequiredNodes.end())
+                    {
+                        CheckMsg(false, "Child node couldn't be found in the hierarchy.");
+                    }
+
+                    if (FoundRequiredNode->second.IsRequired)
+                    {
+                        CalculateBoneTransformations(&Node->Children[idx], globalTransformation);
+                    }
+                }
+            }
+        }
     }
 
-    std::vector<std::string> Animator::GetAvailableAnimationsNames(void) const
+    void OAnimator::AsyncImportSingleAnimationFromFile(std::string_view FilePath, bool ActivateOnLoad)
     {
-        return std::vector<std::string>();
+        if (!m_AnimationImporter.IsBusy())
+        {
+            m_bPendingActivateFirstOnLoad = ActivateOnLoad;
+            m_AnimationImporter.m_SkeletalMesh = m_AnimatedSkeletalMesh; // TEMP
+            m_AnimationImporter.AsyncImportFirstAnimation(FilePath, OnAnimationAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnSingleAnimationLoadedFromFile));
+        }
+        else
+        {
+            LOG(Animator, Warning, "Loading canceled. Animation importer is busy.");
+        }
     }
 
-    uint8_t Animator::GetAvailableAnimationsCount(void) const
+    void OAnimator::AsyncImportAllAnimationsFromFile(std::string_view FilePath, bool ActivateFirstOnLoad)
+    {
+        if (!m_AnimationImporter.IsBusy())
+        {
+            m_bPendingActivateFirstOnLoad = ActivateFirstOnLoad;
+            m_AnimationImporter.m_SkeletalMesh = m_AnimatedSkeletalMesh; // TEMP
+            m_AnimationImporter.AsyncImportAllAnimations(FilePath, OnAnimationsAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnAnimationsLoadedFromFile));
+        } 
+        else
+        {
+            LOG(Animator, Warning, "Loading canceled. Animation importer is busy.");
+        }
+    }
+
+    std::vector<std::string_view> OAnimator::GetAvailableAnimationsNames(void) const
+    {
+        std::vector<std::string_view> Names;
+
+        for (auto const& [Name, Animation] : m_Animations)
+        {
+            Names.emplace_back(Name);
+        }
+        
+        return Names;
+    }
+
+    uint8_t OAnimator::GetAvailableAnimationsCount(void) const
     {
         return uint8_t();
     }
     
-    bool Animator::SetActiveAnimationName(std::string const& AnimationName)
+    bool OAnimator::SetActiveAnimationName(std::string const& AnimationName)
     {
         bool FoundAnimation = m_Animations.find(AnimationName) != m_Animations.cend();
 
@@ -115,7 +199,7 @@ namespace Engine
         return false;
     }
 
-    void Animator::Pause(void)
+    void OAnimator::Pause(void)
     {
         if (IsAnimationActive())
         {
@@ -127,7 +211,7 @@ namespace Engine
         }
     }
     
-    void Animator::Resume(void)
+    void OAnimator::Resume(void)
     {
         if (IsAnimationActive())
         {
@@ -139,7 +223,7 @@ namespace Engine
         }
     }
 
-    void Animator::SetAnimationTime(float TimeInSeconds, bool PauseAnimation)
+    void OAnimator::SetAnimationTime(float TimeInSeconds, bool PauseAnimation)
     {
         if (IsAnimationActive())
         {
@@ -156,15 +240,55 @@ namespace Engine
         }
     }
 
-    void Animator::SetLoop(bool Loop)
+    void OAnimator::SetLoop(bool Loop)
     {
         m_bLoopAnimation = Loop;
     }
 
-    void Animator::ClearAnimations(void)
+    void OAnimator::ClearAnimations(void)
     {
         m_ActiveAnimationName = ID::None;
 
         m_Animations.clear();
+    }
+
+    void OAnimator::OnAnimationsLoadedFromFile(std::vector<Animation>& Animations)
+    {
+        //Check(Animations.size() > 0);
+        //
+        //std::string FirstName;
+        //
+        //for (uint16_t idx = 0 ; idx < Animations.size() ;idx++)
+        //{
+        //    const std::string Name = Animations[idx].GetName().data();
+        //
+        //    if (idx == 0)
+        //    {
+        //        FirstName = "Animation_" + Name;
+        //    }
+        //
+        //    m_Animations["Animation_" + Name] = Animations[idx];
+        //}
+        //
+        //if (m_bPendingActivateFirstOnLoad)
+        //{
+        //    SetActiveAnimationName(m_Animations[FirstName].GetName());
+        //}
+    }
+
+    void OAnimator::OnSingleAnimationLoadedFromFile(Animation& Animation)
+    {
+        static uint16_t AnimationID = 0;
+
+        const std::string Name = "Animation_" + std::to_string(AnimationID);
+
+        m_Animations[Name] = Animation;
+        
+        if (m_bPendingActivateFirstOnLoad)
+        {
+            SetActiveAnimationName(Name);
+        }
+
+        AnimationID++;
     }
 }

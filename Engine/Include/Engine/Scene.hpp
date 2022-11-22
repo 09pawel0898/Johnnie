@@ -2,11 +2,15 @@
 
 #include "Renderer/Materials/Material.hpp"
 
-#include "Scene/Entities/CoreActor.hpp"
-#include "Scene/Entities/CoreWidget.hpp"
+#include "Scene/Entities/CoreEntity.hpp"
 		 
 #include "Scene/Entities/Meshes/StaticMesh.hpp"
 #include "Scene/Entities/Meshes/SkeletalMesh/SkeletalMesh.hpp"
+#include "Scene/Entities/Meshes/SkeletalMesh/Animation.hpp"
+#include "Scene/Entities/Meshes/SkeletalMesh/Animator.hpp"
+
+#include "Scene/Entities/Meshes/AssetImporter.hpp"
+
 #include "Scene/Entities/Meshes/BasicMeshGenerator.hpp"
 
 #include "Scene/Entities/Lights/PointLight.hpp"

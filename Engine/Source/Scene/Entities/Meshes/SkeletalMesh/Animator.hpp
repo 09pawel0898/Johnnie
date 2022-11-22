@@ -3,16 +3,28 @@
 #include "Core/CoreMinimal.hpp"
 #include "Animation.hpp"
 #include "Utilities/Delegates.hpp"
-#include "Scene/Entities/Primitives/Tickable.hpp"
+#include "Scene/Entities/Primitives/Object.hpp"
+
+#include "../AssetImporter.hpp"
 #include "Log/Log.hpp"
+
 
 namespace Engine
 {
-	class Animator final : public Tickable
+	class ASkeletalMesh;
+
+	class OAnimator final : public Object
 	{
+	private:
+		TWeakPtr<ASkeletalMesh> m_AnimatedSkeletalMesh;
+
 	private:
 		using AnimationID = std::string;
 
+		AnimationImporter m_AnimationImporter;
+		bool m_bPendingActivateFirstOnLoad{ false };
+
+	private:
 		std::unordered_map<AnimationID, Animation>	m_Animations;
 		std::string	m_ActiveAnimationName = ID::None;
 
@@ -38,7 +50,7 @@ namespace Engine
 		OnAnimationResumedPlaying	OnAnimationResumed;
 
 	public:
-		Animator();
+		OAnimator();
 
 	private:
 		void InitializeLogCategory(void);
@@ -51,19 +63,17 @@ namespace Engine
 	public:
 		virtual void OnTick(double DeltaTime) override;
 
-		template <typename TAnimation>
-			requires BaseOf<Animation,TAnimation>
-		void AddAnimation(TAnimation&& Animation)
-		{
-			m_Animations.insert(Forward<TAnimation>(Animation));
-		}
+		void AsyncImportSingleAnimationFromFile(std::string_view FilePath, bool ActivateOnLoad);
+		void AsyncImportAllAnimationsFromFile(std::string_view FilePath, bool ActivateFirstOnLoad);
+
+		void SetSkeletalMesh(TSharedPtr<ASkeletalMesh> SkeletalMesh);
 
 	public:
 		bool IsAnimationActive(void) const;
 		std::string const& GetActiveAnimationName(void) const;
 
 		bool SetActiveAnimationName(std::string const& AnimationName);
-		std::vector<std::string> GetAvailableAnimationsNames(void) const;
+		std::vector<std::string_view> GetAvailableAnimationsNames(void) const;
 		uint8_t GetAvailableAnimationsCount(void) const;
 		
 		void Pause(void);
@@ -74,20 +84,29 @@ namespace Engine
 		void ClearAnimations(void);
 
 		std::vector<glm::mat4> const& GetBoneTransformations(void) const;
+
+	private:
+		void OnAnimationsLoadedFromFile(std::vector<Animation>& Animations);
+		void OnSingleAnimationLoadedFromFile(Animation& Animation);
 	};
 
-	FORCEINLINE bool Animator::IsAnimationActive(void) const
+	FORCEINLINE bool OAnimator::IsAnimationActive(void) const
 	{
 		return m_ActiveAnimationName != ID::None;
 	}
 
-	FORCEINLINE std::string const& Animator::GetActiveAnimationName(void) const
+	FORCEINLINE std::string const& OAnimator::GetActiveAnimationName(void) const
 	{
 		return m_ActiveAnimationName;
 	}
 
-	FORCEINLINE std::vector<glm::mat4> const& Animator::GetBoneTransformations(void) const
+	FORCEINLINE std::vector<glm::mat4> const& OAnimator::GetBoneTransformations(void) const
 	{
 		return m_FinalBoneTransformations;
+	}
+
+	FORCEINLINE void OAnimator::SetSkeletalMesh(TSharedPtr<ASkeletalMesh> SkeletalMesh)
+	{
+		m_AnimatedSkeletalMesh = MoveTemp(SkeletalMesh);
 	}
 }
