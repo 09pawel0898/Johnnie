@@ -133,7 +133,7 @@ namespace Engine
 		TSharedPtr<SkinnedMesh> ParseSingleMeshData(uint16_t Index, const aiMesh* AiMesh);
 
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
-		void ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData);
+		void ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimationKeyFrame);
 
 		void ParseHierarchyData(const aiNode* AiRootNode);
 		void ParseHierarchyData_BuildHierarchy(NodeData* Node, const aiNode* AiNode);
@@ -142,7 +142,7 @@ namespace Engine
 
 		void PrintSkeleton(aiNode* Node, uint16_t Deep = 0);
 
-		uint32_t GetBoneID(const aiBone* AnimatedBoneData);
+		uint32_t GetBoneID(const aiBone* AnimationKeyFrame);
 		
 	public:
 		static void FindRootBone(NodeData* Node, NodeData** OutResult, std::map<std::string,uint32_t> const& BoneNameIndexMap);
@@ -196,8 +196,7 @@ namespace Engine
 		void PrintSkeleton(aiNode* Node, uint16_t Deep =0);
 
 		void ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation);
-		void ReadHeirarchyData(AnimatedNodeData* AnimatedNode, const aiNode* Node);
-
+		
 		void NotifyLoadingFinished(void);
 
 		aiNode* GetRootBone(aiNode* SceneRootNode);

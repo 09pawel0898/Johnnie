@@ -8,76 +8,75 @@
 
 namespace Engine
 {
-    AnimatedBoneData::AnimatedBoneData(std::string Name, uint16_t Index, const aiNodeAnim* Channel)
-        : m_Name(MoveTemp(Name)),
-        m_Index(Index),
-        m_LocalTransform(1.0f)
+    AnimationBoneKeyFrames::AnimationBoneKeyFrames(std::string BoneName, uint16_t BoneIndex, const aiNodeAnim* AiChannel)
+        :   m_BoneName(MoveTemp(BoneName)),
+            m_BoneIndex(BoneIndex),
+            m_LocalTransform(1.0f)
     {
-#ifdef DEBUG_MODEL_IMPORTER
-        LOG(Core, Trace, "AnimatedBoneData [{0}]", m_Name);
-#endif
-        ParsePositionKeys(Channel);
-        ParseRotationKeys(Channel);
-        ParseScaleKeys(Channel);
+        ParsePositionKeys(AiChannel);
+        ParseRotationKeys(AiChannel);
+        ParseScaleKeys(AiChannel);
     }
-    void AnimatedBoneData::ParsePositionKeys(const aiNodeAnim* Channel)
-    {
-        for (uint16_t idx = 0; idx < Channel->mNumPositionKeys; ++idx)
-        {
-            aiVector3D const& aiPosition = Channel->mPositionKeys[idx].mValue;
 
-            double TimeStamp = Channel->mPositionKeys[idx].mTime;
+    void AnimationBoneKeyFrames::ParsePositionKeys(const aiNodeAnim* AiChannel)
+    {
+        for (uint16_t idx = 0; idx < AiChannel->mNumPositionKeys; ++idx)
+        {
+            aiVector3D const& aiPosition = AiChannel->mPositionKeys[idx].mValue;
+
+            double TimeStamp = AiChannel->mPositionKeys[idx].mTime;
             PositionKey PositionKey;
             PositionKey.Position = Utility::AiVec3ToGlmVec3(aiPosition);
             PositionKey.TimeStamp = TimeStamp;
 
-            m_Positions.emplace_back(MoveTemp(PositionKey));
+            m_PositionKeyFrames.emplace_back(MoveTemp(PositionKey));
         }
     }
 
-    void AnimatedBoneData::ParseRotationKeys(const aiNodeAnim* Channel)
+    void AnimationBoneKeyFrames::ParseRotationKeys(const aiNodeAnim* AiChannel)
     {
-        for (uint16_t idx = 0; idx < Channel->mNumRotationKeys; idx++)
+        for (uint16_t idx = 0; idx < AiChannel->mNumRotationKeys; idx++)
         {
-            aiQuaternion const& aiQuaternion = Channel->mRotationKeys[idx].mValue;
+            aiQuaternion const& aiQuaternion = AiChannel->mRotationKeys[idx].mValue;
 
-            double TimeStamp = Channel->mRotationKeys[idx].mTime;
+            double TimeStamp = AiChannel->mRotationKeys[idx].mTime;
             RotationKey RotationKey;
             RotationKey.Rotation = Utility::AiQuatToGlmQuat(aiQuaternion);
             RotationKey.TimeStamp = TimeStamp;
 
-            m_Rotations.emplace_back(MoveTemp(RotationKey));
+            m_RotationKeyFrames.emplace_back(MoveTemp(RotationKey));
         }
     }
 
-    void AnimatedBoneData::ParseScaleKeys(const aiNodeAnim* Channel)
+    void AnimationBoneKeyFrames::ParseScaleKeys(const aiNodeAnim* AiChannel)
     {
-        for (uint16_t idx = 0; idx < Channel->mNumScalingKeys; idx++)
+        for (uint16_t idx = 0; idx < AiChannel->mNumScalingKeys; idx++)
         {
-            aiVector3D const& Scale = Channel->mScalingKeys[idx].mValue;
+            aiVector3D const& Scale = AiChannel->mScalingKeys[idx].mValue;
 
-            double TimeStamp = Channel->mScalingKeys[idx].mTime;
+            double TimeStamp = AiChannel->mScalingKeys[idx].mTime;
             ScaleKey ScaleKey;
             ScaleKey.Scale = Utility::AiVec3ToGlmVec3(Scale);
             ScaleKey.TimeStamp = TimeStamp;
 
-            m_Scales.emplace_back(MoveTemp(ScaleKey));
+            m_ScaleKeyFrames.emplace_back(MoveTemp(ScaleKey));
         }
     }
 
-    void AnimatedBoneData::Update(float AnimationTime)
+    void AnimationBoneKeyFrames::UpdateLocalTransform(float AnimationTime)
     {
-        glm::mat4 Translation = InterpolatePosition(AnimationTime);
-        glm::mat4 Rotation = InterpolateRotation(AnimationTime);
-        glm::mat4 Scale = InterpolateScaling(AnimationTime);
+        glm::mat4 Translation   = InterpolatePosition(AnimationTime);
+        glm::mat4 Rotation      = InterpolateRotation(AnimationTime);
+        glm::mat4 Scale         = InterpolateScaling(AnimationTime);
+
         m_LocalTransform = Translation * Rotation * Scale;
     }
 
-    int32_t AnimatedBoneData::GetPositionIndex(float AnimationTimeInTicks) const
+    int32_t AnimationBoneKeyFrames::GetPositionIndex(float AnimationTimeInTicks) const
     {
-        for (uint16_t idx = 0; idx < m_Positions.size() - 1; idx++)
+        for (uint16_t idx = 0; idx < m_PositionKeyFrames.size() - 1; idx++)
         {
-            if (AnimationTimeInTicks < m_Positions[idx + 1].TimeStamp)
+            if (AnimationTimeInTicks < m_PositionKeyFrames[idx + 1].TimeStamp)
             {
                 return idx;
             }
@@ -87,11 +86,11 @@ namespace Engine
         return Index::None;
     }
 
-    int32_t AnimatedBoneData::GetRotationIndex(float AnimationTimeInTicks) const
+    int32_t AnimationBoneKeyFrames::GetRotationIndex(float AnimationTimeInTicks) const
     {
-        for (uint16_t idx = 0; idx < m_Rotations.size() - 1; idx++)
+        for (uint16_t idx = 0; idx < m_RotationKeyFrames.size() - 1; idx++)
         {
-            if (AnimationTimeInTicks < m_Rotations[idx + 1].TimeStamp)
+            if (AnimationTimeInTicks < m_RotationKeyFrames[idx + 1].TimeStamp)
             {
                 return idx;
             }
@@ -101,11 +100,11 @@ namespace Engine
         return Index::None;
     }
 
-    int32_t AnimatedBoneData::GetScaleIndex(float AnimationTimeInTicks) const
+    int32_t AnimationBoneKeyFrames::GetScaleIndex(float AnimationTimeInTicks) const
     {
-        for (uint16_t idx = 0; idx < m_Scales.size() - 1; idx++)
+        for (uint16_t idx = 0; idx < m_ScaleKeyFrames.size() - 1; idx++)
         {
-            if (AnimationTimeInTicks < m_Scales[idx + 1].TimeStamp)
+            if (AnimationTimeInTicks < m_ScaleKeyFrames[idx + 1].TimeStamp)
             {
                 return idx;
             }
@@ -115,7 +114,7 @@ namespace Engine
         return Index::None;
     }
 
-    double AnimatedBoneData::GetScaleFactor(double LastTimeStamp, double NextTimeStamp, float AnimationTimeInTicks) const
+    double AnimationBoneKeyFrames::GetScaleFactor(double LastTimeStamp, double NextTimeStamp, float AnimationTimeInTicks) const
     {
         double MidWayLength = (double)AnimationTimeInTicks - LastTimeStamp;
         double FramesDiff = NextTimeStamp - LastTimeStamp;
@@ -124,71 +123,78 @@ namespace Engine
         return ScaleFactor;
     }
 
-    glm::mat4 AnimatedBoneData::InterpolatePosition(float AnimationTimeInTicks) const
+    glm::mat4 AnimationBoneKeyFrames::InterpolatePosition(float AnimationTimeInTicks) const
     {
-        if (m_Positions.size() == 1)
+        if (m_PositionKeyFrames.size() == 1)
         {
-            return glm::translate(glm::mat4(1.0f), m_Positions[0].Position);
+            return glm::translate(glm::mat4(1.0f), m_PositionKeyFrames[0].Position);
         }
 
         int p0Index = GetPositionIndex(AnimationTimeInTicks);
         int p1Index = p0Index + 1;
 
-        double ScaleFactor = GetScaleFactor(m_Positions[p0Index].TimeStamp,
-            m_Positions[p1Index].TimeStamp, AnimationTimeInTicks);
-        glm::vec3 FinalPosition = glm::mix(m_Positions[p0Index].Position,
-            m_Positions[p1Index].Position, ScaleFactor);
+        double ScaleFactor = GetScaleFactor(m_PositionKeyFrames[p0Index].TimeStamp,
+                                            m_PositionKeyFrames[p1Index].TimeStamp, 
+                                            AnimationTimeInTicks);
+        
+        glm::vec3 FinalPosition = glm::mix( m_PositionKeyFrames[p0Index].Position,
+                                            m_PositionKeyFrames[p1Index].Position, 
+                                            ScaleFactor);
 
         return glm::translate(glm::mat4(1.0f), FinalPosition);
     }
 
-    glm::mat4 AnimatedBoneData::InterpolateRotation(float AnimationTimeInTicks) const
+    glm::mat4 AnimationBoneKeyFrames::InterpolateRotation(float AnimationTimeInTicks) const
     {
-        if (m_Rotations.size() == 1)
+        if (m_RotationKeyFrames.size() == 1)
         {
-            auto rotation = glm::normalize(m_Rotations[0].Rotation);
+            auto rotation = glm::normalize(m_RotationKeyFrames[0].Rotation);
             return glm::mat4_cast(rotation);
         }
 
         int p0Index = GetRotationIndex(AnimationTimeInTicks);
         int p1Index = p0Index + 1;
 
-        double ScaleFactor = GetScaleFactor(m_Rotations[p0Index].TimeStamp,
-            m_Rotations[p1Index].TimeStamp, AnimationTimeInTicks);
+        double ScaleFactor = GetScaleFactor(m_RotationKeyFrames[p0Index].TimeStamp,
+                                            m_RotationKeyFrames[p1Index].TimeStamp, 
+                                            AnimationTimeInTicks);
 
-        glm::quat FinalRotation = glm::slerp(m_Rotations[p0Index].Rotation,
-            m_Rotations[p1Index].Rotation, (float)ScaleFactor);
+        glm::quat FinalRotation = glm::slerp(m_RotationKeyFrames[p0Index].Rotation,
+                                             m_RotationKeyFrames[p1Index].Rotation, 
+                                             (float)ScaleFactor);
+        
         FinalRotation = glm::normalize(FinalRotation);
 
         return glm::mat4_cast(FinalRotation);
     }
 
-    glm::mat4 AnimatedBoneData::InterpolateScaling(float AnimationTimeInTicks) const
+    glm::mat4 AnimationBoneKeyFrames::InterpolateScaling(float AnimationTimeInTicks) const
     {
-        if (m_Scales.size() == 1)
+        if (m_ScaleKeyFrames.size() == 1)
         {
-            return glm::scale(glm::mat4(1.0f), m_Scales[0].Scale);
+            return glm::scale(glm::mat4(1.0f), m_ScaleKeyFrames[0].Scale);
         }
 
         int p0Index = GetScaleIndex(AnimationTimeInTicks);
         int p1Index = p0Index + 1;
 
-        double ScaleFactor = GetScaleFactor(m_Scales[p0Index].TimeStamp,
-            m_Scales[p1Index].TimeStamp, AnimationTimeInTicks);
+        double ScaleFactor = GetScaleFactor(m_ScaleKeyFrames[p0Index].TimeStamp,
+                                            m_ScaleKeyFrames[p1Index].TimeStamp, 
+                                            AnimationTimeInTicks);
 
-        glm::vec3 FinalScale = glm::mix(m_Scales[p0Index].Scale, m_Scales[p1Index].Scale, ScaleFactor);
+        glm::vec3 FinalScale = glm::mix(m_ScaleKeyFrames[p0Index].Scale, m_ScaleKeyFrames[p1Index].Scale, ScaleFactor);
 
         return glm::scale(glm::mat4(1.0f), FinalScale);
     }
 
-	AnimatedBoneData* Animation::FindBone(std::string_view Name)
-	{
-		auto iter = std::find_if(m_Bones.begin(), m_Bones.end(),
-			[&](const AnimatedBoneData& Bone)
-			{
-				return Bone.GetBoneName() == Name;
-			}
-		);
-		return (iter == m_Bones.end()) ? nullptr : &(*iter);
-	}
+    AnimationBoneKeyFrames* Animation::FindBoneKeyFrames(std::string_view BoneName)
+    {
+        auto FoundBoneKeyFrames = std::find_if(m_BoneKeyFrames.begin(), m_BoneKeyFrames.end(),
+            [&](const AnimationBoneKeyFrames& BoneKeyFrames)
+            {
+                return BoneKeyFrames.GetBoneName() == BoneName;
+            }
+        );
+        return (FoundBoneKeyFrames == m_BoneKeyFrames.end()) ? nullptr : &(*FoundBoneKeyFrames);
+    }
 }

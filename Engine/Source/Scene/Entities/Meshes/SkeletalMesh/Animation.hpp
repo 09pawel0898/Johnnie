@@ -9,18 +9,7 @@ struct aiAnimation;
 
 namespace Engine
 {
-	struct AnimatedNodeData
-	{
-		std::string Name;
-		glm::mat4	Transformation;
-		
-		std::vector<AnimatedNodeData>	Children;
-		uint8_t							ChildrenCount;
-
-		AnimatedNodeData* Parent{ nullptr };
-	};
-
-	class AnimatedBoneData
+	class AnimationBoneKeyFrames
 	{
 	public:
 		struct PositionKey
@@ -41,110 +30,93 @@ namespace Engine
 			double TimeStamp;
 		};
 	private:
-		std::vector<PositionKey>	m_Positions;
-		std::vector<RotationKey>	m_Rotations;
-		std::vector<ScaleKey>		m_Scales;
+		std::vector<PositionKey>	m_PositionKeyFrames;
+		std::vector<RotationKey>	m_RotationKeyFrames;
+		std::vector<ScaleKey>		m_ScaleKeyFrames;
 
-		std::string	m_Name;
-		uint16_t	m_Index;
+		std::string	m_BoneName;
+		uint16_t	m_BoneIndex;
+
 		glm::mat4	m_LocalTransform;
 
 	public:
-		AnimatedBoneData(std::string Name, uint16_t Index, const aiNodeAnim* Channel);
+		AnimationBoneKeyFrames(std::string BoneName, uint16_t BoneIndex, const aiNodeAnim* AiChannel);
 
 	private:
-		void ParsePositionKeys(const aiNodeAnim* Channel);
-		void ParseRotationKeys(const aiNodeAnim* Channel);
-		void ParseScaleKeys(const aiNodeAnim* Channel);
+		void ParsePositionKeys(const aiNodeAnim* AiChannel);
+		void ParseRotationKeys(const aiNodeAnim* AiChannel);
+		void ParseScaleKeys(const aiNodeAnim* AiChannel);
 
 	public:
-		void Update(float AnimationTimeInTicks);
+		void UpdateLocalTransform(float AnimationTimeInTicks);
 
-		glm::mat4 GetLocalTransform(void) const;
+	public:
 		std::string const& GetBoneName(void) const;
 		int32_t GetBoneIndex(void) const;
-
-		int32_t GetPositionIndex(float AnimationTimeInTicks) const;
-
-		int32_t GetRotationIndex(float AnimationTimeInTicks) const;
-
-		int32_t GetScaleIndex(float AnimationTimeInTicks) const;
+		glm::mat4 const& GetLocalTransform(void) const;
 
 	private:
 		double GetScaleFactor(double LastTimeStamp, double NextTimeStamp, float AnimationTimeInTicks) const;
+
+		int32_t GetPositionIndex(float AnimationTimeInTicks) const;
+		int32_t GetRotationIndex(float AnimationTimeInTicks) const;
+		int32_t GetScaleIndex(float AnimationTimeInTicks) const;
 
 		glm::mat4 InterpolatePosition(float AnimationTimeInTicks) const;
 		glm::mat4 InterpolateRotation(float AnimationTimeInTicks) const;
 		glm::mat4 InterpolateScaling(float AnimationTimeInTicks) const;
 	};
 
-	FORCEINLINE glm::mat4 AnimatedBoneData::GetLocalTransform(void) const
+	FORCEINLINE glm::mat4 const& AnimationBoneKeyFrames::GetLocalTransform(void) const
 	{
 		return m_LocalTransform;
 	}
-	FORCEINLINE std::string const& AnimatedBoneData::GetBoneName(void) const
+	FORCEINLINE std::string const& AnimationBoneKeyFrames::GetBoneName(void) const
 	{
-		return m_Name;
+		return m_BoneName;
 	}
-	FORCEINLINE int32_t AnimatedBoneData::GetBoneIndex(void) const
+	FORCEINLINE int32_t AnimationBoneKeyFrames::GetBoneIndex(void) const
 	{
-		return m_Index;
+		return m_BoneIndex;
 	}
-
-	static inline constexpr uint8_t g_MaxBonesCount = 200;
 
 	class Animation final
 	{
 		friend class AnimationImporter;
 
 	private:
-		std::string_view m_Name = "";
+		std::string_view m_AnimationName = "";
 
 		float	m_Duration = 0.f;
 		float	m_TicksPerSecond = 0.f;
 
-		bool	m_bIsValid{ false };
+		std::vector<AnimationBoneKeyFrames>				m_BoneKeyFrames;
+		std::unordered_map<std::string_view, BoneData>	m_BoneInfoMap;
+		std::map<std::string, uint32_t>					m_BoneNameIndexMap;
 
-		AnimatedNodeData m_RootNode;
-		
-		std::vector<AnimatedBoneData> m_Bones;
-		std::unordered_map<std::string_view, BoneData> m_BoneInfoMap;
-		std::map<std::string, uint32_t> m_BoneNameIndexMap;
+	public:
+		static inline constexpr uint8_t s_MaxBonesCount = 200;
 
 	public:
 		Animation() = default;
 		explicit Animation(std::string_view Name)
-			:	m_Name(Name)
+			:	m_AnimationName(Name)
 		{}
 
 	public:
-		bool IsValid(void) const;
-		const AnimatedNodeData* GetRootNode(void) const;
-
 		float GetTicksPerSecond(void) const;
 		float GetDuration(void) const;
 		std::string_view GetName(void) const;
-		AnimatedBoneData* FindBone(std::string_view Name);
 
+	public:
+		AnimationBoneKeyFrames* FindBoneKeyFrames(std::string_view BoneName);
 		std::unordered_map<std::string_view, BoneData>& GetBoneInfoMap(void);
-		
 		std::map<std::string, uint32_t> const& GetBoneNameToIndexMap(void) const;
-
 	};
 
 	FORCEINLINE std::string_view Animation::GetName(void) const
 	{
-		return m_Name;
-	}
-
-	FORCEINLINE const AnimatedNodeData* Animation::GetRootNode(void) const
-	{
-		return &m_RootNode;
-	}
-
-	FORCEINLINE bool Animation::IsValid(void) const
-	{
-		return m_bIsValid;
+		return m_AnimationName;
 	}
 
 	FORCEINLINE float Animation::GetTicksPerSecond(void) const

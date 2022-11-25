@@ -13,7 +13,7 @@ namespace Engine
         
         InitializeLogCategory();
 
-        m_FinalBoneTransformations.resize(g_MaxBonesCount);
+        m_FinalBoneTransformations.resize(Animation::s_MaxBonesCount);
     }
 
     void OAnimator::OnTick(double DeltaTime)
@@ -89,11 +89,11 @@ namespace Engine
         
         Animation& CurrentAnimation = m_Animations[m_ActiveAnimationName];
 
-        AnimatedBoneData* Bone = CurrentAnimation.FindBone(NodeName);
+        AnimationBoneKeyFrames* Bone = CurrentAnimation.FindBoneKeyFrames(NodeName);
         
         if (Bone)
         {
-            Bone->Update(m_CurrentTimeInTicks);
+            Bone->UpdateLocalTransform(m_CurrentTimeInTicks);
             NodeTransform = Bone->GetLocalTransform();
         }
 

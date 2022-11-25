@@ -404,23 +404,23 @@ namespace Engine
 		}
 	}
 
-	void SkeletalModelImporter::ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData)
+	void SkeletalModelImporter::ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimationKeyFrame)
 	{
-		MarkRequiredNodesForBone(AnimatedBoneData);
+		MarkRequiredNodesForBone(AnimationKeyFrame);
 
-		uint32_t BoneID = GetBoneID(AnimatedBoneData);
+		uint32_t BoneID = GetBoneID(AnimationKeyFrame);
 
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "Parse Bone {0} ID {1}, NumVerticesAffected {2}", AnimatedBoneData->mName.C_Str(), BoneID, AnimatedBoneData->mNumWeights)
 #endif
 		if (BoneID == m_SkeletonData.BonesData.size())
 		{
-			m_SkeletonData.BonesData.emplace_back(BoneData(Utility::AiMat4ToGlmMat4(AnimatedBoneData->mOffsetMatrix)));
+			m_SkeletonData.BonesData.emplace_back(BoneData(Utility::AiMat4ToGlmMat4(AnimationKeyFrame->mOffsetMatrix)));
 		}
 
-		for (unsigned long long idx = 0; idx < AnimatedBoneData->mNumWeights; idx++)
+		for (unsigned long long idx = 0; idx < AnimationKeyFrame->mNumWeights; idx++)
 		{
-			const aiVertexWeight& VertexWeight = AnimatedBoneData->mWeights[idx];
+			const aiVertexWeight& VertexWeight = AnimationKeyFrame->mWeights[idx];
 
 			uint32_t GlobalVertexID = m_SkinnedMeshData.MeshBaseVertex[MeshIndex] + VertexWeight.mVertexId;
 			Check(GlobalVertexID < m_SkinnedMeshData.VertexBoneInfluenceData.size());
@@ -491,10 +491,10 @@ namespace Engine
 		}
 	}
 
-	uint32_t SkeletalModelImporter::GetBoneID(const aiBone* AnimatedBoneData)
+	uint32_t SkeletalModelImporter::GetBoneID(const aiBone* AnimationKeyFrame)
 	{
 		uint32_t BoneID = 0;
-		std::string BoneName = AnimatedBoneData->mName.C_Str();
+		std::string BoneName = AnimationKeyFrame->mName.C_Str();
 
 		if (m_SkeletonData.BoneNameIndexMap.find(BoneName) != m_SkeletonData.BoneNameIndexMap.end())
 		{
@@ -647,8 +647,7 @@ namespace Engine
 		NewAnim.m_TicksPerSecond = (float)AiAnimation->mTicksPerSecond;
 
 		ReadBonesData(&NewAnim, AiAnimation);
-		ReadHeirarchyData(&NewAnim.m_RootNode, GetRootBone(Scene->mRootNode));
-
+		
 #define DEBUG_MODEL_IMPORTER
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "-------- Animation {0} skeleton --------", AiAnimation->mName.C_Str());
@@ -712,7 +711,7 @@ namespace Engine
 				LOG(Core, Trace, "Extra Bone In Anim {0}", BoneName);
 			}
 
-			Anim->m_Bones.push_back(AnimatedBoneData(NodeAnim->mNodeName.data,
+			Anim->m_BoneKeyFrames.push_back(AnimationBoneKeyFrames(NodeAnim->mNodeName.data,
 									s[BoneName], NodeAnim));
 		}
 		Anim->m_BoneNameIndexMap = s;
@@ -758,24 +757,6 @@ namespace Engine
 		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
 		{
 			FindRootBone(Node->mChildren[idx], OutResult);
-		}
-	}
-
-	void AnimationImporter::ReadHeirarchyData(AnimatedNodeData* AnimatedNode, const aiNode* Node)
-	{
-		Check(Node);
-
-		AnimatedNode->Name				= Node->mName.data;
-		AnimatedNode->Transformation	= Utility::AiMat4ToGlmMat4(Node->mTransformation);
-		AnimatedNode->ChildrenCount		= Node->mNumChildren;
-
-		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
-		{
-			AnimatedNodeData NewNode;
-			
-			ReadHeirarchyData(&NewNode, Node->mChildren[idx]);
-			AnimatedNode->Children.emplace_back(MoveTemp(NewNode));
-			AnimatedNode->Children[AnimatedNode->Children.size() - 1].Parent = AnimatedNode;
 		}
 	}
 
