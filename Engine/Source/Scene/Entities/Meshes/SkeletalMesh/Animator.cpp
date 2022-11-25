@@ -2,6 +2,7 @@
 #include "Animator.hpp"
 #include "SkeletalMeshHelpers.hpp"
 #include "SkeletalMesh.hpp"
+#include "Utilities/GLMUtility.hpp"
 
 namespace Engine
 {
@@ -29,8 +30,18 @@ namespace Engine
 
                 m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)DeltaTime;
                 m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
+                
+                NodeData* RootBone = nullptr;
 
-                CalculateBoneTransformations(Animation.GetRootNode(), glm::mat4(1.0f));
+                SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(SkeletalMesh->GetImporter().get());
+                if (SkelModelImporter)
+                {
+                    SkeletalModelImporter::FindRootBone(
+                        &SkelModelImporter->GetSkeletonData().RootNode, &RootBone, Animation.GetBoneNameToIndexMap());
+                }
+                Check(RootBone);
+
+                CalculateBoneTransformations(RootBone, glm::mat4(1.0f));
 
                 SkeletalMesh->SetCurrentBoneTransformations(m_FinalBoneTransformations);
             }
@@ -71,10 +82,10 @@ namespace Engine
         return Anim->second;
     }
 
-    void OAnimator::CalculateBoneTransformations(const AnimatedNodeData* Node, glm::mat4 const& ParentTransform)
+    void OAnimator::CalculateBoneTransformations(const NodeData* Node, glm::mat4 const& ParentTransform)
     {
-        std::string NodeName    = Node->Name;
-        glm::mat4 NodeTransform = Node->Transformation;
+        const std::string NodeName  = Node->Name;
+        glm::mat4 NodeTransform     = Node->Transformation;
         
         Animation& CurrentAnimation = m_Animations[m_ActiveAnimationName];
 
@@ -85,14 +96,7 @@ namespace Engine
             Bone->Update(m_CurrentTimeInTicks);
             NodeTransform = Bone->GetLocalTransform();
         }
-        else
-        {
-            //LOG(Animator, Trace, "Skipping node {0}", Node->Name);
 
-            int x = 0;
-            x += 2;
-        }
-        
         glm::mat4 globalTransformation = ParentTransform * NodeTransform;
         
         //
@@ -120,17 +124,14 @@ namespace Engine
 
                     m_FinalBoneTransformations[ID] = SkelModelImporter->GetGlobalInverseTransform() * globalTransformation * OffsetMatrix;
                 }
-                for (int16_t idx = 0; idx < Node->ChildrenCount; idx++)
+                for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
                 {
                     std::string ChildName = Node->Children[idx].Name;
 
-                    auto FoundRequiredNode = SkelModelImporter->GetSkeletonData().RequiredNodes.find(ChildName);
-                    if (FoundRequiredNode == SkelModelImporter->GetSkeletonData().RequiredNodes.end())
-                    {
-                        CheckMsg(false, "Child node couldn't be found in the hierarchy.");
-                    }
+                    NodeData* ChildNode = SkelModelImporter->GetSkeletonData().FindNodeByName(ChildName);
+                    CheckMsg(ChildNode != nullptr, "Child node couldn't be found in the hierarchy.");
 
-                    if (FoundRequiredNode->second.IsRequired)
+                    if (ChildNode->IsRequired)
                     {
                         CalculateBoneTransformations(&Node->Children[idx], globalTransformation);
                     }

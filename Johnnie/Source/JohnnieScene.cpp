@@ -149,7 +149,7 @@ void JohnnieScene::Test(ASkeletalMesh* SkeletalMesh)
 
 	if (!ExampleAnimsLoaded)
 	{
-		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Models/RumbaDancing.dae", true);
+		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Animations/A_RumbaDancing.dae", true);
 		ExampleAnimsLoaded = true;
 	}
 }

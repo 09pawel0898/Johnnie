@@ -43,13 +43,15 @@ namespace Engine
 
 	struct NodeData
 	{
-		const aiNode*	Node = nullptr;
-		bool			IsRequired = false;
+		std::string Name;
+		glm::mat4	Transformation;
 
-		NodeData() = default;
-		NodeData(const aiNode* Node)
-			:	Node(Node)
-		{}
+		std::vector<NodeData>	Children;
+		uint8_t					ChildrenCount;
+
+		NodeData* Parent{ nullptr };
+
+		bool			IsRequired = false;
 	};
 
 	struct SkinnedMeshData
@@ -61,13 +63,20 @@ namespace Engine
 		std::vector<uint32_t>					MeshBaseVertex;
 	};
 
-	struct SkeletonData
+	class SkeletonData
 	{
+	public:
 		/** Maps imported by assimp bone names to indexes */
 		std::map<std::string, uint32_t>			BoneNameIndexMap;
 
 		std::vector<BoneData>					BonesData;
 
-		std::map<std::string, NodeData>			RequiredNodes;
+		NodeData RootNode;
+
+	public:
+		NodeData* FindNodeByName(std::string const& Name);
+	private:	
+		NodeData* FindNodeByName_Internal(std::string const& Name, NodeData* Node);
+
 	};
 }

@@ -8,7 +8,6 @@
 #include "../AssetImporter.hpp"
 #include "Log/Log.hpp"
 
-
 namespace Engine
 {
 	class ASkeletalMesh;
@@ -58,7 +57,7 @@ namespace Engine
 		float SecondsToTicks(float AnimationTimeInSeconds) const;
 		Animation const& GetActiveAnimation(void) const;
 
-		void CalculateBoneTransformations(const AnimatedNodeData* Node, glm::mat4 const& ParentTransform);
+		void CalculateBoneTransformations(const NodeData* Node, glm::mat4 const& ParentTransform);
 
 	public:
 		virtual void OnTick(double DeltaTime) override;

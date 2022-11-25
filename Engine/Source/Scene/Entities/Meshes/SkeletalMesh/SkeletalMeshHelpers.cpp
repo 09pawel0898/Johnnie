@@ -22,8 +22,11 @@ namespace Engine
         {
             return;
         }
+        
         if (Index > 3)
+        {
             return;
+        }
 
         //CheckMsg(Index != s_MaxBonesPerVertex, "Program not supports so many vertices influenced by one bone.");
 
@@ -39,4 +42,27 @@ namespace Engine
     BoneData::BoneData(glm::mat4&& OffsetMatrix) noexcept
         :   OffsetMatrix(MoveTemp(OffsetMatrix))
     {}
+    
+    NodeData* SkeletonData::FindNodeByName(std::string const& Name)
+    {
+        return FindNodeByName_Internal(Name, &RootNode);
+    }
+    
+    NodeData* SkeletonData::FindNodeByName_Internal(std::string const& Name, NodeData* Node)
+    {
+        if (Node->Name == Name)
+        {
+            return Node;
+        }
+
+        for (int16_t idx = 0; idx < Node->ChildrenCount; idx++)
+        {
+            NodeData* FoundInChild = FindNodeByName_Internal(Name, &Node->Children[idx]);
+            if (FoundInChild)
+            {
+                return FoundInChild;
+            }
+        }
+        return nullptr;
+    }
 }

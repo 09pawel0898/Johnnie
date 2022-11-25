@@ -208,7 +208,8 @@ namespace Engine
 			| aiProcess_CalcTangentSpace
 			;
 
-		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('/'));
+		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
+		//m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('/'));
 
 		m_ImportModelFuture = std::async(std::launch::async,
 			std::bind(&SkeletalModelImporter::AsyncImportModel_Internal, this, std::placeholders::_1, std::placeholders::_2),
@@ -245,7 +246,8 @@ namespace Engine
 		{
 			m_bHasEmbeddedTextures = true;
 		}
-		InitializeRequiredNodes(Scene->mRootNode);
+		ParseHierarchyData(Scene->mRootNode);
+		
 		ParseMeshes(Scene);
 	}
 
@@ -258,12 +260,10 @@ namespace Engine
 			ParseSingleMesh(idx, Scene->mMeshes[idx]);
 		}
 
-#define DEBUG_MODEL_IMPORTER
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "-------- Model {0} skeleton --------", Scene->mName.C_Str());
 		PrintSkeleton(GetScene()->mRootNode);
 #endif
-#undef DEBUG_MODEL_IMPORTER
 	}
 
 	void SkeletalModelImporter::PreprocessMeshes(const aiScene* Scene)
@@ -429,6 +429,39 @@ namespace Engine
 		}
 	}
 
+	void SkeletalModelImporter::ParseHierarchyData(const aiNode* AiRootNode)
+	{
+		ParseHierarchyData_BuildHierarchy(&m_SkeletonData.RootNode, AiRootNode);
+		ParseHierarchyData_FixParenting(&m_SkeletonData.RootNode);
+	}
+
+	void SkeletalModelImporter::ParseHierarchyData_BuildHierarchy(NodeData* Node, const aiNode* AiNode)
+	{
+		Check(Node);
+		
+		Node->Name				= AiNode->mName.data;
+		Node->Transformation	= Utility::AiMat4ToGlmMat4(AiNode->mTransformation);
+		Node->ChildrenCount		= AiNode->mNumChildren;
+		
+		for (uint16_t idx = 0; idx < AiNode->mNumChildren; idx++)
+		{
+			NodeData NewNode;
+			NewNode.Children.reserve(AiNode->mNumChildren);
+
+			ParseHierarchyData_BuildHierarchy(&NewNode, AiNode->mChildren[idx]);
+			Node->Children.emplace_back(MoveTemp(NewNode));
+		}
+	}
+
+	void SkeletalModelImporter::ParseHierarchyData_FixParenting(NodeData* Node)
+	{
+		for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
+		{
+			Node->Children[idx].Parent = Node;
+			ParseHierarchyData_FixParenting(&Node->Children[idx]);
+		}
+	}
+
 	void SkeletalModelImporter::PrintSkeleton(aiNode* Node, uint16_t Deep /*=0*/)
 	{
 		const aiScene* Scene = GetScene();
@@ -480,39 +513,53 @@ namespace Engine
 	{
 		std::string NodeName = AiBone->mName.C_Str();
 
-		const aiNode* Parent = nullptr;
+		const NodeData* Parent = nullptr;
 
 		do
 		{
-			auto FoundNodeData = m_SkeletonData.RequiredNodes.find(NodeName);
-
-			if (FoundNodeData == m_SkeletonData.RequiredNodes.end())
-			{
-				CheckMsg(false, "Can't find bone in the hierarchy.");
-			}
-
-			FoundNodeData->second.IsRequired = true;
-
-			Parent = FoundNodeData->second.Node->mParent;
+			NodeData* FoundNode = m_SkeletonData.FindNodeByName(NodeName);
+			//CheckMsg(FoundNode != nullptr, "Can't find bone in the hierarchy.");
+			
+			FoundNode->IsRequired = true;
+			Parent = FoundNode->Parent;
 
 			if (Parent)
 			{
-				NodeName = std::string(Parent->mName.C_Str());
+				NodeName = Parent->Name;
 			}
 		} while (Parent);
 	}
 
-	void SkeletalModelImporter::InitializeRequiredNodes(const aiNode* Node)
+	void SkeletalModelImporter::FindRootBone(NodeData* Node, NodeData** OutResult, std::map<std::string, uint32_t> const& BoneNameIndexMap)
 	{
-		std::string NodeName = Node->mName.C_Str();
-
-		NodeData NodeData{ Node };
-
-		m_SkeletonData.RequiredNodes[NodeName] = NodeData;
-
-		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
+		if (*OutResult != nullptr)
 		{
-			InitializeRequiredNodes(Node->mChildren[idx]);
+			return;
+		}
+
+		auto IsBone = [&BoneNameIndexMap](std::string const& NodeName) -> bool
+		{
+			return (BoneNameIndexMap.find(NodeName) != BoneNameIndexMap.end()) ? true : false;
+		};
+
+		const std::string NodeName = Node->Name;
+
+		if (IsBone(NodeName))
+		{
+			if (Node->Parent == nullptr)
+			{
+				return;
+			}
+;
+			if (!IsBone(Node->Parent->Name))
+			{
+				*OutResult = Node;
+			}
+		}
+
+		for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
+		{
+			FindRootBone(&Node->Children[idx], OutResult,BoneNameIndexMap);
 		}
 	}
 

@@ -116,6 +116,7 @@ namespace Engine
 		explicit SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
 		void AsyncImportModel(std::string_view FilePath) override;
+		SkeletonData& GetSkeletonData(void) { return m_SkeletonData; };
 		SkeletonData const& GetSkeletonData(void) const { return m_SkeletonData; };
 
 	private:
@@ -133,11 +134,18 @@ namespace Engine
 
 		void ParseMeshBones(uint16_t MeshIndex, const aiMesh* AiMesh);
 		void ParseSingleBone(uint16_t MeshIndex, const aiBone* AnimatedBoneData);
+
+		void ParseHierarchyData(const aiNode* AiRootNode);
+		void ParseHierarchyData_BuildHierarchy(NodeData* Node, const aiNode* AiNode);
+		void ParseHierarchyData_FixParenting(NodeData* Node);
+
+
 		void PrintSkeleton(aiNode* Node, uint16_t Deep = 0);
 
 		uint32_t GetBoneID(const aiBone* AnimatedBoneData);
 		
-		void InitializeRequiredNodes(const aiNode* Root);
+	public:
+		static void FindRootBone(NodeData* Node, NodeData** OutResult, std::map<std::string,uint32_t> const& BoneNameIndexMap);
 
 	public:
 		void MarkRequiredNodesForBone(const aiBone* AiBone);

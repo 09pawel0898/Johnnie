@@ -128,7 +128,7 @@ namespace Engine
 
 		std::unordered_map<std::string_view, BoneData>& GetBoneInfoMap(void);
 		
-		std::map<std::string, uint32_t> const& GetBoneNameToIndexMap(void);
+		std::map<std::string, uint32_t> const& GetBoneNameToIndexMap(void) const;
 
 	};
 
@@ -162,7 +162,7 @@ namespace Engine
 		return m_BoneInfoMap;
 	}
 	
-	FORCEINLINE std::map<std::string, uint32_t> const& Animation::GetBoneNameToIndexMap(void)
+	FORCEINLINE std::map<std::string, uint32_t> const& Animation::GetBoneNameToIndexMap(void) const
 	{
 		return m_BoneNameIndexMap;
 	}
