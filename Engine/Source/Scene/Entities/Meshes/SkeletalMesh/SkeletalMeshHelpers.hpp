@@ -44,14 +44,14 @@ namespace Engine
 	struct NodeData
 	{
 		std::string Name;
-		glm::mat4	Transformation;
+		glm::mat4 Transformation;
 
-		std::vector<NodeData>	Children;
-		uint8_t					ChildrenCount;
+		std::vector<NodeData> Children;
+		uint8_t	ChildrenCount;
 
 		NodeData* Parent{ nullptr };
 
-		bool			IsRequired = false;
+		bool IsRequired = false;
 	};
 
 	struct SkinnedMeshData
@@ -63,20 +63,79 @@ namespace Engine
 		std::vector<uint32_t>					MeshBaseVertex;
 	};
 
-	class SkeletonData
+	class Skeleton
 	{
-	public:
+	private:
 		/** Maps imported by assimp bone names to indexes */
-		std::map<std::string, uint32_t>			BoneNameIndexMap;
+		std::map<std::string, uint32_t>	m_BoneNameIndexMap;
+		std::vector<BoneData>			m_BonesData;
+		NodeData						m_RootNode;
+		glm::mat4						m_GlobalInverseTransform;
 
-		std::vector<BoneData>					BonesData;
+	public:
+		Skeleton() = default;
 
-		NodeData RootNode;
+	public:
+		void SetGlobalInverseTransform(glm::mat4 const& GlobalInverseTransform);
+		glm::mat4 const& GetGlobalInverseTransform(void) const;
+		
+		std::map<std::string, uint32_t> const& GetBoneNameIndexMap(void) const;
+		std::map<std::string, uint32_t>& GetBoneNameIndexMap(void);
+
+		std::vector<BoneData> const& GetBonesData(void) const;
+		std::vector<BoneData>& GetBonesData(void);
+
+		NodeData const& GetRootNode(void) const;
+		NodeData& GetRootNode(void);
 
 	public:
 		NodeData* FindNodeByName(std::string const& Name);
-	private:	
-		NodeData* FindNodeByName_Internal(std::string const& Name, NodeData* Node);
+		const NodeData* FindNodeByName(std::string const& Name) const;
 
+		void GetRootBone(NodeData** OutResult) const;
+		
+	private:	
+		void GetRootBone_Internal(const NodeData* Node, NodeData** OutResult) const;
+		NodeData* FindNodeByName_Internal(std::string const& Name, NodeData* Node) const;
 	};
+
+	FORCEINLINE void Skeleton::SetGlobalInverseTransform(glm::mat4 const& GlobalInverseTransform)
+	{
+		m_GlobalInverseTransform = GlobalInverseTransform;
+	}
+
+	FORCEINLINE glm::mat4 const& Skeleton::GetGlobalInverseTransform(void) const
+	{
+		return m_GlobalInverseTransform;
+	}
+	
+	FORCEINLINE std::map<std::string, uint32_t> const& Skeleton::GetBoneNameIndexMap(void) const
+	{
+		return m_BoneNameIndexMap;
+	}
+
+	FORCEINLINE std::map<std::string, uint32_t>& Skeleton::GetBoneNameIndexMap(void)
+	{
+		return m_BoneNameIndexMap;
+	}
+	
+	FORCEINLINE std::vector<BoneData> const& Skeleton::GetBonesData(void) const
+	{
+		return m_BonesData;
+	}
+
+	FORCEINLINE std::vector<BoneData>& Skeleton::GetBonesData(void)
+	{
+		return m_BonesData;
+	}
+
+	FORCEINLINE NodeData const& Skeleton::GetRootNode(void) const
+	{
+		return m_RootNode;
+	}
+
+	FORCEINLINE NodeData& Skeleton::GetRootNode(void)
+	{
+		return m_RootNode;
+	}
 }

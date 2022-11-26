@@ -108,7 +108,7 @@ namespace Engine
 		
 		ModelView				m_ModelView;
 		SkinnedMeshData			m_SkinnedMeshData;
-		SkeletonData			m_SkeletonData;
+		Skeleton				m_Skeleton;
 
 		glm::mat4				m_GlobalInverseTransform;
 
@@ -116,8 +116,8 @@ namespace Engine
 		explicit SkeletalModelImporter(TWeakPtr<ASkeletalMesh> SkeletalMesh);
 
 		void AsyncImportModel(std::string_view FilePath) override;
-		SkeletonData& GetSkeletonData(void) { return m_SkeletonData; };
-		SkeletonData const& GetSkeletonData(void) const { return m_SkeletonData; };
+		Skeleton& GetSkeleton(void) { return m_Skeleton; };
+		Skeleton const& GetSkeletonData(void) const { return m_Skeleton; };
 
 	private:
 		void AsyncImportModel_Internal(std::string_view FilePath, uint32_t Flags);
@@ -143,9 +143,6 @@ namespace Engine
 		void PrintSkeleton(aiNode* Node, uint16_t Deep = 0);
 
 		uint32_t GetBoneID(const aiBone* AnimationKeyFrame);
-		
-	public:
-		static void FindRootBone(NodeData* Node, NodeData** OutResult, std::map<std::string,uint32_t> const& BoneNameIndexMap);
 
 	public:
 		void MarkRequiredNodesForBone(const aiBone* AiBone);
@@ -159,13 +156,6 @@ namespace Engine
 
 	DECLARE_DELEGATE(OnAnimationsAsyncLoadingFinishedDelegate, std::vector<Animation>&);
 	DECLARE_DELEGATE(OnAnimationAsyncLoadingFinishedDelegate, Animation&);
-
-	class FixedSkeletonData
-	{
-		std::map<std::string, uint32_t>	BoneNameIndexMap;
-		std::vector<BoneData>			BonesData;
-		std::map<std::string, NodeData>	RequiredNodes;
-	};
 
 	class AnimationImporter : public AssetImporter
 	{
@@ -181,25 +171,26 @@ namespace Engine
 
 	public:
 		TWeakPtr<ASkeletalMesh> m_SkeletalMesh;
-		std::map<std::string, uint32_t> m_BoneNameIndexMap;
-
+		
 	public:
 		AnimationImporter() = default;
 
-		void AsyncImportFirstAnimation(std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationAsyncLoadingFinishedDelegate());
-		void AsyncImportAllAnimations(std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationsAsyncLoadingFinishedDelegate());
+		void AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationAsyncLoadingFinishedDelegate());
+		void AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationsAsyncLoadingFinishedDelegate());
 
 	private:
 		void AsyncImportScene_Internal(std::string_view FilePath, bool ImportAllAnimations);
 		void AsyncImportAnimation_Internal(const aiAnimation* AiAnimation);
 
-		void PrintSkeleton(aiNode* Node, uint16_t Deep =0);
+		void PrintSkeleton(uint16_t AnimationIndex, aiNode* Node, uint16_t Deep =0);
 
 		void ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation);
 		
 		void NotifyLoadingFinished(void);
 
+		/*
 		aiNode* GetRootBone(aiNode* SceneRootNode);
 		void FindRootBone(aiNode* Node, aiNode** OutResult);
+		*/
 	};
 }

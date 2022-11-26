@@ -58,6 +58,7 @@ namespace Engine
 		Animation const& GetActiveAnimation(void) const;
 
 		void CalculateBoneTransformations(const NodeData* Node, glm::mat4 const& ParentTransform);
+		void UpdateSkeletalMeshBoneTransformations(TSharedPtr<ASkeletalMesh>& SkeletalMesh);
 
 	public:
 		virtual void OnTick(double DeltaTime) override;
@@ -107,5 +108,6 @@ namespace Engine
 	FORCEINLINE void OAnimator::SetSkeletalMesh(TSharedPtr<ASkeletalMesh> SkeletalMesh)
 	{
 		m_AnimatedSkeletalMesh = MoveTemp(SkeletalMesh);
+		SetTickEnabled(true);
 	}
 }

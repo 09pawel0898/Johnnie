@@ -90,9 +90,8 @@ namespace Engine
 		float	m_Duration = 0.f;
 		float	m_TicksPerSecond = 0.f;
 
-		std::vector<AnimationBoneKeyFrames>				m_BoneKeyFrames;
-		std::unordered_map<std::string_view, BoneData>	m_BoneInfoMap;
-		std::map<std::string, uint32_t>					m_BoneNameIndexMap;
+		std::vector<AnimationBoneKeyFrames>	m_BoneKeyFrames;
+		std::map<std::string, uint32_t>	m_BoneNameIndexMap;
 
 	public:
 		static inline constexpr uint8_t s_MaxBonesCount = 200;
@@ -110,7 +109,6 @@ namespace Engine
 
 	public:
 		AnimationBoneKeyFrames* FindBoneKeyFrames(std::string_view BoneName);
-		std::unordered_map<std::string_view, BoneData>& GetBoneInfoMap(void);
 		std::map<std::string, uint32_t> const& GetBoneNameToIndexMap(void) const;
 	};
 
@@ -127,11 +125,6 @@ namespace Engine
 	FORCEINLINE float Animation::GetDuration(void) const
 	{
 		return m_Duration;
-	}
-
-	FORCEINLINE std::unordered_map<std::string_view, BoneData>& Animation::GetBoneInfoMap(void)
-	{
-		return m_BoneInfoMap;
 	}
 	
 	FORCEINLINE std::map<std::string, uint32_t> const& Animation::GetBoneNameToIndexMap(void) const

@@ -22,28 +22,18 @@ namespace Engine
 
         TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
         
-        if (SkeletalMesh != nullptr && IsAnimationActive())
+        if (!SkeletalMesh)
+        {
+            m_AnimatedSkeletalMesh.reset();
+            SetTickEnabled(false);
+            return;
+        }
+
+        if (IsAnimationActive())
         {
             if (SkeletalMesh->IsActorReadyToDraw())
             {
-                Animation const& Animation = GetActiveAnimation();
-
-                m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)DeltaTime;
-                m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
-                
-                NodeData* RootBone = nullptr;
-
-                SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(SkeletalMesh->GetImporter().get());
-                if (SkelModelImporter)
-                {
-                    SkeletalModelImporter::FindRootBone(
-                        &SkelModelImporter->GetSkeletonData().RootNode, &RootBone, Animation.GetBoneNameToIndexMap());
-                }
-                Check(RootBone);
-
-                CalculateBoneTransformations(RootBone, glm::mat4(1.0f));
-
-                SkeletalMesh->SetCurrentBoneTransformations(m_FinalBoneTransformations);
+                UpdateSkeletalMeshBoneTransformations(SkeletalMesh);
             }
         }
     }
@@ -82,13 +72,31 @@ namespace Engine
         return Anim->second;
     }
 
+    void OAnimator::UpdateSkeletalMeshBoneTransformations(TSharedPtr<ASkeletalMesh>& SkeletalMesh)
+    {
+        Animation const& Animation = GetActiveAnimation();
+
+        m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)m_DeltaTime;
+        m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
+
+        NodeData* RootBone = nullptr;
+        SkeletalMesh->GetSkeleton().GetRootBone(&RootBone);
+        
+        Check(RootBone);
+
+        CalculateBoneTransformations(RootBone, glm::mat4(1.0f));
+        SkeletalMesh->SetCurrentBoneTransformations(m_FinalBoneTransformations);
+    }
+
     void OAnimator::CalculateBoneTransformations(const NodeData* Node, glm::mat4 const& ParentTransform)
     {
+        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+        Check(SkeletalMesh);
+
         const std::string NodeName  = Node->Name;
         glm::mat4 NodeTransform     = Node->Transformation;
         
         Animation& CurrentAnimation = m_Animations[m_ActiveAnimationName];
-
         AnimationBoneKeyFrames* Bone = CurrentAnimation.FindBoneKeyFrames(NodeName);
         
         if (Bone)
@@ -96,57 +104,49 @@ namespace Engine
             Bone->UpdateLocalTransform(m_CurrentTimeInTicks);
             NodeTransform = Bone->GetLocalTransform();
         }
-
-        glm::mat4 globalTransformation = ParentTransform * NodeTransform;
+        glm::mat4 GlobalTransformation = ParentTransform * NodeTransform;
         
-        //
-        std::vector<BoneData> BD;
-        uint32_t ID;
-        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
-        if (SkeletalMesh)
+        std::vector<BoneData> const& BonesData = SkeletalMesh->GetSkeleton().GetBonesData();
+        
+        auto& BoneNameToIndexMap = CurrentAnimation.GetBoneNameToIndexMap();
+        if (BoneNameToIndexMap.find(NodeName) != BoneNameToIndexMap.end())
         {
-            SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(SkeletalMesh->GetImporter().get());
-            if (SkelModelImporter)
+            uint32_t BoneIndex = BoneNameToIndexMap.at(NodeName);
+
+            glm::mat4 const& OffsetMatrix = BonesData[BoneIndex].OffsetMatrix;
+
+            m_FinalBoneTransformations[BoneIndex] = SkeletalMesh->GetSkeleton().GetGlobalInverseTransform() * GlobalTransformation * OffsetMatrix;
+        }
+
+        for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
+        {
+            std::string ChildName = Node->Children[idx].Name;
+
+            const NodeData* ChildNode = SkeletalMesh->GetSkeleton().FindNodeByName(ChildName);
+            CheckMsg(ChildNode != nullptr, "Child node couldn't be found in the hierarchy.");
+
+            if (ChildNode->IsRequired)
             {
-                
-
-                BD = SkelModelImporter->GetSkeletonData().BonesData;
-        
-        //
-                auto& BoneNameToIndexMap = CurrentAnimation.GetBoneNameToIndexMap();
-        
-                if (BoneNameToIndexMap.find(NodeName) != BoneNameToIndexMap.end())
-                {
-                    std::string s = NodeName;
-                    ID = BoneNameToIndexMap.at(s);
-
-                    glm::mat4 const& OffsetMatrix = BD[ID].OffsetMatrix;
-
-                    m_FinalBoneTransformations[ID] = SkelModelImporter->GetGlobalInverseTransform() * globalTransformation * OffsetMatrix;
-                }
-                for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
-                {
-                    std::string ChildName = Node->Children[idx].Name;
-
-                    NodeData* ChildNode = SkelModelImporter->GetSkeletonData().FindNodeByName(ChildName);
-                    CheckMsg(ChildNode != nullptr, "Child node couldn't be found in the hierarchy.");
-
-                    if (ChildNode->IsRequired)
-                    {
-                        CalculateBoneTransformations(&Node->Children[idx], globalTransformation);
-                    }
-                }
+                CalculateBoneTransformations(&Node->Children[idx], GlobalTransformation);
             }
         }
     }
 
     void OAnimator::AsyncImportSingleAnimationFromFile(std::string_view FilePath, bool ActivateOnLoad)
     {
+        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+
+        if (SkeletalMesh == nullptr)
+        {
+            LOG(Animator, Warning, "Can't import animation, no valid skeletal mesh is loaded.");
+            return;
+        }
+
         if (!m_AnimationImporter.IsBusy())
         {
+            SkeletalMesh->GetSkeleton();
             m_bPendingActivateFirstOnLoad = ActivateOnLoad;
-            m_AnimationImporter.m_SkeletalMesh = m_AnimatedSkeletalMesh; // TEMP
-            m_AnimationImporter.AsyncImportFirstAnimation(FilePath, OnAnimationAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnSingleAnimationLoadedFromFile));
+            m_AnimationImporter.AsyncImportFirstAnimation(SkeletalMesh, FilePath, OnAnimationAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnSingleAnimationLoadedFromFile));
         }
         else
         {
@@ -156,11 +156,18 @@ namespace Engine
 
     void OAnimator::AsyncImportAllAnimationsFromFile(std::string_view FilePath, bool ActivateFirstOnLoad)
     {
+        TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+        
+        if (SkeletalMesh == nullptr)
+        {
+            LOG(Animator, Warning, "Can't import animations, no valid skeletal mesh is loaded.");
+            return;
+        }
+
         if (!m_AnimationImporter.IsBusy())
         {
             m_bPendingActivateFirstOnLoad = ActivateFirstOnLoad;
-            m_AnimationImporter.m_SkeletalMesh = m_AnimatedSkeletalMesh; // TEMP
-            m_AnimationImporter.AsyncImportAllAnimations(FilePath, OnAnimationsAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnAnimationsLoadedFromFile));
+            m_AnimationImporter.AsyncImportAllAnimations(SkeletalMesh, FilePath, OnAnimationsAsyncLoadingFinishedDelegate::CreateRaw(this, &OAnimator::OnAnimationsLoadedFromFile));
         } 
         else
         {

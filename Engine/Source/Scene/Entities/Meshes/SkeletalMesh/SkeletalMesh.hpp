@@ -37,6 +37,8 @@ namespace Engine
 
         std::vector<glm::mat4>                      m_CurrentBoneTransformations;
 
+        Skeleton m_Skeleton;
+
         bool m_bIsModelReadyToDraw{ false };
         bool m_bIsModelImported{ false };
 
@@ -60,6 +62,10 @@ namespace Engine
         void EvaluateMeshes(void);
 
     public:
+        void SetSkeleton(Skeleton const& Skeleton);
+        Skeleton const& GetSkeleton(void) const;
+
+    public:
         Material* GetMaterialInSlot(uint8_t SlotIndex);
         size_t GetNumMaterials(void) const;
         void SetMaterialForSlot(uint8_t SlotIndex, TSharedPtr<Material> const& Material);
@@ -73,6 +79,16 @@ namespace Engine
 
         bool IsActorReadyToDraw(void) const;
     };
+
+    FORCEINLINE void ASkeletalMesh::SetSkeleton(Skeleton const& Skeleton)
+    {
+        m_Skeleton = Skeleton;
+    }
+    
+    FORCEINLINE Skeleton const& ASkeletalMesh::GetSkeleton(void) const
+    {
+        return m_Skeleton;
+    }
 
     FORCEINLINE void ASkeletalMesh::SetCurrentBoneTransformations(std::vector<glm::mat4> const& BoneTransformations)
     {

@@ -33,9 +33,6 @@ namespace Engine
         BoneIDs[Index] = BoneID;
         Weights[Index] = Weight;
 
-#ifdef DEBUG_MODEL_IMPORTER
-        //LOG(Assimp, Trace, "GlobalVertexID {0} BoneID {1} Weight {2} InfoSlotIndex {3}", GlobalVertexID, BoneIDs[Index], Weights[Index], Index);
-#endif
         Index++;
     }
 
@@ -43,12 +40,55 @@ namespace Engine
         :   OffsetMatrix(MoveTemp(OffsetMatrix))
     {}
     
-    NodeData* SkeletonData::FindNodeByName(std::string const& Name)
+    NodeData* Skeleton::FindNodeByName(std::string const& Name)
     {
-        return FindNodeByName_Internal(Name, &RootNode);
+        return FindNodeByName_Internal(Name, &m_RootNode);
+    }
+
+    const NodeData* Skeleton::FindNodeByName(std::string const& Name) const
+    {
+        return FindNodeByName_Internal(Name, const_cast<NodeData*>(&m_RootNode));
+    }
+
+    void Skeleton::GetRootBone(NodeData** OutResult) const
+    {
+        return GetRootBone_Internal(&m_RootNode, OutResult);
+    }
+
+    void Skeleton::GetRootBone_Internal(const NodeData* Node, NodeData** OutResult) const
+    {
+        if (*OutResult != nullptr)
+        {
+            return;
+        }
+
+        auto IsBone = [this](std::string const& NodeName) -> bool
+        {
+            return (m_BoneNameIndexMap.find(NodeName) != m_BoneNameIndexMap.end()) ? true : false;
+        };
+
+        const std::string NodeName = Node->Name;
+
+        if (IsBone(NodeName))
+        {
+            if (Node->Parent == nullptr)
+            {
+                return;
+            }
+            ;
+            if (!IsBone(Node->Parent->Name))
+            {
+                *OutResult = const_cast<NodeData*>(Node);
+            }
+        }
+
+        for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
+        {
+            GetRootBone_Internal(&Node->Children[idx], OutResult);
+        }
     }
     
-    NodeData* SkeletonData::FindNodeByName_Internal(std::string const& Name, NodeData* Node)
+    NodeData* Skeleton::FindNodeByName_Internal(std::string const& Name, NodeData* Node) const
     {
         if (Node->Name == Name)
         {

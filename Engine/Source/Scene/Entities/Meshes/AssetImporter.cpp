@@ -233,8 +233,6 @@ namespace Engine
 		}
 		Utility::ScaleScene(Scene, 0.020f);
 
-		m_GlobalInverseTransform = glm::inverse(Utility::AiMat4ToGlmMat4(Scene->mRootNode->mTransformation));
-
 		ParseScene(Scene);
 
 		m_bIsModelImported = true;
@@ -246,9 +244,15 @@ namespace Engine
 		{
 			m_bHasEmbeddedTextures = true;
 		}
+
 		ParseHierarchyData(Scene->mRootNode);
-		
 		ParseMeshes(Scene);
+
+		TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock();
+		Check(SkeletalMesh);
+
+		m_Skeleton.SetGlobalInverseTransform(glm::inverse(Utility::AiMat4ToGlmMat4(Scene->mRootNode->mTransformation)));
+		SkeletalMesh->SetSkeleton(m_Skeleton);
 	}
 
 	void SkeletalModelImporter::ParseMeshes(const aiScene* Scene)
@@ -413,9 +417,9 @@ namespace Engine
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "Parse Bone {0} ID {1}, NumVerticesAffected {2}", AnimatedBoneData->mName.C_Str(), BoneID, AnimatedBoneData->mNumWeights)
 #endif
-		if (BoneID == m_SkeletonData.BonesData.size())
+		if (BoneID == m_Skeleton.GetBonesData().size())
 		{
-			m_SkeletonData.BonesData.emplace_back(BoneData(Utility::AiMat4ToGlmMat4(AnimationKeyFrame->mOffsetMatrix)));
+			m_Skeleton.GetBonesData().emplace_back(BoneData(Utility::AiMat4ToGlmMat4(AnimationKeyFrame->mOffsetMatrix)));
 		}
 
 		for (unsigned long long idx = 0; idx < AnimationKeyFrame->mNumWeights; idx++)
@@ -431,8 +435,8 @@ namespace Engine
 
 	void SkeletalModelImporter::ParseHierarchyData(const aiNode* AiRootNode)
 	{
-		ParseHierarchyData_BuildHierarchy(&m_SkeletonData.RootNode, AiRootNode);
-		ParseHierarchyData_FixParenting(&m_SkeletonData.RootNode);
+		ParseHierarchyData_BuildHierarchy(&m_Skeleton.GetRootNode(), AiRootNode);
+		ParseHierarchyData_FixParenting(&m_Skeleton.GetRootNode());
 	}
 
 	void SkeletalModelImporter::ParseHierarchyData_BuildHierarchy(NodeData* Node, const aiNode* AiNode)
@@ -474,7 +478,7 @@ namespace Engine
 			Message += "  ";
 		}
 
-		if (m_SkeletonData.BoneNameIndexMap.find(BoneName) != m_SkeletonData.BoneNameIndexMap.end())
+		if (m_Skeleton.GetBoneNameIndexMap().find(BoneName) != m_Skeleton.GetBoneNameIndexMap().end())
 		{
 			Message += "[B] " + std::string(Node->mName.C_Str());
 		}
@@ -496,14 +500,14 @@ namespace Engine
 		uint32_t BoneID = 0;
 		std::string BoneName = AnimationKeyFrame->mName.C_Str();
 
-		if (m_SkeletonData.BoneNameIndexMap.find(BoneName) != m_SkeletonData.BoneNameIndexMap.end())
+		if (m_Skeleton.GetBoneNameIndexMap().find(BoneName) != m_Skeleton.GetBoneNameIndexMap().end())
 		{
-			BoneID = m_SkeletonData.BoneNameIndexMap[BoneName];
+			BoneID = m_Skeleton.GetBoneNameIndexMap()[BoneName];
 		}
 		else
 		{
-			BoneID = (uint32_t)m_SkeletonData.BoneNameIndexMap.size();
-			m_SkeletonData.BoneNameIndexMap[BoneName] = BoneID;
+			BoneID = (uint32_t)m_Skeleton.GetBoneNameIndexMap().size();
+			m_Skeleton.GetBoneNameIndexMap()[BoneName] = BoneID;
 		}
 
 		return BoneID;
@@ -512,13 +516,12 @@ namespace Engine
 	void SkeletalModelImporter::MarkRequiredNodesForBone(const aiBone* AiBone)
 	{
 		std::string NodeName = AiBone->mName.C_Str();
-
 		const NodeData* Parent = nullptr;
 
 		do
 		{
-			NodeData* FoundNode = m_SkeletonData.FindNodeByName(NodeName);
-			//CheckMsg(FoundNode != nullptr, "Can't find bone in the hierarchy.");
+			NodeData* FoundNode = m_Skeleton.FindNodeByName(NodeName);
+			CheckMsg(FoundNode != nullptr, "Can't find bone in the node hierarchy.");
 			
 			FoundNode->IsRequired = true;
 			Parent = FoundNode->Parent;
@@ -530,41 +533,15 @@ namespace Engine
 		} while (Parent);
 	}
 
-	void SkeletalModelImporter::FindRootBone(NodeData* Node, NodeData** OutResult, std::map<std::string, uint32_t> const& BoneNameIndexMap)
+	void AnimationImporter::AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
 	{
-		if (*OutResult != nullptr)
+		if (m_bIsBusy)
 		{
+			LOG(Assimp, Error, "Can't import animation asset, importer busy.");
 			return;
 		}
 
-		auto IsBone = [&BoneNameIndexMap](std::string const& NodeName) -> bool
-		{
-			return (BoneNameIndexMap.find(NodeName) != BoneNameIndexMap.end()) ? true : false;
-		};
-
-		const std::string NodeName = Node->Name;
-
-		if (IsBone(NodeName))
-		{
-			if (Node->Parent == nullptr)
-			{
-				return;
-			}
-;
-			if (!IsBone(Node->Parent->Name))
-			{
-				*OutResult = Node;
-			}
-		}
-
-		for (uint16_t idx = 0; idx < Node->ChildrenCount; idx++)
-		{
-			FindRootBone(&Node->Children[idx], OutResult,BoneNameIndexMap);
-		}
-	}
-
-	void AnimationImporter::AsyncImportFirstAnimation(std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
-	{
+		m_SkeletalMesh = SkeletalMesh;
 		m_bIsBusy = true;
 
 		m_OnAsyncLoadingFinished = MoveTemp(OnAsyncLoadingFinished);
@@ -575,14 +552,21 @@ namespace Engine
 										FilePath, false);
 	}
 
-	void AnimationImporter::AsyncImportAllAnimations(std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
+	void AnimationImporter::AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
 	{
+		if (m_bIsBusy)
+		{
+			LOG(Assimp, Error, "Can't import animation assets, importer busy.");
+			return;
+		}
+
+		m_SkeletalMesh = SkeletalMesh;
 		m_bIsBusy = true;
 
 		m_OnAsyncLoadingFinished = MoveTemp(OnAsyncLoadingFinished);
 		m_RootDirectory = FilePath.substr(0, FilePath.find_last_of('\\'));
 
-		m_ReadSceneFuture = std::async(std::launch::async,
+		m_ReadSceneFuture = std::async(	std::launch::async,
 										std::bind(&AnimationImporter::AsyncImportScene_Internal, this, std::placeholders::_1, std::placeholders::_2),
 										FilePath, true);
 	}
@@ -648,18 +632,18 @@ namespace Engine
 
 		ReadBonesData(&NewAnim, AiAnimation);
 		
-#define DEBUG_MODEL_IMPORTER
 #ifdef DEBUG_MODEL_IMPORTER
 		LOG(Assimp, Trace, "-------- Animation {0} skeleton --------", AiAnimation->mName.C_Str());
-		PrintSkeleton(GetRootBone(Scene->mRootNode));
+		PrintSkeleton(m_LoadedAnimations.size() - 1,Scene->mRootNode);
 #endif
-#undef DEBUG_MODEL_IMPORTER
 	}
 
-	void AnimationImporter::PrintSkeleton(aiNode* Node, uint16_t Deep /*=0*/)
+	void AnimationImporter::PrintSkeleton(uint16_t AnimationIndex, aiNode* Node, uint16_t Deep /*=0*/)
 	{
-		const aiScene* Scene = GetScene();
+		TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock();
+		Check(SkeletalMesh);
 
+		const aiScene* Scene = GetScene();
 		const char* BoneName = Node->mName.C_Str();
 		std::string Message = "";
 
@@ -668,7 +652,9 @@ namespace Engine
 			Message += "  ";
 		}
 
-		if (m_BoneNameIndexMap.find(BoneName) != m_BoneNameIndexMap.end())
+		Animation& Animation = m_LoadedAnimations[AnimationIndex];
+
+		if (Animation.GetBoneNameToIndexMap().find(BoneName) != Animation.GetBoneNameToIndexMap().end())
 		{
 			Message += "[B] " + std::string(Node->mName.C_Str());
 		}
@@ -681,21 +667,16 @@ namespace Engine
 
 		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
 		{
-			PrintSkeleton(Node->mChildren[idx], Deep + 1);
+			PrintSkeleton(AnimationIndex,Node->mChildren[idx], Deep + 1);
 		}
 	}
 
 	void AnimationImporter::ReadBonesData(Animation* Anim, const aiAnimation* AiAnimation)
 	{
-		auto SM = m_SkeletalMesh.lock();
-		std::map<std::string, uint32_t> s;
-		
-		SkeletalModelImporter* SkelModelImporter = Cast<SkeletalModelImporter>(SM->GetImporter().get());
-		if (SkelModelImporter)
-		{
-			s = SkelModelImporter->GetSkeletonData().BoneNameIndexMap;
-		}
+		TSharedPtr<ASkeletalMesh> SkeletalMesh = m_SkeletalMesh.lock();
+		Check(SkeletalMesh);
 
+		std::map<std::string, uint32_t> BoneNameIndexMap = SkeletalMesh->GetSkeleton().GetBoneNameIndexMap();
 		uint32_t BoneID = 0;
 
 		for (uint16_t idx = 0; idx < AiAnimation->mNumChannels; idx++)
@@ -703,63 +684,62 @@ namespace Engine
 			aiNodeAnim* NodeAnim = AiAnimation->mChannels[idx];
 			const std::string BoneName = NodeAnim->mNodeName.data;
 
-			if (s.find(BoneName) == s.end())
+			if (BoneNameIndexMap.find(BoneName) == BoneNameIndexMap.end())
 			{
-				BoneID = (uint32_t)s.size();
-				s[BoneName] = BoneID;
+				BoneID = (uint32_t)BoneNameIndexMap.size();
+				BoneNameIndexMap[BoneName] = BoneID;
 
 				LOG(Core, Trace, "Extra Bone In Anim {0}", BoneName);
 			}
 
-			Anim->m_BoneKeyFrames.push_back(AnimationBoneKeyFrames(NodeAnim->mNodeName.data,
-									s[BoneName], NodeAnim));
+			Anim->m_BoneKeyFrames.push_back(AnimationBoneKeyFrames(NodeAnim->mNodeName.data,BoneNameIndexMap[BoneName], NodeAnim));
 		}
-		Anim->m_BoneNameIndexMap = s;
-		m_BoneNameIndexMap = s;
+		Anim->m_BoneNameIndexMap = BoneNameIndexMap;
 	}
 
+	/*
 	aiNode* AnimationImporter::GetRootBone(aiNode* SceneRootNode)
 	{
 		aiNode* RootBone = nullptr;
-
+	
 		FindRootBone(SceneRootNode,&RootBone);
 		return RootBone;
 	}
-
+	
 	void AnimationImporter::FindRootBone(aiNode* Node, aiNode** OutResult)
 	{
 		if (*OutResult != nullptr)
 		{
 			return;
 		}
-
+	
 		auto IsBone = [this](std::string const& NodeName) -> bool
 		{
 			return (m_BoneNameIndexMap.find(NodeName) != m_BoneNameIndexMap.end()) ? true : false;
 		};
-
+	
 		std::string NodeName = Node->mName.C_Str();
-
+	
 		if (IsBone(NodeName))
 		{
 			if (Node->mParent == nullptr)
 			{
 				return;
 			}
-
+	
 			std::string ParentName = Node->mParent->mName.C_Str();
 			if (!IsBone(ParentName))
 			{
 				*OutResult = Node;
 			}
 		}
-
+	
 		for (uint16_t idx = 0; idx < Node->mNumChildren; idx++)
 		{
 			FindRootBone(Node->mChildren[idx], OutResult);
 		}
 	}
-
+	*/
 	void AnimationImporter::NotifyLoadingFinished(void)
 	{
 		std::visit(MakeInlineVisitor(
