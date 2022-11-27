@@ -7,6 +7,8 @@
 #include "Gui/JohnnieCameraWidget.hpp"
 #include "Gui/JohnnieSceneWidget.hpp"
 #include "Gui/JohnnieViewportWidget.hpp"
+#include "Gui/JohnnieAnimatorWidget.hpp"
+
 #include "JohnnieDelegates.hpp"
 #include "JohnnieGlobals.hpp"
 
@@ -23,6 +25,21 @@ void JohnnieScene::OnDetach(void)
 
 void JohnnieScene::OnTick(double DeltaTime)
 {	
+	UpdatePointLight(DeltaTime);
+
+	static bool Loaded = false;
+
+	if (Input::IsKeyPressed(KeyCode::I) && !Loaded)
+	{
+		Loaded = true;
+		m_SkeletalMesh = NewActor<ASkeletalMesh>("C:\\Users\\PRECISION 3X10\\Desktop\\Johnnie\\Build\\Johnnie\\Assets\\Models\\RumbaDancing.dae");
+		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
+		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
+	}
+}
+
+void JohnnieScene::UpdatePointLight(double DeltaTime)
+{
 	static double step = 0.0;
 	step += DeltaTime;
 
@@ -30,38 +47,8 @@ void JohnnieScene::OnTick(double DeltaTime)
 	float lightY = 2.f;
 	float lightZ = (float)(1.5f * cos(step));
 	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
-	
+
 	m_PointLight->SetLocation(lightPos);
-
-	static bool ModelLoaded = false;
-	if(Input::IsKeyPressed(KeyCode::I) && !ModelLoaded)
-	{
-		m_SkeletalMesh = NewActor<ASkeletalMesh>("Assets/Models/RumbaDancing.dae", OnSkeletalMeshAsyncLoadingFinishedDelegate::CreateRaw(this, &JohnnieScene::Test));
-		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
-		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
-
-		ModelLoaded= true;
-	}
-
-	static bool Loaded = false;
-	if(Input::IsKeyPressed(KeyCode::J) && !Loaded)
-	{
-		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Animations/A_Reaction.dae", true);
-		Loaded = true;
-		ModelLoaded = false;
-	}
-	
-	static bool Selected = false;
-	if(Input::IsKeyPressed(KeyCode::K) && !Selected)
-	{
-		for (auto Name : m_Animator->GetAvailableAnimationsNames())
-		{
-			LOG(Core, Trace, "Anim [{0}]", Name.data());
-		}
-
-		m_Animator->SetActiveAnimationName("Animation_0");
-		Selected = true;
-	}
 }
 
 void JohnnieScene::InitGui(void)
@@ -74,24 +61,33 @@ void JohnnieScene::InitGui(void)
 	m_SceneWidget		= NewWidget<WJohnnieSceneWidget>();
 	m_ViewportWidget	= NewWidget<WJohnnieViewportWidget>();
 
+	m_AnimatorWidget	= NewWidget<WJohnnieAnimatorWidget>(m_Animator);
+
     /** Init widgets actions */
 
-	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FileName)
+	JohnnieDelegates::Get()->OnStaticMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath)
 	{
 		m_SkeletalMesh = nullptr;
 		
-		m_StaticMesh = NewActor<AStaticMesh>(FileName);
+		m_StaticMesh = NewActor<AStaticMesh>(FilePath);
 		m_StaticMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
 	});
 	
-	JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.AddLambda([this](std::string const& FileName)
+	JohnnieDelegates::Get()->OnSkeletalMeshToLoadPathSelected.AddLambda([this](std::string const& FilePath)
 	{
 		m_StaticMesh = nullptr;
 		
-		m_SkeletalMesh = NewActor<ASkeletalMesh>(FileName, OnSkeletalMeshAsyncLoadingFinishedDelegate::CreateRaw(this,&JohnnieScene::Test));
+		m_SkeletalMesh = NewActor<ASkeletalMesh>(FilePath);
 		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
 
+		m_Animator->ClearAnimations();
 		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
+	});	
+	
+	JohnnieDelegates::Get()->OnAnimationToLoadPathSelected.AddLambda([this](std::string const& FilePath)
+	{
+		Check(m_Animator);
+		m_Animator->AsyncImportSingleAnimationFromFile(FilePath,true);
 	});
 }
 
@@ -118,8 +114,6 @@ void JohnnieScene::InitCamera(void)
 	m_Camera->SetRotation(glm::vec3(0.f, -16.29f, 653.89f));
 	m_Camera->SetLocation(glm::vec3(-3.95f,5.88f, 8.52f));
 
-	//m_Camera->SetRotation(glm::vec3(0, -47.5, 668));
-	//m_Camera->SetLocation(glm::vec3(-18,24,24));
 	CameraController::Get()->SetViewTarget(m_Camera);
 }
 
@@ -140,16 +134,5 @@ void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
 		material->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
 		//material->SetBaseColor(glm::vec3(0.8f, 0.105f, 0.109f));
 		material->SetSpecular(glm::vec3(0.f));
-	}
-}
-
-void JohnnieScene::Test(ASkeletalMesh* SkeletalMesh)
-{
-	static bool ExampleAnimsLoaded = false;
-
-	if (!ExampleAnimsLoaded)
-	{
-		m_Animator->AsyncImportSingleAnimationFromFile("Assets/Animations/A_RumbaDancing.dae", true);
-		ExampleAnimsLoaded = true;
 	}
 }

@@ -29,7 +29,7 @@ namespace Engine
             return;
         }
 
-        if (IsAnimationActive())
+        if (IsAnimationActive() && !m_bPaused)
         {
             if (SkeletalMesh->IsActorReadyToDraw())
             {
@@ -48,7 +48,7 @@ namespace Engine
         }
     }
 
-    float OAnimator::SecondsToTicks(float AnimationTimeInSeconds) const
+    float OAnimator::SecondsToTicks(float AnimationTimeInSeconds)
     {
         if (IsAnimationActive())
         {
@@ -59,7 +59,15 @@ namespace Engine
             const float TicksPerSecond = Animation.GetTicksPerSecond();
             const float TimeInTicks = AnimationTimeInSeconds * TicksPerSecond;
 
-            return fmod(TimeInTicks, Animation.GetDuration()); // loop animation
+            if(m_bLoopAnimation)
+            {
+                return fmod(TimeInTicks, Animation.GetDuration()); // loop animation
+            }
+            else if (TimeInTicks > Animation.GetDuration())
+            {
+                m_CurrentTimeInTicks = 0.f;
+                m_bPaused = true;
+            }
         }
         return 0.f;
     }
@@ -77,7 +85,16 @@ namespace Engine
         Animation const& Animation = GetActiveAnimation();
 
         m_CurrentTimeInTicks += Animation.GetTicksPerSecond() * (float)m_DeltaTime;
-        m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration()); // loop anim
+        
+        if (m_bLoopAnimation)
+        {
+            m_CurrentTimeInTicks = fmod(m_CurrentTimeInTicks, Animation.GetDuration());
+        }
+        else if (m_CurrentTimeInTicks > Animation.GetDuration())
+        {
+            m_CurrentTimeInTicks = 0.f;
+            m_bPaused = true;
+        }
 
         NodeData* RootBone = nullptr;
         SkeletalMesh->GetSkeleton().GetRootBone(&RootBone);
@@ -132,7 +149,7 @@ namespace Engine
         }
     }
 
-    void OAnimator::AsyncImportSingleAnimationFromFile(std::string_view FilePath, bool ActivateOnLoad)
+    void OAnimator::AsyncImportSingleAnimationFromFile(std::string const& FilePath, bool ActivateOnLoad)
     {
         TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
 
@@ -154,7 +171,7 @@ namespace Engine
         }
     }
 
-    void OAnimator::AsyncImportAllAnimationsFromFile(std::string_view FilePath, bool ActivateFirstOnLoad)
+    void OAnimator::AsyncImportAllAnimationsFromFile(std::string const& FilePath, bool ActivateFirstOnLoad)
     {
         TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
         
@@ -189,7 +206,7 @@ namespace Engine
 
     uint8_t OAnimator::GetAvailableAnimationsCount(void) const
     {
-        return uint8_t();
+        return (uint8_t)m_Animations.size();
     }
     
     bool OAnimator::SetActiveAnimationName(std::string const& AnimationName)
@@ -205,6 +222,36 @@ namespace Engine
         }
         LOG(Animator, Warning, "Can't activate requested animation, there's no such animation registered.");
         return false;
+    }
+
+    float OAnimator::GetActiveAnimationDurationInSeconds(void) const
+    {
+        if (!IsAnimationActive())
+        {
+            return 0.f;
+        }
+
+        auto FoundAnimation = m_Animations.find(m_ActiveAnimationName);
+        if (FoundAnimation != m_Animations.cend())
+        {
+            return FoundAnimation->second.GetDuration() / FoundAnimation->second.GetTicksPerSecond();
+        }
+        return 0.f;
+    }
+
+    float OAnimator::GetCurrentAnimationTimeInSeconds(void) const
+    {
+        if (!IsAnimationActive())
+        {
+            return 0.f;
+        }
+
+        auto FoundAnimation = m_Animations.find(m_ActiveAnimationName);
+        if (FoundAnimation != m_Animations.cend())
+        {
+            return m_CurrentTimeInTicks / FoundAnimation->second.GetTicksPerSecond();
+        }
+        return 0.f;
     }
 
     void OAnimator::Pause(void)
@@ -239,6 +286,10 @@ namespace Engine
             
             if (PauseAnimation)
             {
+                TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();
+                Check(SkeletalMesh);
+
+                UpdateSkeletalMeshBoneTransformations(SkeletalMesh);
                 Pause();
             }
         }
@@ -297,6 +348,17 @@ namespace Engine
             SetActiveAnimationName(Name);
         }
 
+        OnAnimationLoaded.Broadcast((uint32_t)(m_Animations.size()-1));
+
         AnimationID++;
+    }
+
+    bool OAnimator::HasValidSkeletalMesh(void) const
+    {
+        if (TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock())
+        {
+            return SkeletalMesh->IsActorReadyToDraw();
+        }
+        return false;
     }
 }

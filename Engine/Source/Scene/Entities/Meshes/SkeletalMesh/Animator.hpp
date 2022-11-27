@@ -28,7 +28,7 @@ namespace Engine
 		std::string	m_ActiveAnimationName = ID::None;
 
 		bool		m_bIsAnyAnimationActive{ false };
-		bool		m_bLoopAnimation{ false };
+		bool		m_bLoopAnimation{ true };
 		bool		m_bPaused{ false };
 
 		float		m_CurrentTimeInTicks;
@@ -37,11 +37,14 @@ namespace Engine
 		std::vector<glm::mat4> m_FinalBoneTransformations;
 
 	public:
+		DECLARE_MULTICAST_DELEGATE(OnNewAnimationLoaded, uint32_t);
 		DECLARE_MULTICAST_DELEGATE(OnAnimationStartedPlaying,	std::string const&);
 		DECLARE_MULTICAST_DELEGATE(OnAnimationFinishedPlaying,	std::string const&);
 		DECLARE_MULTICAST_DELEGATE(OnAnimationPausedPlaying,	std::string const&);
 		DECLARE_MULTICAST_DELEGATE(OnAnimationResumedPlaying,	std::string const&);
 		
+		OnNewAnimationLoaded		OnAnimationLoaded;
+
 		OnAnimationStartedPlaying	OnAnimationStarted;
 		OnAnimationFinishedPlaying	OnAnimationFinished;
 
@@ -54,7 +57,8 @@ namespace Engine
 	private:
 		void InitializeLogCategory(void);
 
-		float SecondsToTicks(float AnimationTimeInSeconds) const;
+		float SecondsToTicks(float AnimationTimeInSeconds);
+		
 		Animation const& GetActiveAnimation(void) const;
 
 		void CalculateBoneTransformations(const NodeData* Node, glm::mat4 const& ParentTransform);
@@ -63,10 +67,11 @@ namespace Engine
 	public:
 		virtual void OnTick(double DeltaTime) override;
 
-		void AsyncImportSingleAnimationFromFile(std::string_view FilePath, bool ActivateOnLoad);
-		void AsyncImportAllAnimationsFromFile(std::string_view FilePath, bool ActivateFirstOnLoad);
+		void AsyncImportSingleAnimationFromFile(std::string const& FilePath, bool ActivateOnLoad);
+		void AsyncImportAllAnimationsFromFile(std::string const& FilePath, bool ActivateFirstOnLoad);
 
 		void SetSkeletalMesh(TSharedPtr<ASkeletalMesh> SkeletalMesh);
+		bool HasValidSkeletalMesh(void) const;
 
 	public:
 		bool IsAnimationActive(void) const;
@@ -76,10 +81,15 @@ namespace Engine
 		std::vector<std::string_view> GetAvailableAnimationsNames(void) const;
 		uint8_t GetAvailableAnimationsCount(void) const;
 		
+		float GetActiveAnimationDurationInSeconds(void) const;
+		float GetCurrentAnimationTimeInSeconds(void) const;
+
 		void Pause(void);
+		bool IsPaused(void) const;
 		void Resume(void);
 		void SetAnimationTime(float TimeInSeconds, bool PauseAnimation);
 		void SetLoop(bool Loop);
+		bool IsLooping(void) const;
 
 		void ClearAnimations(void);
 
@@ -89,6 +99,16 @@ namespace Engine
 		void OnAnimationsLoadedFromFile(std::vector<Animation>& Animations);
 		void OnSingleAnimationLoadedFromFile(Animation& Animation);
 	};
+
+	FORCEINLINE bool OAnimator::IsPaused(void) const
+	{
+		return m_bPaused;
+	}
+	
+	FORCEINLINE bool OAnimator::IsLooping(void) const
+	{
+		return m_bLoopAnimation;
+	}
 
 	FORCEINLINE bool OAnimator::IsAnimationActive(void) const
 	{

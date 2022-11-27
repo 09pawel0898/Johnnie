@@ -11,6 +11,7 @@ class WJohnnieCameraWidget;
 class WJohnnieStatisticsWidget;
 class WJohnnieSceneWidget;
 class WJohnnieViewportWidget;
+class WJohnnieAnimatorWidget;
 
 namespace Engine
 {
@@ -32,6 +33,7 @@ private:
 	TSharedPtr<WJohnnieCameraWidget>		m_CameraDataWidget;
 	TSharedPtr<WJohnnieSceneWidget>			m_SceneWidget;
 	TSharedPtr<WJohnnieViewportWidget>		m_ViewportWidget;
+	TSharedPtr<WJohnnieAnimatorWidget>		m_AnimatorWidget;
 
 private:
 	/** Floating Camera */
@@ -65,5 +67,6 @@ private:
 
 	void InitPlatformMaterial(AStaticMesh* Platform);
 
+	void UpdatePointLight(double DeltaTime);
 	void Test(ASkeletalMesh* SkeletalMesh);
 };

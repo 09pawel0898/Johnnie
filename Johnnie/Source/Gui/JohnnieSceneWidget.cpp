@@ -11,7 +11,7 @@
 
 WJohnnieSceneWidget::WJohnnieSceneWidget()
 {
-	Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/NoTexture_Image.png");
+	Renderer::Get()->GetTexture2DManager().LoadResource("Assets/Textures/NoTexture.png");
 	
 	SceneDelegates::Get()->OnStaticMeshLoaded.AddLambda([this](AStaticMesh* StaticMesh)
 	{
@@ -603,7 +603,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					}
 					else
 					{
-						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture_Image.png");
+						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture.png");
 						ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
 					}
 				}

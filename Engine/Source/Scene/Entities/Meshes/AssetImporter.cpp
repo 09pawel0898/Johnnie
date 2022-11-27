@@ -533,7 +533,7 @@ namespace Engine
 		} while (Parent);
 	}
 
-	void AnimationImporter::AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
+	void AnimationImporter::AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string const& FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
 	{
 		if (m_bIsBusy)
 		{
@@ -552,7 +552,7 @@ namespace Engine
 										FilePath, false);
 	}
 
-	void AnimationImporter::AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
+	void AnimationImporter::AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string const& FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished)
 	{
 		if (m_bIsBusy)
 		{

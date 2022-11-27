@@ -175,8 +175,8 @@ namespace Engine
 	public:
 		AnimationImporter() = default;
 
-		void AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationAsyncLoadingFinishedDelegate());
-		void AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string_view FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationsAsyncLoadingFinishedDelegate());
+		void AsyncImportFirstAnimation(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string const& FilePath, OnAnimationAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationAsyncLoadingFinishedDelegate());
+		void AsyncImportAllAnimations(TWeakPtr<ASkeletalMesh> SkeletalMesh, std::string const& FilePath, OnAnimationsAsyncLoadingFinishedDelegate OnAsyncLoadingFinished = OnAnimationsAsyncLoadingFinishedDelegate());
 
 	private:
 		void AsyncImportScene_Internal(std::string_view FilePath, bool ImportAllAnimations);
