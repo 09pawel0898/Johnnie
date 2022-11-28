@@ -58,16 +58,8 @@ namespace Engine
 
             const float TicksPerSecond = Animation.GetTicksPerSecond();
             const float TimeInTicks = AnimationTimeInSeconds * TicksPerSecond;
-
-            if(m_bLoopAnimation)
-            {
-                return fmod(TimeInTicks, Animation.GetDuration()); // loop animation
-            }
-            else if (TimeInTicks > Animation.GetDuration())
-            {
-                m_CurrentTimeInTicks = 0.f;
-                m_bPaused = true;
-            }
+            
+            return fmod(TimeInTicks, Animation.GetDuration());
         }
         return 0.f;
     }
@@ -283,7 +275,6 @@ namespace Engine
         if (IsAnimationActive())
         {
             m_CurrentTimeInTicks = SecondsToTicks(TimeInSeconds);
-            
             if (PauseAnimation)
             {
                 TSharedPtr<ASkeletalMesh> SkeletalMesh = m_AnimatedSkeletalMesh.lock();

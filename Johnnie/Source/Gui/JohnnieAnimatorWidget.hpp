@@ -13,6 +13,16 @@ namespace Engine
 	}
 }
 
+//struct ComboOption
+//{
+//	std::string Name;
+//	bool IsSelected{ false };
+//
+//	explicit ComboOption(std::string_view Name)
+//		: Name(Name)
+//	{}
+//};
+
 class WJohnnieAnimatorWidget final : public ImGuiWidgetBase
 {
 private:
@@ -30,6 +40,8 @@ private:
 
 	float m_CurrentAnimationTimeInSeconds = 0.f;
 	int32_t m_SelectedAnimationIndex = 0;
+
+	//std::vector<ComboOption> m_Options;
 
 public:
 	WJohnnieAnimatorWidget(TSharedPtr<OAnimator> Animator);

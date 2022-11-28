@@ -192,28 +192,36 @@ void WJohnnieAnimatorWidget::RenderAnimationSelector(OAnimator* Animator, bool I
 		return;
 	}
 
-	char ComboOptions[400] = "\0";
+	struct ComboOption
+	{
+		std::string Name;
+		bool IsSelected{ false };
+
+		ComboOption(std::string_view Name) 
+			:	Name(Name)
+		{}
+	};
+
+	std::vector<ComboOption> Options;
 	std::unordered_map<int32_t, std::string> AnimationIndexToNameMap;
 
 	for (uint16_t idx = 0; idx < Animator->GetAvailableAnimationsNames().size(); idx++)
 	{
 		std::string_view Name = Animator->GetAvailableAnimationsNames()[idx];
-
-		AnimationIndexToNameMap[AnimationIndexToNameMap.size()] = Name;
-
-		if (idx > 0)
-		{
-			memcpy(ComboOptions + strlen(ComboOptions) + 1, Name.data(), strlen(Name.data()) + 1);
-		}
-		else
-		{
-			memcpy(ComboOptions + strlen(ComboOptions), Name.data(), strlen(Name.data()) + 1);
-		}
+		Options.emplace_back(Name);
 	}
 
-	if (ImGui::Combo("Animation", &m_SelectedAnimationIndex, ComboOptions))
-	{
-		OnSelectedAnimationChanged(Animator,AnimationIndexToNameMap[m_SelectedAnimationIndex]);
+	if(ImGui::BeginCombo("Animation", Options[m_SelectedAnimationIndex].Name.data()))
+	{ 
+		for (uint8_t idx = 0; idx < Options.size() ;idx++)
+		{
+			if (ImGui::Selectable(Options[idx].Name.c_str(), Options[idx].IsSelected))
+			{
+				m_SelectedAnimationIndex = idx;
+				OnSelectedAnimationChanged(Animator, Options[idx].Name);
+			}
+		}
+		ImGui::EndCombo();
 	}
 }
 
