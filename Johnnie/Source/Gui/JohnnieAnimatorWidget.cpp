@@ -18,9 +18,6 @@ WJohnnieAnimatorWidget::WJohnnieAnimatorWidget(TSharedPtr<OAnimator> Animator)
 
 void WJohnnieAnimatorWidget::OnRenderGui(void)
 {
-	bool b = true;
-	ImGui::ShowDemoWindow(&b);
-
 	if (!m_bShouldRenderWidget)
 	{
 		return;

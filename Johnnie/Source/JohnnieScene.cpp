@@ -26,27 +26,17 @@ void JohnnieScene::OnDetach(void)
 void JohnnieScene::OnTick(double DeltaTime)
 {	
 	UpdatePointLight(DeltaTime);
-
-	static bool Loaded = false;
-
-	if (Input::IsKeyPressed(KeyCode::I) && !Loaded)
-	{
-		Loaded = true;
-		m_SkeletalMesh = NewActor<ASkeletalMesh>("C:\\Users\\PRECISION 3X10\\Desktop\\Johnnie\\Build\\Johnnie\\Assets\\Models\\RumbaDancing.dae");
-		m_SkeletalMesh->SetScale(glm::vec3(0.035f, 0.035f, 0.035f));
-		m_Animator->SetSkeletalMesh(m_SkeletalMesh);
-	}
 }
 
 void JohnnieScene::UpdatePointLight(double DeltaTime)
 {
-	static double step = 0.0;
-	step += DeltaTime;
+	static double Step = 0.0;
+	Step += DeltaTime;
 
-	float lightX = (float)(3.0f * sin(step));
-	float lightY = 2.f;
-	float lightZ = (float)(1.5f * cos(step));
-	glm::vec3 lightPos = glm::vec3(lightX, lightY, lightZ);
+	float LightX = (float)(3.0f * sin(Step));
+	float LightY = 2.f;
+	float LightZ = (float)(1.5f * cos(Step));
+	glm::vec3 lightPos = glm::vec3(LightX, LightY, LightZ);
 
 	m_PointLight->SetLocation(lightPos);
 }
@@ -129,10 +119,9 @@ void JohnnieScene::InitScene(void)
 
 void JohnnieScene::InitPlatformMaterial(AStaticMesh* Platform)
 {
-	if (Material* material = Platform->GetMaterialInSlot(0))
+	if (Material* Material = Platform->GetMaterialInSlot(0))
 	{
-		material->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
-		//material->SetBaseColor(glm::vec3(0.8f, 0.105f, 0.109f));
-		material->SetSpecular(glm::vec3(0.f));
+		Material->SetBaseColor(glm::vec3(0.101f, 0.105f, 0.109f));
+		Material->SetSpecular(glm::vec3(0.f));
 	}
 }
