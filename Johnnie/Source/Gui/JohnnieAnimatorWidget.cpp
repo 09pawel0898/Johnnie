@@ -201,9 +201,7 @@ void WJohnnieAnimatorWidget::RenderAnimationSelector(OAnimator* Animator, bool I
 			:	Name(Name)
 		{}
 	};
-
 	std::vector<ComboOption> Options;
-	std::unordered_map<int32_t, std::string> AnimationIndexToNameMap;
 
 	for (uint16_t idx = 0; idx < Animator->GetAvailableAnimationsNames().size(); idx++)
 	{
