@@ -484,7 +484,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					}
 					else
 					{
-						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture_Image.png");
+						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture.png");
 						ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
 					}
 				}
@@ -544,7 +544,7 @@ void MaterialSlotWidget::OnRenderGui(void)
 					}
 					else
 					{
-						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture_Image.png");
+						auto noTextureImg = Renderer::Get()->GetTexture2DManager().GetResource("Assets/Textures/NoTexture.png");
 						ImGui::Image((void*)(intptr_t)noTextureImg->GetRendererID(), ImVec2(80, 80));
 					}
 				}
