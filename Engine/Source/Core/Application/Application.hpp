@@ -70,6 +70,7 @@ namespace Engine::Core
 
 	public:
 		virtual void PostInitApplication(void);
+		void ShutdownApplication(void);
 
 	private:
 		/** Statistics */

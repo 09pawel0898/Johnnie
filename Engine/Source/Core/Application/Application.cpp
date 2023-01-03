@@ -130,6 +130,11 @@ namespace Engine::Core
 #endif
     }
 
+    void Application::ShutdownApplication(void)
+    {
+        m_bRunning = false;
+    }
+
     void Application::PostInitApplication(void)
     {
         Renderer::Init(RHI::RenderingAPI::OpenGL);

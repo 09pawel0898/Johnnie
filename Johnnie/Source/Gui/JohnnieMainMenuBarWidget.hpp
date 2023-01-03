@@ -19,9 +19,6 @@ private:
 	bool				m_bIsFileBrowserOpened{ false };
 
 	FileBrowserSelectedAssetType m_FileBrowserSelectedAssetType;
-	
-
-	void InitFileBrowser(void);
 
 public:
 	WJohnnieMainMenuBarWidget();

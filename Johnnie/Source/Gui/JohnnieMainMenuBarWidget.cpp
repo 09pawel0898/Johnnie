@@ -1,12 +1,12 @@
 #include "JohnnieMainMenuBarWidget.hpp"
 #include "../JohnnieDelegates.hpp"
+#include "Core/Application/Application.hpp"
 
 #include <Engine/Utilities.hpp>
 
 WJohnnieMainMenuBarWidget::WJohnnieMainMenuBarWidget()
 {
 	SetTickEnabled(true);
-	InitFileBrowser();
 }
 
 void WJohnnieMainMenuBarWidget::OnTick(double DeltaTime)
@@ -43,14 +43,23 @@ void WJohnnieMainMenuBarWidget::OnRenderGui(void)
 			{
 				OpenFileBrowserForAssetType(FileBrowserSelectedAssetType::SkeletalMesh);
 			}
-
 			if (ImGui::MenuItem("Exit")) 
 			{
-				// Exit application
+				Core::Application::Get()->ShutdownApplication();
 			}
 			ImGui::EndMenu();
 		}
-
+		//if (ImGui::BeginMenu("Style"))
+		//{
+		//	ImGuiProperties& GUIProperties = ImGuiRenderer::Get()->GetImGuiProperties();
+		//	bool DarkMode = GUIProperties.IsDarkMode();
+		//
+		//	if (ImGui::Checkbox("asd", &DarkMode))
+		//	{
+		//		GUIProperties.SetDarkMode(DarkMode);
+		//	}
+		//	ImGui::EndMenu();
+		//}
 		ImGui::EndMainMenuBar();
 	}
 
@@ -71,10 +80,12 @@ void WJohnnieMainMenuBarWidget::OpenFileBrowserForAssetType(FileBrowserSelectedA
 {
 	if (AssetType == FileBrowserSelectedAssetType::StaticMesh)
 	{
+		m_FileBrowser.SetTypeFilters({ ".obj",".fbx",".dae" });
 		m_FileBrowser.SetTitle("Select static model file");
 	}
 	if (AssetType == FileBrowserSelectedAssetType::SkeletalMesh)
 	{
+		m_FileBrowser.SetTypeFilters({ ".dae" });
 		m_FileBrowser.SetTitle("Select skeletal model file");
 	}
 	
@@ -102,9 +113,4 @@ void WJohnnieMainMenuBarWidget::NotifyFileBrowserAssetSelected()
 	}
 
 	m_FileBrowser.ClearSelected();
-}
-
-void WJohnnieMainMenuBarWidget::InitFileBrowser(void)
-{
-	m_FileBrowser.SetTypeFilters({".obj",".fbx",".md5mesh",".dae"});
 }
