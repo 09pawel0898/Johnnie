@@ -30,9 +30,9 @@ namespace Engine::RHI
 		static std::unordered_map<RHIMapTextureType, std::string> RHITextureUniformNames =
 		{
 			{RHIMapTextureType::BasicTexture2D,	"uTexture"},
-			{RHIMapTextureType::DiffuseMap,			"uMaterial.TextureDiffuse"},
-			{RHIMapTextureType::SpecularMap,			"uMaterial.TextureSpecular"},
-			{RHIMapTextureType::NormalMap,			"uMaterial.TextureNormalMap"}
+			{RHIMapTextureType::DiffuseMap,		"uMaterial.TextureDiffuse"},
+			{RHIMapTextureType::SpecularMap,	"uMaterial.TextureSpecular"},
+			{RHIMapTextureType::NormalMap,		"uMaterial.TextureNormalMap"}
 		};
 		return RHITextureUniformNames[TextureType];
 	}
@@ -41,7 +41,7 @@ namespace Engine::RHI
 	{
 		Position	= Vertex.Position;
 		Tangent		= Vertex.Tangent;
-		NormalMap	= Vertex.NormalMap;
+		Normal		= Vertex.Normal;
 		TexUV		= Vertex.TexUV;
 	}
 
@@ -49,7 +49,7 @@ namespace Engine::RHI
 	{
 		Position	= Rhs.Position;
 		Tangent		= Rhs.Tangent;
-		NormalMap	= Rhs.NormalMap;
+		Normal		= Rhs.Normal;
 		TexUV		= Rhs.TexUV;
 
 		return *this;

@@ -22,7 +22,7 @@ namespace Engine::RHI
 		virtual ~RHIVertexArray() = default;
 
 	public:
-		virtual void Bind(void) const	= 0;
+		virtual void Bind(void) const = 0;
 		virtual void Unbind(void) const = 0;
 
 		virtual void SetIndexBuffer(TSharedPtr<RHIIndexBuffer> IndexBuffer)	= 0;

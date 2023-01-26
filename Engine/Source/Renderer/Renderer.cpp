@@ -71,25 +71,25 @@ namespace Engine
 	{
 		if(!HasFlag(R_ShadowMap))
 		{
-			auto const& camera = CameraController::Get()->GetCamera();
+			auto const& Camera = CameraController::Get()->GetCamera();
 			Shader->Bind();
-			Shader->SetFloat3("uCameraPosition", camera->GetLocation());
-			Shader->SetMat4("uViewMat", camera->GetViewMat());
-			Shader->SetMat4("uProjMat", camera->GetProjectionMat());
+			Shader->SetFloat3("uCameraPosition", Camera->GetLocation());
+			Shader->SetMat4("uViewMat", Camera->GetViewMat());
+			Shader->SetMat4("uProjMat", Camera->GetProjectionMat());
 			Shader->SetMat4("uModelMat", ModelMat);
 			Shader->SetMat3("uNormalMat", glm::mat3(glm::transpose(glm::inverse(ModelMat))));
 
 			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
 			{
-				static const glm::mat4 biasMatrix(
+				static const glm::mat4 BiasMatrix(
 					0.5, 0.0, 0.0, 0.0,
 					0.0, 0.5, 0.0, 0.0,
 					0.0, 0.0, 0.5, 0.0,
 					0.5, 0.5, 0.5, 1.0
 				);
 
-				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
-				Shader->SetMat4("uDepthBiasMVP", biasMatrix * depthVP * ModelMat);
+				auto DepthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
+				Shader->SetMat4("uDepthBiasMVP", BiasMatrix * DepthVP * ModelMat);
 			}
 		}
 		else
@@ -97,8 +97,8 @@ namespace Engine
 			Shader->Bind();
 			if (SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().has_value())
 			{
-				auto depthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
-				Shader->SetMat4("uDepthMVP", depthVP * ModelMat);
+				auto DepthVP = SceneManager::Get()->GetActiveScene()->GetLightingManager().GetDirectionalLightDepthVP().value();
+				Shader->SetMat4("uDepthMVP", DepthVP * ModelMat);
 			}
 		}
 		RHICommand::DrawIndexed(VertexArray);

@@ -83,46 +83,43 @@ namespace Engine
     
     void LightingManager::CalculateLighting(void)
     {
-        auto pointLightData = GetPointLightData();
+        auto& MeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_Mesh");
 
-        auto& staticMeshShader = Renderer::Get()->GetShaderManager().GetResource("Shader_Mesh");
-
-        if (pointLightData.has_value())
+        if (auto Data = GetPointLightData(); Data.has_value())
         {
-            PointLightData& lightData = pointLightData.value();
+            PointLightData& LightData = Data.value();
 
-            staticMeshShader->Bind();
+            MeshShader->Bind();
              
-            staticMeshShader->SetInt("uNumPointLights", 1);
-            staticMeshShader->SetFloat3("uPointLights[0].Position", lightData.WorldLocation);
+            MeshShader->SetInt("uNumPointLights", 1);
+            MeshShader->SetFloat3("uPointLights[0].Position", LightData.WorldLocation);
 
-            glm::vec3 diffuseColor = lightData.Color * lightData.DiffuseMap;
-            staticMeshShader->SetFloat3("uPointLights[0].Diffuse", diffuseColor);
-            staticMeshShader->SetFloat3("uPointLights[0].Ambient", diffuseColor * lightData.Ambient);
-            staticMeshShader->SetFloat3("uPointLights[0].Specular", glm::vec3(lightData.SpecularMap));
+            glm::vec3 DiffuseColor = LightData.Color * LightData.DiffuseMap;
+            MeshShader->SetFloat3("uPointLights[0].Diffuse", DiffuseColor);
+            MeshShader->SetFloat3("uPointLights[0].Ambient", DiffuseColor * LightData.Ambient);
+            MeshShader->SetFloat3("uPointLights[0].Specular", glm::vec3(LightData.SpecularMap));
 
-            staticMeshShader->SetFloat("uPointLights[0].Constant", lightData.Constant);
-            staticMeshShader->SetFloat("uPointLights[0].Linear", lightData.Linear);
-            staticMeshShader->SetFloat("uPointLights[0].Quadratic", lightData.Quadratic);
+            MeshShader->SetFloat("uPointLights[0].Constant", LightData.Constant);
+            MeshShader->SetFloat("uPointLights[0].Linear", LightData.Linear);
+            MeshShader->SetFloat("uPointLights[0].Quadratic", LightData.Quadratic);
         }
         else
         {
-            staticMeshShader->Bind();
-            staticMeshShader->SetInt("uNumPointLights", 0);
+            MeshShader->Bind();
+            MeshShader->SetInt("uNumPointLights", 0);
         }
 
-        auto directionalLightData = GetDirectionalLightData();
-        if (directionalLightData.has_value())
+        if (auto Data = GetDirectionalLightData(); Data.has_value())
         {
-            DirectionalLightData& lightData = directionalLightData.value();
+            DirectionalLightData& LightData = Data.value();
 
-            staticMeshShader->Bind();
-            staticMeshShader->SetFloat3("uDirectionalLight.Direction", lightData.Direction);
+            MeshShader->Bind();
+            MeshShader->SetFloat3("uDirectionalLight.Direction", LightData.Direction);
 
-            glm::vec3 diffuseColor = lightData.Color * lightData.DiffuseMap;
-            staticMeshShader->SetFloat3("uDirectionalLight.Diffuse", diffuseColor);
-            staticMeshShader->SetFloat3("uDirectionalLight.Ambient", diffuseColor * lightData.Ambient);
-            staticMeshShader->SetFloat3("uDirectionalLight.Specular", glm::vec3(lightData.SpecularMap));
+            glm::vec3 DiffuseColor = LightData.Color * LightData.Diffuse;
+            MeshShader->SetFloat3("uDirectionalLight.Diffuse", DiffuseColor);
+            MeshShader->SetFloat3("uDirectionalLight.Ambient", DiffuseColor * LightData.Ambient);
+            MeshShader->SetFloat3("uDirectionalLight.Specular", glm::vec3(LightData.Specular));
         }
     }
 }

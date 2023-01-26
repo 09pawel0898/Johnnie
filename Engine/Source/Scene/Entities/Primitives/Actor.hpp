@@ -10,8 +10,11 @@
 
 namespace Engine
 {
-	class Actor : public Object, public IDrawable//, std::enable_shared_from_this<Actor>
+	class Actor : public Object, public IDrawable
 	{
+	private:
+		bool m_bVisible = true;
+
 	protected:
 		glm::vec3 m_Location	= { 0.f,0.f,0.f };
 		glm::vec3 m_Rotation	= { 0.f,0.f,0.f };
@@ -32,12 +35,6 @@ namespace Engine
 		void SetScale(glm::vec3 const& Scale);
 
 		virtual glm::mat4 GetModelMat(void) const;
-
-	private:
-		/** Rendering */
-		bool m_bVisible = true;
-
-		void UpdateRendererStats(bool IncreaseActorCount);
 
 	public:
 		virtual void OnTick(double DeltaTime) override {};

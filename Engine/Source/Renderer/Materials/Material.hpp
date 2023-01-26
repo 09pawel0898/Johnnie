@@ -27,7 +27,7 @@ namespace Engine
 		glm::vec3 BaseColor{ 0.47f,0.47f,0.47f };
 		bool UseDiffuseMap{ false };
 
-		glm::vec3 SpecularMap{ 0.08f, 0.08f, 0.08f };
+		glm::vec3 Specular{ 0.08f, 0.08f, 0.08f };
 		bool UseSpecularMap{ false };
 
 		bool UseNormalMap{ false };
@@ -39,7 +39,7 @@ namespace Engine
 		MaterialUniform() = default;
 
 		MaterialUniform(glm::vec3 const& BaseColor, glm::vec3 const& SpecularMap, float Shiness)
-			:	BaseColor(BaseColor), SpecularMap(SpecularMap), Shiness(Shiness)
+			:	BaseColor(BaseColor), Specular(SpecularMap), Shiness(Shiness)
 		{}
 	};
 

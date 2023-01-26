@@ -9,8 +9,6 @@ namespace Engine::RHI
 {
 	TUniquePtr<RHIVertexArray> RHIVertexArray::Create(void)
 	{
-		auto& r = Renderer::Get();
-		RenderingAPI re = r->GetApiType();
 		switch (Renderer::Get()->GetApiType())
 		{
 			case RenderingAPI::OpenGL: return MakeUnique<OpenGLVertexArray>(); break;

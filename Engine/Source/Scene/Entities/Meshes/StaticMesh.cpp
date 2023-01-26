@@ -101,7 +101,7 @@ namespace Engine
             if (Mesh_->mNormals)
             {
                 aiVector3D const& normal = Mesh_->mNormals[i];
-                vertex.NormalMap = { normal.x, normal.y, normal.z };
+                vertex.Normal = { normal.x, normal.y, normal.z };
             }
             
             if (Mesh_->mTangents)
@@ -252,11 +252,11 @@ namespace Engine
     {
         if(m_bIsModelReadyToDraw)
         {
-            const glm::mat4 modelMat = GetModelMat();
+            const glm::mat4 ModelMat = GetModelMat();
 
-            for (auto& mesh : m_SubMeshes)
+            for (auto& Mesh : m_SubMeshes)
             {
-                mesh->Draw(modelMat);
+                Mesh->Draw(ModelMat);
             }
         }
     }

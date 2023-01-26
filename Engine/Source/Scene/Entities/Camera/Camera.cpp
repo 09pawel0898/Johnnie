@@ -23,12 +23,12 @@ namespace Engine
 
 	void ACamera::UpdateWorldCamera(void)
 	{
-		auto const& currentRotation = GetRotation();
+		auto const& CurrentRotation = GetRotation();
 
 		m_Forward = glm::normalize(glm::vec3(
-			cos(glm::radians(currentRotation.z)) * cos(glm::radians(currentRotation.y)),
-			sin(glm::radians(currentRotation.y)),
-			sin(glm::radians(currentRotation.z)) * cos(glm::radians(currentRotation.y))));
+			cos(glm::radians(CurrentRotation.z)) * cos(glm::radians(CurrentRotation.y)),
+			sin(glm::radians(CurrentRotation.y)),
+			sin(glm::radians(CurrentRotation.z)) * cos(glm::radians(CurrentRotation.y))));
 
 		m_Right = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), m_Forward));
 		m_Up = glm::cross(m_Forward, m_Right);

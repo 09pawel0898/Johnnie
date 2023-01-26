@@ -143,10 +143,10 @@ void WJohnnieSceneWidget::OnRenderLightingSubtab()
 				ImGui::SliderFloat("Ambient", &lightData.Ambient, 0.0f, 1.0f);
 
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Diffuse", &lightData.DiffuseMap, 0.0f, 1.0f);
+				ImGui::SliderFloat("Diffuse", &lightData.Diffuse, 0.0f, 1.0f);
 
 				ImGui::Dummy(ImVec2(0.0f, 2.0f));
-				ImGui::SliderFloat("Specular", &lightData.SpecularMap, 0.0f, 1.0f);
+				ImGui::SliderFloat("Specular", &lightData.Specular, 0.0f, 1.0f);
 
 				ImGui::Separator();
 
@@ -446,7 +446,7 @@ void MaterialSlotWidget::RefreshMaterial(void)
 								uniform.BaseColor.y, 
 								uniform.BaseColor.z, 1.0f);
 		
-		m_Specular = (uniform.SpecularMap.r + uniform.SpecularMap.g + uniform.SpecularMap.b) / 3.f;
+		m_Specular = (uniform.Specular.r + uniform.Specular.g + uniform.Specular.b) / 3.f;
 		m_Shininess = (int32_t)std::log2(uniform.Shiness);
 	}
 }

@@ -15,8 +15,8 @@ namespace Engine
 		glm::vec3 Direction;
 
 		float Ambient = 0.5f;
-		float DiffuseMap = 1.0f;
-		float SpecularMap = 0.75f;
+		float Diffuse = 1.0f;
+		float Specular = 0.75f;
 
 		DirectionalLightData() = default;
 

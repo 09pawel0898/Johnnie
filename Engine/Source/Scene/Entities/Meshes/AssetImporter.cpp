@@ -349,8 +349,8 @@ namespace Engine
 
 			if (AiMesh->mNormals)
 			{
-				aiVector3D const& NormalMap = AiMesh->mNormals[i];
-				Vertex.NormalMap = { NormalMap.x, NormalMap.y, NormalMap.z };
+				aiVector3D const& Normal = AiMesh->mNormals[i];
+				Vertex.Normal = { Normal.x, Normal.y, Normal.z };
 			}
 
 			if (AiMesh->mTangents)

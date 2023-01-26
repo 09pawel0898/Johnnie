@@ -71,52 +71,50 @@ namespace Engine
 
 	void Mesh::Draw(glm::mat4 const& ModelMat) const
 	{  
-		auto& shaderManager = Renderer::Get()->GetShaderManager();
-		
-		auto renderWithAssignedMaterial = 
-		[this,&shaderManager, &ModelMat](Material* Material)
+		auto RenderWithAssignedMaterial = 
+		[this, &ModelMat](Material* Material)
 		{
-			auto& meshShader = GetShaderForMesh(Material->IsMaterialEmissive());
+			auto& MeshShader = GetShaderForMesh(Material->IsMaterialEmissive());
 
-			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
+			MeshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
-			meshShader->SetFloat("uCastShadows", Renderer::Get()->GetShadowsSettings().bRenderShadows);
-			meshShader->SetFloat("uShadowIntensity", Renderer::Get()->GetShadowsSettings().ShadowsIntensity);
+			MeshShader->SetFloat("uCastShadows", Renderer::Get()->GetShadowsSettings().bRenderShadows);
+			MeshShader->SetFloat("uShadowIntensity", Renderer::Get()->GetShadowsSettings().ShadowsIntensity);
 
 			if(!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
-				Material->Bind(meshShader);
+				Material->Bind(MeshShader);
 			}
-			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
+			Renderer::Get()->Draw(MeshShader, m_VAO, ModelMat);
 		};
 
 		if (m_bUseHardMaterialReference)
 		{
-			if (auto hardMaterialRef = m_HardMaterialReference.lock())
+			if (auto HardMaterialRef = m_HardMaterialReference.lock())
 			{
-				renderWithAssignedMaterial(hardMaterialRef.get());
+				RenderWithAssignedMaterial(HardMaterialRef.get());
 			}
 		}
-		else if (auto staticMeshSlotMaterial = GetMaterialFromOwnerActorSlot(m_MaterialIndex))
+		else if (auto StaticMeshSlotMaterial = GetMaterialFromOwnerActorSlot(m_MaterialIndex))
 		{
-			renderWithAssignedMaterial(staticMeshSlotMaterial);
+			RenderWithAssignedMaterial(StaticMeshSlotMaterial);
 		}
 		else
 		{
-			auto& meshShader = GetShaderForMesh(false);
+			auto& MeshShader = GetShaderForMesh(false);
 
-			meshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
+			MeshShader->SetInt("uIsSkinnedMesh", (int32_t)false);
 
 			if (!Renderer::Get()->HasFlag(R_ShadowMap))
 			{
-				DefaultMaterials::BasicWhite->Bind(meshShader);
+				DefaultMaterials::BasicWhite->Bind(MeshShader);
 			}
-			Renderer::Get()->Draw(meshShader, m_VAO, ModelMat);
+			Renderer::Get()->Draw(MeshShader, m_VAO, ModelMat);
 		}
 
-		RendererStatistics& rendererStats = Renderer::GetMutableRendererStats();
-		rendererStats.MeshesCount++;
-		rendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
+		RendererStatistics& RendererStats = Renderer::GetMutableRendererStats();
+		RendererStats.MeshesCount++;
+		RendererStats.TotalTrisCount += m_MeshStatistics.TrisCount;
 	}
 	
 	void Mesh::EvaluateMesh(void)
@@ -135,20 +133,20 @@ namespace Engine
 	{
 		m_VAO = RHIVertexArray::Create();
 
-		RHIVertexBufferElement aPosition = RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
-		RHIVertexBufferElement aNormal = RHIVertexBufferElement(RHIElementType::Float3, "aNormal");
-		RHIVertexBufferElement aTexUV = RHIVertexBufferElement(RHIElementType::Float2, "aTexUV");
-		RHIVertexBufferElement aTangent = RHIVertexBufferElement(RHIElementType::Float3, "aTangent");
+		RHIVertexBufferElement aPosition	= RHIVertexBufferElement(RHIElementType::Float3, "aPosition");
+		RHIVertexBufferElement aNormal		= RHIVertexBufferElement(RHIElementType::Float3, "aNormal");
+		RHIVertexBufferElement aTexUV		= RHIVertexBufferElement(RHIElementType::Float2, "aTexUV");
+		RHIVertexBufferElement aTangent		= RHIVertexBufferElement(RHIElementType::Float3, "aTangent");
 
-		auto vbo = RHIVertexBuffer::Create(Vertices);
+		auto VBO = RHIVertexBuffer::Create(Vertices);
 
 		RHIVertexBufferLayout layout = { aPosition, aNormal, aTexUV, aTangent};
-		vbo->SetLayout(MakeUnique< RHIVertexBufferLayout>(MoveTemp(layout)));
+		VBO->SetLayout(MakeUnique< RHIVertexBufferLayout>(MoveTemp(layout)));
 
-		TUniquePtr<RHIIndexBuffer> ibo = RHIIndexBuffer::Create(Indices);
+		auto IBO = RHIIndexBuffer::Create(Indices);
 
-		m_VAO->SetIndexBuffer(MoveTemp(ibo));
-		m_VAO->AddVertexBuffer(MoveTemp(vbo));
+		m_VAO->SetIndexBuffer(MoveTemp(IBO));
+		m_VAO->AddVertexBuffer(MoveTemp(VBO));
 	}
 
 	Material* Mesh::GetMaterialFromOwnerActorSlot(uint8_t Index) const

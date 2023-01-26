@@ -15,7 +15,7 @@ namespace Engine::RHI
 	struct RHIVertex
 	{
 		glm::vec3 Position;
-		glm::vec3 NormalMap;
+		glm::vec3 Normal;
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 	};
@@ -23,7 +23,7 @@ namespace Engine::RHI
 	struct RHISkinnedVertex
 	{
 		glm::vec3 Position;
-		glm::vec3 NormalMap;
+		glm::vec3 Normal;
 		glm::vec2 TexUV;
 		glm::vec3 Tangent;
 

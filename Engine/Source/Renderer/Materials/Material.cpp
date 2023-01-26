@@ -68,7 +68,7 @@ namespace Engine
 
 	void Material::SetSpecular(glm::vec3 SpecularMap)
 	{
-		m_Uniform.SpecularMap = SpecularMap;
+		m_Uniform.Specular = SpecularMap;
 		m_Uniform.UseSpecularMap = false;
 	}
 
@@ -111,7 +111,7 @@ namespace Engine
 		if (!IsMaterialEmissive())
 		{
 			// Setting material uniform parameters //
-			Shader->SetFloat3("uMaterial.Specular", m_Uniform.SpecularMap);
+			Shader->SetFloat3("uMaterial.Specular", m_Uniform.Specular);
 			Shader->SetFloat("uMaterial.Shiness",	m_Uniform.Shiness);
 
 			Shader->SetInt("uMaterial.UseDiffuseMap",	(int32_t)m_Uniform.UseDiffuseMap);
@@ -122,20 +122,20 @@ namespace Engine
 			if (m_Uniform.UseDiffuseMap)
 			{
 				m_Textures.DiffuseMapTexture->Bind(0);
-				std::string texName = GetUniformNameByTextureType(m_Textures.DiffuseMapTexture->GetType());
-				Shader->SetInt(texName.c_str(), 0);
+				std::string TexName = GetUniformNameByTextureType(m_Textures.DiffuseMapTexture->GetType());
+				Shader->SetInt(TexName.c_str(), 0);
 			}
 			if (m_Uniform.UseSpecularMap)
 			{
 				m_Textures.SpecularMapTexture->Bind(1);
-				std::string texName = GetUniformNameByTextureType(m_Textures.SpecularMapTexture->GetType());
-				Shader->SetInt(texName.c_str(), 1);
+				std::string TexName = GetUniformNameByTextureType(m_Textures.SpecularMapTexture->GetType());
+				Shader->SetInt(TexName.c_str(), 1);
 			}
 			if (m_Uniform.UseNormalMap)
 			{
 				m_Textures.NormalMapTexture->Bind(2);
-				std::string texName = GetUniformNameByTextureType(m_Textures.NormalMapTexture->GetType());
-				Shader->SetInt(texName.c_str(), 2);
+				std::string TexName = GetUniformNameByTextureType(m_Textures.NormalMapTexture->GetType());
+				Shader->SetInt(TexName.c_str(), 2);
 			}
 			
 			// Bind shadow map //

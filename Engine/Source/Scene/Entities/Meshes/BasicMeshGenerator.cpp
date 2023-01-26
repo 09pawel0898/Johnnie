@@ -129,7 +129,7 @@ namespace Engine
 				v.Position.y = (float)(Radius * cos(phi));
 				v.Position.z = (float)(Radius * sin(phi) * sin(theta));
 
-				v.NormalMap = glm::normalize(v.Position);
+				v.Normal = glm::normalize(v.Position);
 
 				v.TexUV.x = (float)(theta / std::numbers::pi);
 				v.TexUV.y = (float)(phi / std::numbers::pi);

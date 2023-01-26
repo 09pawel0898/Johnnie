@@ -62,22 +62,22 @@ namespace Engine
 		{
 			if (Input::IsKeyPressed(KeyCode::W))
 			{
-				GetLocation() += cameraSpeed * m_Forward * m_CammeraAccelerationMod;
+				SetLocation(GetLocation() + cameraSpeed * m_Forward * m_CammeraAccelerationMod);
 				IncreaseAccelerationMod();
 			}
 			if (Input::IsKeyPressed(KeyCode::S))
 			{
-				GetLocation() -= cameraSpeed * m_Forward * m_CammeraAccelerationMod;
+				SetLocation(GetLocation() - cameraSpeed * m_Forward * m_CammeraAccelerationMod);
 				IncreaseAccelerationMod();
 			}
 			if (Input::IsKeyPressed(KeyCode::A))
 			{
-				GetLocation() -= glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod;
+				SetLocation(GetLocation() - glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod);
 				IncreaseAccelerationMod();
 			}
 			if (Input::IsKeyPressed(KeyCode::D))
 			{
-				GetLocation() += glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod;
+				SetLocation(GetLocation() + glm::normalize(glm::cross(m_Forward, m_Up)) * cameraSpeed * m_CammeraAccelerationMod);
 				IncreaseAccelerationMod();
 			}
 		}
