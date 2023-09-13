@@ -1,5 +1,5 @@
 ## Johnnie
-A software tool for rendering animated 3D models
+A software tool for rendering animated 3D models.
 
 <p align="center">
 	<img src="Screenshots/Johnnie.gif?raw=true" width=700 height=394 alt="animated">
@@ -16,7 +16,7 @@ The codebase is divided into two modules - engine module compiled into static li
 Features:
 * Static / skeletal mesh loading
 * Loading and playing skeletal animations
-* Model material specification - albedo / diffuse / specular textures loading 
+* Model material specification -  diffuse / specular / normal textures loading 
 * Point and directional lights (old school Blinn-Phong lighting model)
 * Shadow mapping
 * Logging / profiling tools
