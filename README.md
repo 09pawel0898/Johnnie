@@ -1,7 +1,7 @@
 ## Johnnie - A software tool for rendering animated 3D models
 
 <p align="center">
-	<img src="https://giphy.com/embed/Nb0pDc0fHZ4TkgXJqh" alt="animated">
+	<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWc4ZGR4cWZuMDVnaHM1eDZsYXljOXVoMzh5YWU2b2R3MWV1dXlnMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/Nb0pDc0fHZ4TkgXJqh/giphy.gif" alt="animated">
 </p>  
 
 ## Description
